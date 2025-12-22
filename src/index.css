@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary-50: #fef6e7;
+  --color-primary-100: #fde8c3;
+  --color-primary-200: #fcd49f;
+  --color-primary-300: #fabb6b;
+  --color-primary-400: #f8a542;
+  --color-primary-500: #f7931a;
+  --color-primary-600: #e0840f;
+  --color-primary-700: #c1710d;
+  --color-primary-800: #9a5a0a;
+  --color-primary-900: #714208;
+
+  --color-btd-light: #60a5fa;
+  --color-btd-DEFAULT: #3b82f6;
+  --color-btd-dark: #2563eb;
+  --color-btd-100: #dbeafe;
+
+  --color-btb-light: #fbbf24;
+  --color-btb-DEFAULT: #f59e0b;
+  --color-btb-dark: #d97706;
+
+  --color-brs-light: #34d399;
+  --color-brs-DEFAULT: #10b981;
+  --color-brs-dark: #059669;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg transition-all;
+    /* Mobile touch optimization */
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 active:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 text-gray-900 dark:text-white font-medium py-3 px-6 rounded-lg transition-all;
+    /* Mobile touch optimization */
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.98);
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800 outline-none transition-all;
+    min-height: 44px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+}
