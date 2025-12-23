@@ -7,17 +7,17 @@ function Footer() {
     {
       name: 'Twitter/X',
       icon: '/social/twitter.svg',
-      url: 'https://twitter.com/bitreserve',
+      url: 'https://x.com/bitres_labs',
     },
     {
       name: 'Discord',
       icon: '/social/discord.svg',
-      url: 'https://discord.gg/bitreserve',
+      url: 'https://discord.gg/bitres', // TODO: Update with actual Discord invite link
     },
     {
       name: 'GitHub',
       icon: '/social/github.svg',
-      url: 'https://github.com/bitreserve/brs',
+      url: 'https://github.com/bitres-labs',
     },
   ]
 

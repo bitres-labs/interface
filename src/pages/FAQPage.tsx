@@ -12,15 +12,15 @@ function FAQPage() {
       questions: [
         {
           q: 'What is Bitres?',
-          a: 'BRS is a decentralized stablecoin system that creates BTD (Bitcoin Backed Dollar), a stablecoin pegged to IUSD (Ideal USD, which tracks CPI inflation). The system uses WBTC as collateral and features automatic interest accumulation and governance through BRS tokens.',
+          a: 'Bitres is a decentralized stablecoin system that creates BTD (Bitcoin Backed Dollar), a stablecoin pegged to IUSD (Ideal USD, which tracks PCE inflation). The system uses WBTC as collateral and features automatic interest accumulation and governance through BRS tokens.',
         },
         {
-          q: 'What tokens does BRS have?',
-          a: 'BRS has three main tokens: BTD (stablecoin), BTB (bond token for under-collateralized periods), and BRS (governance token for system rewards).',
+          q: 'What tokens does Bitres have?',
+          a: 'Bitres has three main tokens: BTD (stablecoin), BTB (bond token for under-collateralized periods), and BRS (governance token for system rewards).',
         },
         {
-          q: 'Is BRS safe?',
-          a: 'BRS smart contracts are designed with security best practices, including role-based access control, reentrancy guards, and emergency pause mechanisms. However, as with all DeFi protocols, please do your own research and only invest what you can afford to lose.',
+          q: 'Is Bitres safe?',
+          a: 'Bitres smart contracts are designed with security best practices, including role-based access control, reentrancy guards, and emergency pause mechanisms. However, as with all DeFi protocols, please do your own research and only invest what you can afford to lose.',
         },
       ],
     },
@@ -63,11 +63,11 @@ function FAQPage() {
       questions: [
         {
           q: 'What is IUSD?',
-          a: 'IUSD (Ideal USD) is a synthetic dollar unit that adjusts for CPI inflation. It represents the "ideal" purchasing power of $1. As inflation increases, 1 IUSD becomes worth more nominal dollars.',
+          a: 'IUSD (Ideal USD) is a synthetic dollar unit that adjusts for PCE inflation. It represents the "ideal" purchasing power of $1. As inflation increases, 1 IUSD becomes worth more nominal dollars.',
         },
         {
           q: 'How are prices determined?',
-          a: 'BTC price comes from Chainlink oracles, CPI data from FRED API, and token prices from Uniswap TWAP (Time-Weighted Average Price) oracles to prevent manipulation.',
+          a: 'BTC price comes from Chainlink oracles, PCE data from FRED API, and token prices from Uniswap TWAP (Time-Weighted Average Price) oracles to prevent manipulation.',
         },
         {
           q: 'Why does BTD price fluctuate?',
@@ -83,12 +83,12 @@ function FAQPage() {
           a: 'The collateral ratio (CR) is the ratio of total collateral value to total BTD supply. A healthy system maintains CR ≥ 150%. When CR < 100%, the system enters emergency mode and redemptions include BTB bonds.',
         },
         {
-          q: 'What fees does BRS charge?',
-          a: 'BRS charges a small minting fee (typically 0.1-0.5%) and redemption fee. These fees help maintain system stability and fund the treasury for protocol development.',
+          q: 'What fees does Bitres charge?',
+          a: 'Bitres charges a small minting fee (typically 0.1-0.5%) and redemption fee. These fees help maintain system stability and fund the treasury for protocol development.',
         },
         {
-          q: 'Can BRS be upgraded?',
-          a: 'Yes, BRS contracts use upgradeable proxy patterns with timelock controls. Any upgrades must go through governance proposals and have a delay period for security.',
+          q: 'Can Bitres be upgraded?',
+          a: 'Yes, Bitres contracts use upgradeable proxy patterns with timelock controls. Any upgrades must go through governance proposals and have a delay period for security.',
         },
       ],
     },

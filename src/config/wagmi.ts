@@ -1,14 +1,12 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { http } from 'wagmi'
-import { NETWORK_CONFIG } from './contracts'
-
-// Hardhat Local Network
-// Always use the WSL IP for RPC connections (Windows browsers can't access WSL's localhost)
-const RPC_URL = NETWORK_CONFIG.rpcUrl
+import { sepolia } from 'wagmi/chains'
+import { NETWORK_CONFIG, NETWORK_CONFIG_LOCAL, NETWORK_CONFIG_SEPOLIA } from './contracts'
 
 const WALLETCONNECT_PROJECT_ID =
   import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '0123456789abcdef0123456789abcdef'
 
+// Hardhat Local Network
 const hardhat = {
   id: 31337,
   name: 'Hardhat Local',
@@ -18,18 +16,29 @@ const hardhat = {
     symbol: 'ETH',
   },
   rpcUrls: {
-    default: { http: [RPC_URL] },
-    public: { http: [RPC_URL] },
+    default: { http: [NETWORK_CONFIG_LOCAL.rpcUrl] },
+    public: { http: [NETWORK_CONFIG_LOCAL.rpcUrl] },
   },
   testnet: true,
 }
 
+// Detect environment
+const isProduction = typeof window !== 'undefined' &&
+  !window.location.hostname.includes('localhost') &&
+  !window.location.hostname.includes('127.0.0.1')
+
+// Use Sepolia in production, both networks in development
+const chains = isProduction
+  ? [sepolia] as const
+  : [hardhat, sepolia] as const
+
 export const config = getDefaultConfig({
   appName: 'Bitres',
   projectId: WALLETCONNECT_PROJECT_ID,
-  chains: [hardhat],
+  chains,
   transports: {
-    [hardhat.id]: http(RPC_URL),
+    [hardhat.id]: http(NETWORK_CONFIG_LOCAL.rpcUrl),
+    [sepolia.id]: http(NETWORK_CONFIG_SEPOLIA.rpcUrl),
   },
   ssr: false,
 })

@@ -1,0 +1,152 @@
+name: E2E (Synpress)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  synpress-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CI: true
+    steps:
+      - name: Checkout interface
+        uses: actions/checkout@v4
+        with:
+          path: interface
+
+      - name: Checkout contracts
+        uses: actions/checkout@v4
+        with:
+          repository: bitres-labs/bitres
+          path: bitres
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            interface/package-lock.json
+            bitres/package-lock.json
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Install interface dependencies
+        working-directory: interface
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: interface
+        run: npx playwright install chromium
+
+      - name: Install contracts dependencies
+        working-directory: bitres
+        run: npm install --legacy-peer-deps
+
+      - name: Start Hardhat and deploy contracts
+        working-directory: bitres
+        run: |
+          set -e
+          # Start Hardhat node in background
+          npx hardhat node --hostname 0.0.0.0 > /tmp/hardhat.log 2>&1 &
+          HARDHAT_PID=$!
+          echo "Started Hardhat node (PID: $HARDHAT_PID)"
+
+          # Wait for node to be ready
+          echo "Waiting for Hardhat node..."
+          for i in {1..60}; do
+            if nc -z 127.0.0.1 8545 2>/dev/null; then
+              echo "Hardhat node ready"
+              break
+            fi
+            sleep 1
+          done
+
+          # Verify node is running
+          if ! nc -z 127.0.0.1 8545 2>/dev/null; then
+            echo "Hardhat node failed to start"
+            tail -50 /tmp/hardhat.log
+            exit 1
+          fi
+
+          # Deploy contracts (use --deployment-id to avoid prompts)
+          echo "Deploying contracts..."
+          rm -rf ignition/deployments/chain-31337
+          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost --deployment-id ci-deploy > /tmp/ignition-deploy.log 2>&1
+
+          # Initialize system
+          echo "Initializing system..."
+          npx hardhat run scripts/main/init-full-system.mjs --network localhost > /tmp/init-full-system.log 2>&1
+
+          echo "Contracts deployed and initialized"
+
+      - name: Generate frontend config
+        run: |
+          DEPLOYMENT_DIR="bitres/ignition/deployments/chain-31337"
+          if [ -d "$DEPLOYMENT_DIR" ]; then
+            echo "Deployment artifacts found"
+            mkdir -p interface/src/config
+            cp "$DEPLOYMENT_DIR/deployed_addresses.json" interface/src/config/contracts.json 2>/dev/null || echo "No deployed_addresses.json"
+          fi
+
+      - name: Run E2E tests
+        working-directory: interface
+        run: |
+          set -e
+          # Restart Hardhat node for tests
+          cd ../bitres
+          npx hardhat node --hostname 0.0.0.0 > /tmp/hardhat.log 2>&1 &
+          sleep 10
+
+          # Re-deploy for clean state
+          rm -rf ignition/deployments/chain-31337
+          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost --deployment-id e2e-deploy > /tmp/ignition-deploy-e2e.log 2>&1
+          npx hardhat run scripts/main/init-full-system.mjs --network localhost > /tmp/init-full-system-e2e.log 2>&1
+
+          # Start frontend
+          cd ../interface
+          npm run dev &
+          sleep 10
+
+          # Prepare MetaMask
+          xvfb-run -a npx synpress test/wallet-setup
+
+          # Run tests
+          xvfb-run -a npx playwright test e2e/synpress-redeem.spec.ts --reporter=html
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "==== /tmp/hardhat.log (tail) ===="
+          tail -200 /tmp/hardhat.log || true
+          echo "==== /tmp/ignition-deploy.log (tail) ===="
+          tail -200 /tmp/ignition-deploy.log || true
+          echo "==== /tmp/init-full-system.log (tail) ===="
+          tail -200 /tmp/init-full-system.log || true
+          echo "==== /tmp/ignition-deploy-e2e.log (tail) ===="
+          tail -200 /tmp/ignition-deploy-e2e.log || true
+          echo "==== /tmp/init-full-system-e2e.log (tail) ===="
+          tail -200 /tmp/init-full-system-e2e.log || true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results
+          path: |
+            interface/test-results/
+            interface/playwright-report/
+            /tmp/hardhat.log
+            /tmp/ignition-deploy.log
+            /tmp/init-full-system.log
+            /tmp/ignition-deploy-e2e.log
+            /tmp/init-full-system-e2e.log
+          retention-days: 7

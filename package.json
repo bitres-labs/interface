@@ -25,6 +25,9 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
+    "@synthetixio/synpress": "^4.1.1",
+    "@synthetixio/synpress-cache": "^0.0.13",
+    "@synthetixio/synpress-metamask": "^0.0.13",
     "@tailwindcss/postcss": "^4.1.16",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
