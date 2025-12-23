@@ -65,14 +65,24 @@ const NETWORK_CONFIG_LOCAL = {
 // Network Detection and Export
 // ============================================================================
 
-// Default to Sepolia for production, Local for development
-const isProduction = typeof window !== 'undefined' &&
-  !window.location.hostname.includes('localhost') &&
-  !window.location.hostname.includes('127.0.0.1')
+// Check if running in production (Vite build mode)
+// import.meta.env.PROD is true during `vite build`, false during `vite dev`
+const isProductionBuild = import.meta.env.PROD
+
+// Runtime check for localhost (only matters in dev mode)
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname.includes('localhost') ||
+  window.location.hostname.includes('127.0.0.1')
+)
+
+// Use Sepolia in production build, or Local in dev/localhost
+const useSepoliaNetwork = isProductionBuild && !isLocalhost
 
 // Use Sepolia by default in production
-export const CONTRACTS = isProduction ? { ...CONTRACTS_SEPOLIA, BTCPriceFeed: CONTRACTS_SEPOLIA.ChainlinkBTCUSD } : CONTRACTS_LOCAL
-export const NETWORK_CONFIG = isProduction ? NETWORK_CONFIG_SEPOLIA : NETWORK_CONFIG_LOCAL
+export const CONTRACTS = useSepoliaNetwork
+  ? { ...CONTRACTS_SEPOLIA, BTCPriceFeed: CONTRACTS_SEPOLIA.ChainlinkBTCUSD }
+  : CONTRACTS_LOCAL
+export const NETWORK_CONFIG = useSepoliaNetwork ? NETWORK_CONFIG_SEPOLIA : NETWORK_CONFIG_LOCAL
 
 // Export both for manual switching
 export { CONTRACTS_LOCAL, NETWORK_CONFIG_LOCAL }

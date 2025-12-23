@@ -22,13 +22,11 @@ const hardhat = {
   testnet: true,
 }
 
-// Detect environment
-const isProduction = typeof window !== 'undefined' &&
-  !window.location.hostname.includes('localhost') &&
-  !window.location.hostname.includes('127.0.0.1')
+// Detect environment using Vite's build mode
+const isProductionBuild = import.meta.env.PROD
 
-// Use Sepolia in production, both networks in development
-const chains = isProduction
+// Use Sepolia only in production, both networks in development
+const chains = isProductionBuild
   ? [sepolia] as const
   : [hardhat, sepolia] as const
 
