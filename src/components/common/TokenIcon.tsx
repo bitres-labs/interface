@@ -13,14 +13,13 @@ const TOKEN_ICONS: Record<string, string> = {
   WBTC: '/tokens/wbtc.png',
   USDC: '/tokens/usdc.png',
   USDT: '/tokens/usdt.png',
-}
-
-const TOKEN_COLORS: Record<string, string> = {
-  BRS: 'bg-brs-DEFAULT',
-  BTD: 'bg-btd-DEFAULT',
-  BTB: 'bg-btb-DEFAULT',
-  stBTD: 'bg-btd-DEFAULT',
-  stBTB: 'bg-btb-DEFAULT',
+  BTB: '/tokens/btb.png',
+  BTD: '/tokens/btd.png',
+  BRS: '/tokens/brs.png',
+  ETH: '/tokens/eth.png',
+  WETH: '/tokens/eth.png',
+  stBTB: '/tokens/btb.png',
+  stBTD: '/tokens/btd.png',
 }
 
 export function TokenIcon({ token, size = 'w-8 h-8', className = '' }: TokenIconProps) {
@@ -29,11 +28,6 @@ export function TokenIcon({ token, size = 'w-8 h-8', className = '' }: TokenIcon
     return (
       <img src={TOKEN_ICONS[token]} alt={token} className={`${size} rounded-full ${className}`} />
     )
-  }
-
-  // If there's a color configuration, use a colored circle
-  if (TOKEN_COLORS[token]) {
-    return <div className={`${size} ${TOKEN_COLORS[token]} rounded-full ${className}`} />
   }
 
   // Default gray circle

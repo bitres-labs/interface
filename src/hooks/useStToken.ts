@@ -1,10 +1,11 @@
 import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
 import { parseEther } from 'viem'
-import { CONTRACTS } from '@/config/contracts'
+import { CONTRACTS, TOKEN_DECIMALS } from '@/config/contracts'
 import { logger } from '@/utils/logger'
-import { useApproveAndExecute } from './useApproveAndExecute'
+import { usePermit } from './usePermit'
+import { useState } from 'react'
 
-// ERC4626 Vault ABI (used by stBTD and stBTB)
+// ERC4626 Vault ABI with permit support (used by stBTD and stBTB)
 const VAULT_ABI = [
   {
     inputs: [
@@ -27,15 +28,31 @@ const VAULT_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  {
+    inputs: [
+      { name: 'assets', type: 'uint256' },
+      { name: 'receiver', type: 'address' },
+      { name: 'deadline', type: 'uint256' },
+      { name: 'v', type: 'uint8' },
+      { name: 'r', type: 'bytes32' },
+      { name: 's', type: 'bytes32' },
+    ],
+    name: 'depositWithPermit',
+    outputs: [{ name: 'shares', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ] as const
 
 /**
- * Deposit BTD to stBTD (ERC4626 vault)
+ * Deposit BTD to stBTD (ERC4626 vault) using EIP-2612 permit
+ * No separate approve transaction needed - gasless approval via signature
  */
 export function useDepositStBTD() {
   const { address } = useAccount()
   const { writeContract, data: hash, isPending, error } = useWriteContract()
-  const { approveAndExecute, isProcessing: isApproving } = useApproveAndExecute()
+  const { signPermit } = usePermit()
+  const [isSigningPermit, setIsSigningPermit] = useState(false)
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   })
@@ -44,34 +61,39 @@ export function useDepositStBTD() {
     if (!address) throw new Error('Wallet not connected')
 
     try {
-      await approveAndExecute({
+      setIsSigningPermit(true)
+      logger.info('Signing permit for BTD deposit to stBTD...', { amount: btdAmount })
+
+      // Sign permit for BTD token
+      const permitSig = await signPermit({
         tokenAddress: CONTRACTS.BTD,
         spenderAddress: CONTRACTS.stBTD,
         amount: btdAmount,
-        decimals: 18,
-        actionName: 'Deposit to stBTD',
-        executeAction: async () => {
-          logger.info('Depositing BTD to stBTD...', { amount: btdAmount })
+        decimals: TOKEN_DECIMALS.BTD,
+      })
 
-          const amount = parseEther(btdAmount)
+      setIsSigningPermit(false)
+      logger.info('Depositing BTD to stBTD with permit...', { amount: btdAmount })
 
-          writeContract({
-            address: CONTRACTS.stBTD,
-            abi: VAULT_ABI,
-            functionName: 'deposit',
-            args: [amount, address],
-          })
-        },
+      const amount = parseEther(btdAmount)
+
+      writeContract({
+        address: CONTRACTS.stBTD,
+        abi: VAULT_ABI,
+        functionName: 'depositWithPermit',
+        args: [amount, address, permitSig.deadline, permitSig.v, permitSig.r, permitSig.s],
       })
     } catch (err) {
-      logger.error('Deposit stBTD error:', err)
+      setIsSigningPermit(false)
+      logger.error('Deposit stBTD with permit error:', err)
       throw err
     }
   }
 
   return {
     deposit,
-    isPending: isPending || isApproving,
+    isPending: isPending || isSigningPermit,
+    isSigningPermit,
     isConfirming,
     isSuccess,
     error,
@@ -120,12 +142,14 @@ export function useRedeemStBTD() {
 }
 
 /**
- * Deposit BTB to stBTB (ERC4626 vault)
+ * Deposit BTB to stBTB (ERC4626 vault) using EIP-2612 permit
+ * No separate approve transaction needed - gasless approval via signature
  */
 export function useDepositStBTB() {
   const { address } = useAccount()
   const { writeContract, data: hash, isPending, error } = useWriteContract()
-  const { approveAndExecute, isProcessing: isApproving } = useApproveAndExecute()
+  const { signPermit } = usePermit()
+  const [isSigningPermit, setIsSigningPermit] = useState(false)
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   })
@@ -134,34 +158,39 @@ export function useDepositStBTB() {
     if (!address) throw new Error('Wallet not connected')
 
     try {
-      await approveAndExecute({
+      setIsSigningPermit(true)
+      logger.info('Signing permit for BTB deposit to stBTB...', { amount: btbAmount })
+
+      // Sign permit for BTB token
+      const permitSig = await signPermit({
         tokenAddress: CONTRACTS.BTB,
         spenderAddress: CONTRACTS.stBTB,
         amount: btbAmount,
-        decimals: 18,
-        actionName: 'Deposit to stBTB',
-        executeAction: async () => {
-          logger.info('Depositing BTB to stBTB...', { amount: btbAmount })
+        decimals: TOKEN_DECIMALS.BTB,
+      })
 
-          const amount = parseEther(btbAmount)
+      setIsSigningPermit(false)
+      logger.info('Depositing BTB to stBTB with permit...', { amount: btbAmount })
 
-          writeContract({
-            address: CONTRACTS.stBTB,
-            abi: VAULT_ABI,
-            functionName: 'deposit',
-            args: [amount, address],
-          })
-        },
+      const amount = parseEther(btbAmount)
+
+      writeContract({
+        address: CONTRACTS.stBTB,
+        abi: VAULT_ABI,
+        functionName: 'depositWithPermit',
+        args: [amount, address, permitSig.deadline, permitSig.v, permitSig.r, permitSig.s],
       })
     } catch (err) {
-      logger.error('Deposit stBTB error:', err)
+      setIsSigningPermit(false)
+      logger.error('Deposit stBTB with permit error:', err)
       throw err
     }
   }
 
   return {
     deposit,
-    isPending: isPending || isApproving,
+    isPending: isPending || isSigningPermit,
+    isSigningPermit,
     isConfirming,
     isSuccess,
     error,

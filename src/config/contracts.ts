@@ -132,7 +132,7 @@ export function getNetworkConfigForChain(chainId: number) {
  */
 export async function hydrateContractsFromDeployment(): Promise<void> {
   if (typeof fetch === 'undefined') return
-  if (isProduction) return // Skip for production (Sepolia)
+  if (isProductionBuild) return // Skip for production (Sepolia)
 
   try {
     const ts = Date.now()

@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useAccount, usePublicClient, useWalletClient, useReadContract } from 'wagmi'
-import { parseUnits } from 'viem'
+import { parseUnits, maxUint256 } from 'viem'
 import { ERC20_ABI } from '@/abis'
 import { logger } from '@/utils/logger'
 
 /**
  * Hook to handle approve + execute in one click
- * Automatically checks allowance and approves if needed before executing the action
+ * Automatically checks allowance and approves with unlimited amount (MaxUint256) if needed
+ * This provides better UX as users only need to approve once per token-spender pair
  */
 export function useApproveAndExecute() {
   const { address: account } = useAccount()
@@ -46,21 +47,22 @@ export function useApproveAndExecute() {
         args: [account, spenderAddress],
       })) as bigint
 
-      // If allowance is insufficient, approve first
+      // If allowance is insufficient, approve with unlimited amount (MaxUint256)
+      // This provides better UX - user only needs to approve once per token-spender pair
       if (currentAllowance < amountWei) {
-        logger.log(`Approving ${amount} tokens for ${actionName}...`)
+        logger.log(`Approving unlimited allowance for ${actionName}...`)
 
         const approveHash = await walletClient.writeContract({
           address: tokenAddress,
           abi: ERC20_ABI,
           functionName: 'approve',
-          args: [spenderAddress, amountWei],
+          args: [spenderAddress, maxUint256],
           account,
         })
 
         // Wait for approval transaction
         await publicClient.waitForTransactionReceipt({ hash: approveHash })
-        logger.log('Approval confirmed')
+        logger.log('Unlimited approval confirmed')
       } else {
         logger.log('Sufficient allowance, skipping approval')
       }

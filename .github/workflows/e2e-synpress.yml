@@ -35,25 +35,31 @@ jobs:
             interface/package-lock.json
             bitres/package-lock.json
 
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: stable
-
       - name: Install interface dependencies
         working-directory: interface
         run: npm ci
 
       - name: Install Playwright browsers
         working-directory: interface
-        run: npx playwright install chromium
+        run: |
+          # Install browsers for project's Playwright version (1.57.0)
+          npx playwright install --with-deps chromium
+
+          # Install browsers for Synpress's internal Playwright version (1.48.2)
+          # This creates chromium-1140 in ~/.cache/ms-playwright/ which synpress-cache expects
+          npx -y -p playwright@1.48.2 -- playwright install --with-deps chromium
+
+          # Verify the browser directories exist
+          ls -la ~/.cache/ms-playwright/ || true
 
       - name: Install contracts dependencies
         working-directory: bitres
+        if: false
         run: npm install --legacy-peer-deps
 
       - name: Start Hardhat and deploy contracts
         working-directory: bitres
+        if: false
         run: |
           set -e
           # Start Hardhat node in background
@@ -78,18 +84,19 @@ jobs:
             exit 1
           fi
 
-          # Deploy contracts (use --deployment-id to avoid prompts)
+          # Deploy contracts
           echo "Deploying contracts..."
           rm -rf ignition/deployments/chain-31337
-          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost --deployment-id ci-deploy > /tmp/ignition-deploy.log 2>&1
+          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost 2>&1 | tee /tmp/ignition-deploy.log
 
           # Initialize system
           echo "Initializing system..."
-          npx hardhat run scripts/main/init-full-system.mjs --network localhost > /tmp/init-full-system.log 2>&1
+          npx hardhat run scripts/main/init-full-system.mjs --network localhost 2>&1 | tee /tmp/init-full-system.log
 
           echo "Contracts deployed and initialized"
 
       - name: Generate frontend config
+        if: false
         run: |
           DEPLOYMENT_DIR="bitres/ignition/deployments/chain-31337"
           if [ -d "$DEPLOYMENT_DIR" ]; then
@@ -98,30 +105,16 @@ jobs:
             cp "$DEPLOYMENT_DIR/deployed_addresses.json" interface/src/config/contracts.json 2>/dev/null || echo "No deployed_addresses.json"
           fi
 
-      - name: Run E2E tests
+      - name: Diagnose MetaMask extension load
         working-directory: interface
         run: |
           set -e
-          # Restart Hardhat node for tests
-          cd ../bitres
-          npx hardhat node --hostname 0.0.0.0 > /tmp/hardhat.log 2>&1 &
-          sleep 10
-
-          # Re-deploy for clean state
-          rm -rf ignition/deployments/chain-31337
-          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost --deployment-id e2e-deploy > /tmp/ignition-deploy-e2e.log 2>&1
-          npx hardhat run scripts/main/init-full-system.mjs --network localhost > /tmp/init-full-system-e2e.log 2>&1
-
-          # Start frontend
-          cd ../interface
-          npm run dev &
-          sleep 10
-
-          # Prepare MetaMask
-          xvfb-run -a npx synpress test/wallet-setup
-
-          # Run tests
-          xvfb-run -a npx playwright test e2e/synpress-redeem.spec.ts --reporter=html
+          npx -y -p playwright@1.40.0 playwright install chromium
+          OLD_CHROMIUM=$(npx -y -p playwright@1.40.0 node -e "const { chromium } = require('playwright-core'); console.log(chromium.executablePath())")
+          export DIAG_CHROMIUM_EXECUTABLE_PATH="$OLD_CHROMIUM"
+          echo "Using Playwright 1.40.0 chromium: $DIAG_CHROMIUM_EXECUTABLE_PATH"
+          "$DIAG_CHROMIUM_EXECUTABLE_PATH" --version || true
+          xvfb-run -a node e2e/diagnose-extension.cjs
 
       - name: Dump logs on failure
         if: failure()

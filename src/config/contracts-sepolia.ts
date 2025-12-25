@@ -1,13 +1,17 @@
 // Bitres Contract Addresses - Sepolia Testnet (Chain ID: 11155111)
 // Auto-generated from Ignition deployment: FullSystemSepolia
-// Last updated: 2025-12-23
+// Last updated: 2025-12-25
 
 export const CONTRACTS_SEPOLIA = {
-  // Mock Tokens (testnet faucet tokens)
-  WBTC: '0x19BB045d5DD4cC31dceC24C9FaadCb0A5542Ce92' as `0x${string}`,
-  USDC: '0x72E6DC154C8f5F630e39B806Ee7C5C56DF8F37f6' as `0x${string}`,
-  USDT: '0xe2DdDa165f37fF1F16439EF50D3B9cb4FFa3B6D2' as `0x${string}`,
-  WETH: '0xDADe7Bf9672564f0afBb18EFE09Bfc8A8fe8AdD6' as `0x${string}`,
+  // Official Sepolia Testnet Tokens
+  // Users can get these from standard faucets:
+  // - WETH: Wrap ETH directly (Uniswap WETH9)
+  // - USDC: faucet.circle.com
+  // - WBTC/USDT: Aave faucet (app.aave.com -> Faucet)
+  WBTC: '0x29f2D40B0605204364af54EC677bD022dA425d03' as `0x${string}`,  // Aave V3 testnet
+  USDC: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as `0x${string}`,  // Circle official
+  USDT: '0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0' as `0x${string}`,  // Aave V3 testnet
+  WETH: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14' as `0x${string}`,  // Uniswap WETH9
 
   // Core Tokens
   BRS: '0xFc06003c597c3846f1567f06caea0da3A3cA1317' as `0x${string}`,
@@ -47,7 +51,7 @@ export const CONTRACTS_SEPOLIA = {
 export const NETWORK_CONFIG_SEPOLIA = {
   chainId: 11155111,
   chainName: 'Sepolia Testnet',
-  rpcUrl: 'https://rpc.sepolia.org',
+  rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
   blockExplorer: 'https://sepolia.etherscan.io',
 }
 
