@@ -2,6 +2,14 @@ name: E2E (Synpress)
 
 on:
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "E2E suite to run"
+        type: choice
+        options:
+          - smoke
+          - full
+        default: smoke
   # Temporarily disabled - E2E tests need fixing
   # push:
   #   branches: [main]
@@ -13,6 +21,7 @@ jobs:
     timeout-minutes: 45
     env:
       CI: true
+      TEST_SUITE: ${{ inputs.suite || 'smoke' }}
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -116,8 +125,15 @@ jobs:
 
       - name: Run OKX E2E wallet smoke
         working-directory: interface
+        if: env.TEST_SUITE == 'smoke'
         run: |
           xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts --workers=1
+
+      - name: Run OKX E2E full suite
+        working-directory: interface
+        if: env.TEST_SUITE == 'full'
+        run: |
+          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/bitres-prod.spec.ts --workers=1
 
       - name: Dump logs on failure
         if: failure()
