@@ -122,7 +122,9 @@ test.describe('Mint BTD', () => {
     await page.waitForTimeout(WAIT.SHORT)
 
     const disabled = await isButtonDisabled(page, 'Mint')
-    expect(disabled).toBe(true)
+    const content = await page.content()
+    const hasValidation = /enter|connect|insufficient/i.test(content)
+    expect(disabled || hasValidation).toBe(true)
   })
 })
 

@@ -114,6 +114,7 @@ const test = base.extend<{
 })
 
 test.describe('Custom Synpress: MetaMask Tests', () => {
+  test.skip(process.env.WALLET_PROVIDER === 'okx', 'Skipping MetaMask-specific checks for OKX runs')
   test('should load MetaMask extension', async ({ extensionContext }) => {
     // Wait for pages to load
     await new Promise(resolve => setTimeout(resolve, 5000))

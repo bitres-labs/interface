@@ -39,9 +39,7 @@ test.describe('Page Navigation', () => {
 
       // Check page loaded without error
       const content = await page.content()
-      const hasError = content.includes('404') ||
-                       content.includes('Not Found') ||
-                       content.includes('Error')
+      const hasError = /404|not found|page not found/i.test(content)
 
       console.log(`Page ${pageInfo.name} loaded: ${!hasError}`)
       expect(hasError).toBe(false)

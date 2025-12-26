@@ -5,32 +5,12 @@
  */
 
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
-import { expect, type Page } from '@playwright/test'
+import { expect } from '@playwright/test'
 import BasicSetup from '../test/wallet-setup/okx.setup'
+import { connectWallet, isWalletConnected } from './utils/test-helpers'
 
 // Create test instance with OKX fixtures
 const test = metaMaskFixtures(BasicSetup, 0)
-
-// Helper to connect wallet via RainbowKit
-async function connectWalletRainbowKit(page: Page, metamask: any) {
-  // Click connect button
-  const connectButton = page.locator('button:has-text("Connect Wallet")')
-  if (await connectButton.count() > 0) {
-    await connectButton.first().click()
-    await page.waitForTimeout(1000)
-
-    // Click OKX option in RainbowKit modal
-    const okxOption = page.locator('button:has-text("OKX")')
-    if (await okxOption.count() > 0) {
-      await okxOption.first().click()
-      await page.waitForTimeout(1000)
-
-      // Approve connection in OKX
-      await metamask.connectToDapp()
-      await page.waitForTimeout(2000)
-    }
-  }
-}
 
 test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
   test('should connect OKX wallet', async ({ page, metamask }) => {
@@ -39,12 +19,9 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
     await page.waitForTimeout(3000)
 
     // Connect wallet
-    await connectWalletRainbowKit(page, metamask)
+    await connectWallet(page, metamask)
 
-    // Verify connected - look for address display
-    const addressPattern = /0x[a-fA-F0-9]{4}.*[a-fA-F0-9]{4}/
-    const content = await page.content()
-    const isConnected = addressPattern.test(content)
+    const isConnected = await isWalletConnected(page)
 
     console.log('Wallet connected:', isConnected)
     await page.screenshot({ path: 'test-results/synpress-connected.png' })
@@ -58,7 +35,7 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
     // Navigate and connect
     await page.goto('http://localhost:3000/')
     await page.waitForTimeout(3000)
-    await connectWalletRainbowKit(page, metamask)
+    await connectWallet(page, metamask)
     await page.waitForTimeout(2000)
 
     // Switch to Redeem BTD tab
@@ -107,7 +84,7 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
     // Navigate and connect
     await page.goto('http://localhost:3000/')
     await page.waitForTimeout(3000)
-    await connectWalletRainbowKit(page, metamask)
+    await connectWallet(page, metamask)
     await page.waitForTimeout(2000)
 
     // Should be on Mint tab by default

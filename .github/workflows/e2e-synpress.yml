@@ -22,6 +22,7 @@ jobs:
     env:
       CI: true
       TEST_SUITE: ${{ inputs.suite || 'smoke' }}
+      WALLET_PROVIDER: okx
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -175,6 +176,7 @@ jobs:
     env:
       CI: true
       TEST_SUITE: full
+      WALLET_PROVIDER: okx
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -307,6 +309,7 @@ jobs:
     env:
       CI: true
       TEST_SUITE: full
+      WALLET_PROVIDER: okx
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -439,6 +442,7 @@ jobs:
     env:
       CI: true
       TEST_SUITE: full
+      WALLET_PROVIDER: okx
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4

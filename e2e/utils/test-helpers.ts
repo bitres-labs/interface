@@ -19,6 +19,7 @@ export const WAIT = {
  * Connect wallet via RainbowKit
  */
 export async function connectWallet(page: Page, metamask: any) {
+  if (page.isClosed()) return
   const connectButton = page.locator('button:has-text("Connect Wallet")')
   if (await connectButton.count() > 0) {
     await connectButton.first().click()
@@ -45,20 +46,26 @@ export async function connectWallet(page: Page, metamask: any) {
 
 async function attemptWalletConnect(page: Page, metamask: any, attempts = 2) {
   for (let i = 0; i < attempts; i += 1) {
+    if (page.isClosed()) return false
     await metamask.connectToDapp()
     const connected = await waitForWalletConnection(page, WAIT.LONG * 3)
     if (connected) return true
 
-    const retryButton = page.locator('button:has-text("Retry")')
-    if (await retryButton.count()) {
-      await retryButton.first().click()
-      await page.waitForTimeout(WAIT.SHORT)
+    try {
+      const retryButton = page.locator('button:has-text("Retry")')
+      if (await retryButton.count()) {
+        await retryButton.first().click()
+        await page.waitForTimeout(WAIT.SHORT)
+      }
+    } catch {
+      return false
     }
   }
   return false
 }
 
 export async function waitForWalletConnection(page: Page, timeout = 15000) {
+  if (page.isClosed()) return false
   try {
     await page.waitForFunction(async () => {
       const ethereum = (window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }).ethereum
@@ -187,7 +194,7 @@ export async function clickButton(page: Page, text: string, options?: { last?: b
  * Click a tab button
  */
 export async function clickTab(page: Page, tabText: string) {
-  const tab = page.locator(`button:has-text("${tabText}")`).first()
+  const tab = page.locator(`button:has-text("${tabText}")`).filter({ hasNot: page.locator('[disabled]') }).first()
   if (await tab.count() > 0) {
     await tab.click()
     await page.waitForTimeout(WAIT.SHORT)
