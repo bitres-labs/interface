@@ -60,3 +60,4 @@ vitest.config.ts
 CLAUDE.md
 .vercel
 .cache-synpress/
+.cache-okx/

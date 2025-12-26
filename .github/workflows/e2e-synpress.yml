@@ -45,10 +45,6 @@ jobs:
           # Install browsers for project's Playwright version (1.57.0)
           npx playwright install --with-deps chromium
 
-          # Install browsers for Synpress's internal Playwright version (1.48.2)
-          # This creates chromium-1140 in ~/.cache/ms-playwright/ which synpress-cache expects
-          npx -y -p playwright@1.48.2 -- playwright install --with-deps chromium
-
           # Verify the browser directories exist
           ls -la ~/.cache/ms-playwright/ || true
 
@@ -105,20 +101,29 @@ jobs:
             cp "$DEPLOYMENT_DIR/deployed_addresses.json" interface/src/config/contracts.json 2>/dev/null || echo "No deployed_addresses.json"
           fi
 
-      - name: Diagnose MetaMask extension load
+      - name: Start interface dev server
+        working-directory: interface
+        run: |
+          npm run dev -- --host 0.0.0.0 --port 3000 > /tmp/interface-dev.log 2>&1 &
+          echo $! > /tmp/interface-dev.pid
+          npx wait-on http://127.0.0.1:3000
+
+      - name: Diagnose OKX extension load
         working-directory: interface
         run: |
           set -e
-          npx -y -p playwright@1.40.0 playwright install chromium
-          OLD_CHROMIUM=$(npx -y -p playwright@1.40.0 node -e "const { chromium } = require('playwright-core'); console.log(chromium.executablePath())")
-          export DIAG_CHROMIUM_EXECUTABLE_PATH="$OLD_CHROMIUM"
-          echo "Using Playwright 1.40.0 chromium: $DIAG_CHROMIUM_EXECUTABLE_PATH"
-          "$DIAG_CHROMIUM_EXECUTABLE_PATH" --version || true
-          xvfb-run -a node e2e/diagnose-extension.cjs
+          xvfb-run -a node e2e/diagnose-okx.cjs
+
+      - name: Run OKX E2E wallet smoke
+        working-directory: interface
+        run: |
+          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts --workers=1
 
       - name: Dump logs on failure
         if: failure()
         run: |
+          echo "==== /tmp/interface-dev.log (tail) ===="
+          tail -200 /tmp/interface-dev.log || true
           echo "==== /tmp/hardhat.log (tail) ===="
           tail -200 /tmp/hardhat.log || true
           echo "==== /tmp/ignition-deploy.log (tail) ===="
@@ -138,9 +143,17 @@ jobs:
           path: |
             interface/test-results/
             interface/playwright-report/
+            /tmp/interface-dev.log
             /tmp/hardhat.log
             /tmp/ignition-deploy.log
             /tmp/init-full-system.log
             /tmp/ignition-deploy-e2e.log
             /tmp/init-full-system-e2e.log
           retention-days: 7
+
+      - name: Stop interface dev server
+        if: always()
+        run: |
+          if [ -f /tmp/interface-dev.pid ]; then
+            kill "$(cat /tmp/interface-dev.pid)" || true
+          fi

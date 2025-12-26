@@ -24,13 +24,94 @@ export async function connectWallet(page: Page, metamask: any) {
     await connectButton.first().click()
     await page.waitForTimeout(WAIT.SHORT)
 
+    const okxOption = page.locator('button:has-text("OKX")')
     const metaMaskOption = page.locator('button:has-text("MetaMask")')
-    if (await metaMaskOption.count() > 0) {
+    if (await okxOption.count() > 0) {
+      await okxOption.first().click()
+      await page.waitForTimeout(WAIT.SHORT)
+      await attemptWalletConnect(page, metamask)
+      const connected = await waitForWalletConnection(page, WAIT.LONG * 5)
+      if (connected) {
+        await ensureHardhatNetwork(page, metamask)
+      }
+    } else if (await metaMaskOption.count() > 0) {
       await metaMaskOption.first().click()
       await page.waitForTimeout(WAIT.SHORT)
-      await metamask.connectToDapp()
-      await page.waitForTimeout(WAIT.MEDIUM)
+      await attemptWalletConnect(page, metamask)
+      await waitForWalletConnection(page, WAIT.LONG * 5)
     }
+  }
+}
+
+async function attemptWalletConnect(page: Page, metamask: any, attempts = 2) {
+  for (let i = 0; i < attempts; i += 1) {
+    await metamask.connectToDapp()
+    const connected = await waitForWalletConnection(page, WAIT.LONG * 3)
+    if (connected) return true
+
+    const retryButton = page.locator('button:has-text("Retry")')
+    if (await retryButton.count()) {
+      await retryButton.first().click()
+      await page.waitForTimeout(WAIT.SHORT)
+    }
+  }
+  return false
+}
+
+export async function waitForWalletConnection(page: Page, timeout = 15000) {
+  try {
+    await page.waitForFunction(async () => {
+      const ethereum = (window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }).ethereum
+      if (!ethereum?.request) return false
+      const accounts = await ethereum.request({ method: 'eth_accounts' })
+      return Array.isArray(accounts) && accounts.length > 0
+    }, undefined, { timeout })
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function ensureHardhatNetwork(page: Page, metamask: any) {
+  let requested = false
+  try {
+    requested = await page.evaluate(async () => {
+      const ethereum = (window as { ethereum?: { request?: (args: { method: string; params?: unknown[] }) => Promise<unknown> } }).ethereum
+      if (!ethereum?.request) return false
+      const chainId = await ethereum.request({ method: 'eth_chainId' })
+      if (chainId === '0x7a69') return false
+      try {
+        await ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: '0x7a69',
+              chainName: 'Hardhat',
+              rpcUrls: ['http://localhost:8545'],
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }
+            }
+          ]
+        })
+        return true
+      } catch {
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x7a69' }]
+          })
+          return true
+        } catch {
+          return false
+        }
+      }
+    })
+  } catch {
+    requested = false
+  }
+
+  if (requested && metamask?.approveNetworkChange) {
+    await metamask.approveNetworkChange()
+    await page.waitForTimeout(WAIT.MEDIUM)
   }
 }
 
@@ -38,9 +119,20 @@ export async function connectWallet(page: Page, metamask: any) {
  * Check if wallet is connected by looking for address pattern
  */
 export async function isWalletConnected(page: Page): Promise<boolean> {
+  try {
+    const accounts = await page.evaluate(async () => {
+      const ethereum = (window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }).ethereum
+      if (!ethereum?.request) return []
+      return ethereum.request({ method: 'eth_accounts' })
+    })
+    if (Array.isArray(accounts) && accounts.length > 0) return true
+  } catch {
+    // ignore and fall back to DOM
+  }
+
   const content = await page.content()
   const addressPattern = /0x[a-fA-F0-9]{4}.*[a-fA-F0-9]{4}/
-  return addressPattern.test(content)
+  return addressPattern.test(content) || /wrong network/i.test(content)
 }
 
 /**
