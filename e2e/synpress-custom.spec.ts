@@ -12,6 +12,42 @@ const METAMASK_PATH = path.join(process.cwd(), '.cache-synpress', 'metamask-chro
 // Wallet password (from wallet setup)
 const WALLET_PASSWORD = 'Tester@1234'
 
+function getExtensionIdFromUrl(url?: string) {
+  if (!url) return undefined
+  const match = url.match(/^chrome-extension:\/\/([^/]+)\//)
+  return match?.[1]
+}
+
+async function getExtensionIdFromContext(context: BrowserContext) {
+  for (const worker of context.serviceWorkers()) {
+    const id = getExtensionIdFromUrl(worker.url())
+    if (id) return id
+  }
+
+  for (const page of context.pages()) {
+    const id = getExtensionIdFromUrl(page.url())
+    if (id) return id
+  }
+
+  try {
+    const worker = await context.waitForEvent('serviceworker', { timeout: 10000 })
+    const id = getExtensionIdFromUrl(worker.url())
+    if (id) return id
+  } catch {
+    // fall through
+  }
+
+  try {
+    const page = await context.waitForEvent('page', { timeout: 10000 })
+    const id = getExtensionIdFromUrl(page.url())
+    if (id) return id
+  } catch {
+    // fall through
+  }
+
+  throw new Error('MetaMask extension ID not found - extension may not have loaded')
+}
+
 // Extend test to include custom fixtures
 const test = base.extend<{
   extensionContext: BrowserContext
@@ -33,6 +69,7 @@ const test = base.extend<{
     // Key: ignoreDefaultArgs to prevent --disable-extensions
     const context = await chromium.launchPersistentContext(userDataDir, {
       headless: false, // Extensions don't work in headless mode
+      channel: process.env.PW_CHANNEL as 'chrome' | 'chromium' | undefined,
       ignoreDefaultArgs: ['--disable-extensions', '--enable-automation'],
       args: [
         `--disable-extensions-except=${METAMASK_PATH}`,
@@ -55,33 +92,17 @@ const test = base.extend<{
     // Wait for MetaMask extension page to open
     await new Promise(resolve => setTimeout(resolve, 3000))
 
-    // Find MetaMask extension page
+    const extensionId = await getExtensionIdFromContext(extensionContext)
     const pages = extensionContext.pages()
     console.log('Open pages:', pages.map(p => p.url()))
 
-    let metamaskPage = pages.find(p => p.url().includes('chrome-extension://'))
-
+    let metamaskPage = pages.find(p => p.url().includes(extensionId))
     if (!metamaskPage) {
-      // Try to get extension ID from chrome://extensions
-      const extPage = await extensionContext.newPage()
-      await extPage.goto('chrome://extensions')
-      await extPage.waitForTimeout(2000)
-
-      const extensions = await extPage.evaluate(() => {
-        // @ts-ignore
-        return chrome.management?.getAll?.() || []
-      })
-      console.log('Extensions:', extensions)
-
-      await extPage.close()
-      throw new Error('MetaMask extension page not found')
+      metamaskPage = await extensionContext.newPage()
     }
 
-    // Navigate to MetaMask home if needed
-    if (!metamaskPage.url().includes('/home.html')) {
-      const extensionId = metamaskPage.url().split('/')[2]
-      await metamaskPage.goto(`chrome-extension://${extensionId}/home.html`)
-    }
+    await metamaskPage.goto(`chrome-extension://${extensionId}/home.html`)
+    await metamaskPage.waitForLoadState('domcontentloaded')
 
     await use(metamaskPage)
   },

@@ -7,7 +7,7 @@
 
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
 import { expect } from '@playwright/test'
-import BasicSetup from '../test/wallet-setup/basic.setup'
+import BasicSetup from '../test/wallet-setup/okx.setup'
 import {
   connectWallet,
   navigateTo,

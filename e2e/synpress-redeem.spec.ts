@@ -1,14 +1,14 @@
 /**
- * Synpress E2E Test: Redeem BTD with Real MetaMask
+ * Synpress E2E Test: Redeem BTD with OKX Wallet
  *
- * Uses Synpress to automate MetaMask extension for real transaction signing.
+ * Uses Playwright to automate OKX extension for real transaction signing.
  */
 
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
 import { expect, type Page } from '@playwright/test'
-import BasicSetup from '../test/wallet-setup/basic.setup'
+import BasicSetup from '../test/wallet-setup/okx.setup'
 
-// Create test instance with MetaMask fixtures
+// Create test instance with OKX fixtures
 const test = metaMaskFixtures(BasicSetup, 0)
 
 // Helper to connect wallet via RainbowKit
@@ -19,21 +19,21 @@ async function connectWalletRainbowKit(page: Page, metamask: any) {
     await connectButton.first().click()
     await page.waitForTimeout(1000)
 
-    // Click MetaMask option in RainbowKit modal
-    const metaMaskOption = page.locator('button:has-text("MetaMask")')
-    if (await metaMaskOption.count() > 0) {
-      await metaMaskOption.first().click()
+    // Click OKX option in RainbowKit modal
+    const okxOption = page.locator('button:has-text("OKX")')
+    if (await okxOption.count() > 0) {
+      await okxOption.first().click()
       await page.waitForTimeout(1000)
 
-      // Approve connection in MetaMask
+      // Approve connection in OKX
       await metamask.connectToDapp()
       await page.waitForTimeout(2000)
     }
   }
 }
 
-test.describe('Synpress: Redeem BTD with Real MetaMask', () => {
-  test('should connect MetaMask wallet', async ({ page, metamask }) => {
+test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
+  test('should connect OKX wallet', async ({ page, metamask }) => {
     // Navigate to app
     await page.goto('http://localhost:3000/')
     await page.waitForTimeout(3000)

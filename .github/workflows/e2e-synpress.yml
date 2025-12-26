@@ -18,7 +18,7 @@ on:
 jobs:
   synpress-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       CI: true
       TEST_SUITE: ${{ inputs.suite || 'smoke' }}
@@ -59,12 +59,12 @@ jobs:
 
       - name: Install contracts dependencies
         working-directory: bitres
-        if: false
+        if: env.TEST_SUITE == 'full'
         run: npm install --legacy-peer-deps
 
       - name: Start Hardhat and deploy contracts
         working-directory: bitres
-        if: false
+        if: env.TEST_SUITE == 'full'
         run: |
           set -e
           # Start Hardhat node in background
@@ -101,7 +101,7 @@ jobs:
           echo "Contracts deployed and initialized"
 
       - name: Generate frontend config
-        if: false
+        if: env.TEST_SUITE == 'full'
         run: |
           DEPLOYMENT_DIR="bitres/ignition/deployments/chain-31337"
           if [ -d "$DEPLOYMENT_DIR" ]; then
@@ -133,7 +133,7 @@ jobs:
         working-directory: interface
         if: env.TEST_SUITE == 'full'
         run: |
-          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/bitres-prod.spec.ts --workers=1
+          xvfb-run -a npx playwright test e2e/synpress-*.spec.ts --workers=1
 
       - name: Dump logs on failure
         if: failure()
