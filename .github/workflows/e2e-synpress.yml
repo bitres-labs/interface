@@ -129,12 +129,6 @@ jobs:
         run: |
           xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts --workers=1
 
-      - name: Run OKX E2E full suite
-        working-directory: interface
-        if: env.TEST_SUITE == 'full'
-        run: |
-          xvfb-run -a npx playwright test e2e/synpress-*.spec.ts --workers=1
-
       - name: Dump logs on failure
         if: failure()
         run: |
@@ -165,6 +159,402 @@ jobs:
             /tmp/init-full-system.log
             /tmp/ignition-deploy-e2e.log
             /tmp/init-full-system-e2e.log
+          retention-days: 7
+
+      - name: Stop interface dev server
+        if: always()
+        run: |
+          if [ -f /tmp/interface-dev.pid ]; then
+            kill "$(cat /tmp/interface-dev.pid)" || true
+          fi
+
+  full-core:
+    if: ${{ inputs.suite == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: true
+      TEST_SUITE: full
+    steps:
+      - name: Checkout interface
+        uses: actions/checkout@v4
+        with:
+          path: interface
+
+      - name: Checkout contracts
+        uses: actions/checkout@v4
+        with:
+          repository: bitres-labs/bitres
+          path: bitres
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            interface/package-lock.json
+            bitres/package-lock.json
+
+      - name: Install interface dependencies
+        working-directory: interface
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: interface
+        run: |
+          npx playwright install --with-deps chromium
+          ls -la ~/.cache/ms-playwright/ || true
+
+      - name: Install contracts dependencies
+        working-directory: bitres
+        run: npm install --legacy-peer-deps
+
+      - name: Start Hardhat and deploy contracts
+        working-directory: bitres
+        run: |
+          set -e
+          npx hardhat node --hostname 0.0.0.0 > /tmp/hardhat.log 2>&1 &
+          HARDHAT_PID=$!
+          echo "Started Hardhat node (PID: $HARDHAT_PID)"
+
+          echo "Waiting for Hardhat node..."
+          for i in {1..60}; do
+            if nc -z 127.0.0.1 8545 2>/dev/null; then
+              echo "Hardhat node ready"
+              break
+            fi
+            sleep 1
+          done
+
+          if ! nc -z 127.0.0.1 8545 2>/dev/null; then
+            echo "Hardhat node failed to start"
+            tail -50 /tmp/hardhat.log
+            exit 1
+          fi
+
+          echo "Deploying contracts..."
+          rm -rf ignition/deployments/chain-31337
+          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost 2>&1 | tee /tmp/ignition-deploy.log
+
+          echo "Initializing system..."
+          npx hardhat run scripts/main/init-full-system.mjs --network localhost 2>&1 | tee /tmp/init-full-system.log
+
+      - name: Generate frontend config
+        run: |
+          DEPLOYMENT_DIR="bitres/ignition/deployments/chain-31337"
+          if [ -d "$DEPLOYMENT_DIR" ]; then
+            mkdir -p interface/src/config
+            cp "$DEPLOYMENT_DIR/deployed_addresses.json" interface/src/config/contracts.json 2>/dev/null || echo "No deployed_addresses.json"
+          fi
+
+      - name: Start interface dev server
+        working-directory: interface
+        run: |
+          npm run dev -- --host 0.0.0.0 --port 3000 > /tmp/interface-dev.log 2>&1 &
+          echo $! > /tmp/interface-dev.pid
+          npx wait-on http://127.0.0.1:3000
+
+      - name: Diagnose OKX extension load
+        working-directory: interface
+        run: |
+          set -e
+          xvfb-run -a node e2e/diagnose-okx.cjs
+
+      - name: Run OKX E2E core suite
+        working-directory: interface
+        run: |
+          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/synpress-mint.spec.ts e2e/synpress-redeem.spec.ts e2e/synpress-swap.spec.ts --workers=1
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "==== /tmp/interface-dev.log (tail) ===="
+          tail -200 /tmp/interface-dev.log || true
+          echo "==== /tmp/hardhat.log (tail) ===="
+          tail -200 /tmp/hardhat.log || true
+          echo "==== /tmp/ignition-deploy.log (tail) ===="
+          tail -200 /tmp/ignition-deploy.log || true
+          echo "==== /tmp/init-full-system.log (tail) ===="
+          tail -200 /tmp/init-full-system.log || true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-core
+          path: |
+            interface/test-results/
+            interface/playwright-report/
+            /tmp/interface-dev.log
+            /tmp/hardhat.log
+            /tmp/ignition-deploy.log
+            /tmp/init-full-system.log
+          retention-days: 7
+
+      - name: Stop interface dev server
+        if: always()
+        run: |
+          if [ -f /tmp/interface-dev.pid ]; then
+            kill "$(cat /tmp/interface-dev.pid)" || true
+          fi
+
+  full-stake-farm:
+    if: ${{ inputs.suite == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: true
+      TEST_SUITE: full
+    steps:
+      - name: Checkout interface
+        uses: actions/checkout@v4
+        with:
+          path: interface
+
+      - name: Checkout contracts
+        uses: actions/checkout@v4
+        with:
+          repository: bitres-labs/bitres
+          path: bitres
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            interface/package-lock.json
+            bitres/package-lock.json
+
+      - name: Install interface dependencies
+        working-directory: interface
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: interface
+        run: |
+          npx playwright install --with-deps chromium
+          ls -la ~/.cache/ms-playwright/ || true
+
+      - name: Install contracts dependencies
+        working-directory: bitres
+        run: npm install --legacy-peer-deps
+
+      - name: Start Hardhat and deploy contracts
+        working-directory: bitres
+        run: |
+          set -e
+          npx hardhat node --hostname 0.0.0.0 > /tmp/hardhat.log 2>&1 &
+          HARDHAT_PID=$!
+          echo "Started Hardhat node (PID: $HARDHAT_PID)"
+
+          echo "Waiting for Hardhat node..."
+          for i in {1..60}; do
+            if nc -z 127.0.0.1 8545 2>/dev/null; then
+              echo "Hardhat node ready"
+              break
+            fi
+            sleep 1
+          done
+
+          if ! nc -z 127.0.0.1 8545 2>/dev/null; then
+            echo "Hardhat node failed to start"
+            tail -50 /tmp/hardhat.log
+            exit 1
+          fi
+
+          echo "Deploying contracts..."
+          rm -rf ignition/deployments/chain-31337
+          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost 2>&1 | tee /tmp/ignition-deploy.log
+
+          echo "Initializing system..."
+          npx hardhat run scripts/main/init-full-system.mjs --network localhost 2>&1 | tee /tmp/init-full-system.log
+
+      - name: Generate frontend config
+        run: |
+          DEPLOYMENT_DIR="bitres/ignition/deployments/chain-31337"
+          if [ -d "$DEPLOYMENT_DIR" ]; then
+            mkdir -p interface/src/config
+            cp "$DEPLOYMENT_DIR/deployed_addresses.json" interface/src/config/contracts.json 2>/dev/null || echo "No deployed_addresses.json"
+          fi
+
+      - name: Start interface dev server
+        working-directory: interface
+        run: |
+          npm run dev -- --host 0.0.0.0 --port 3000 > /tmp/interface-dev.log 2>&1 &
+          echo $! > /tmp/interface-dev.pid
+          npx wait-on http://127.0.0.1:3000
+
+      - name: Diagnose OKX extension load
+        working-directory: interface
+        run: |
+          set -e
+          xvfb-run -a node e2e/diagnose-okx.cjs
+
+      - name: Run OKX E2E stake/farm suite
+        working-directory: interface
+        run: |
+          xvfb-run -a npx playwright test e2e/synpress-stake.spec.ts e2e/synpress-farm.spec.ts --workers=1
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "==== /tmp/interface-dev.log (tail) ===="
+          tail -200 /tmp/interface-dev.log || true
+          echo "==== /tmp/hardhat.log (tail) ===="
+          tail -200 /tmp/hardhat.log || true
+          echo "==== /tmp/ignition-deploy.log (tail) ===="
+          tail -200 /tmp/ignition-deploy.log || true
+          echo "==== /tmp/init-full-system.log (tail) ===="
+          tail -200 /tmp/init-full-system.log || true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-stake-farm
+          path: |
+            interface/test-results/
+            interface/playwright-report/
+            /tmp/interface-dev.log
+            /tmp/hardhat.log
+            /tmp/ignition-deploy.log
+            /tmp/init-full-system.log
+          retention-days: 7
+
+      - name: Stop interface dev server
+        if: always()
+        run: |
+          if [ -f /tmp/interface-dev.pid ]; then
+            kill "$(cat /tmp/interface-dev.pid)" || true
+          fi
+
+  full-pool-nav:
+    if: ${{ inputs.suite == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: true
+      TEST_SUITE: full
+    steps:
+      - name: Checkout interface
+        uses: actions/checkout@v4
+        with:
+          path: interface
+
+      - name: Checkout contracts
+        uses: actions/checkout@v4
+        with:
+          repository: bitres-labs/bitres
+          path: bitres
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            interface/package-lock.json
+            bitres/package-lock.json
+
+      - name: Install interface dependencies
+        working-directory: interface
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: interface
+        run: |
+          npx playwright install --with-deps chromium
+          ls -la ~/.cache/ms-playwright/ || true
+
+      - name: Install contracts dependencies
+        working-directory: bitres
+        run: npm install --legacy-peer-deps
+
+      - name: Start Hardhat and deploy contracts
+        working-directory: bitres
+        run: |
+          set -e
+          npx hardhat node --hostname 0.0.0.0 > /tmp/hardhat.log 2>&1 &
+          HARDHAT_PID=$!
+          echo "Started Hardhat node (PID: $HARDHAT_PID)"
+
+          echo "Waiting for Hardhat node..."
+          for i in {1..60}; do
+            if nc -z 127.0.0.1 8545 2>/dev/null; then
+              echo "Hardhat node ready"
+              break
+            fi
+            sleep 1
+          done
+
+          if ! nc -z 127.0.0.1 8545 2>/dev/null; then
+            echo "Hardhat node failed to start"
+            tail -50 /tmp/hardhat.log
+            exit 1
+          fi
+
+          echo "Deploying contracts..."
+          rm -rf ignition/deployments/chain-31337
+          echo "y" | npx hardhat ignition deploy ignition/modules/FullSystem.ts --network localhost 2>&1 | tee /tmp/ignition-deploy.log
+
+          echo "Initializing system..."
+          npx hardhat run scripts/main/init-full-system.mjs --network localhost 2>&1 | tee /tmp/init-full-system.log
+
+      - name: Generate frontend config
+        run: |
+          DEPLOYMENT_DIR="bitres/ignition/deployments/chain-31337"
+          if [ -d "$DEPLOYMENT_DIR" ]; then
+            mkdir -p interface/src/config
+            cp "$DEPLOYMENT_DIR/deployed_addresses.json" interface/src/config/contracts.json 2>/dev/null || echo "No deployed_addresses.json"
+          fi
+
+      - name: Start interface dev server
+        working-directory: interface
+        run: |
+          npm run dev -- --host 0.0.0.0 --port 3000 > /tmp/interface-dev.log 2>&1 &
+          echo $! > /tmp/interface-dev.pid
+          npx wait-on http://127.0.0.1:3000
+
+      - name: Diagnose OKX extension load
+        working-directory: interface
+        run: |
+          set -e
+          xvfb-run -a node e2e/diagnose-okx.cjs
+
+      - name: Run OKX E2E pool/navigation suite
+        working-directory: interface
+        run: |
+          xvfb-run -a npx playwright test e2e/synpress-pool.spec.ts e2e/synpress-navigation.spec.ts e2e/synpress-custom.spec.ts e2e/synpress-smoke.spec.ts --workers=1
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "==== /tmp/interface-dev.log (tail) ===="
+          tail -200 /tmp/interface-dev.log || true
+          echo "==== /tmp/hardhat.log (tail) ===="
+          tail -200 /tmp/hardhat.log || true
+          echo "==== /tmp/ignition-deploy.log (tail) ===="
+          tail -200 /tmp/ignition-deploy.log || true
+          echo "==== /tmp/init-full-system.log (tail) ===="
+          tail -200 /tmp/init-full-system.log || true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-pool-nav
+          path: |
+            interface/test-results/
+            interface/playwright-report/
+            /tmp/interface-dev.log
+            /tmp/hardhat.log
+            /tmp/ignition-deploy.log
+            /tmp/init-full-system.log
           retention-days: 7
 
       - name: Stop interface dev server
