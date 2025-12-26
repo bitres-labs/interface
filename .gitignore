@@ -50,7 +50,7 @@ node_modules/
 
 # Local deployment state (auto-generated)
 public/deployment-local-state.json
-src/config/contracts.json
+# Note: contracts.json is committed for Sepolia testnet support
 
 # E2E tests (local development only)
 playwright.config.ts
