@@ -273,7 +273,7 @@ function HomePage() {
             </p>
             <div className="flex gap-3 justify-center">
               <a
-                href="https://discord.gg/brs"
+                href="https://discord.gg/u3DTPAYrva"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"

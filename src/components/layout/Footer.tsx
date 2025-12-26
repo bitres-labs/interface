@@ -12,7 +12,7 @@ function Footer() {
     {
       name: 'Discord',
       icon: '/social/discord.svg',
-      url: 'https://discord.gg/bitres', // TODO: Update with actual Discord invite link
+      url: 'https://discord.gg/u3DTPAYrva',
     },
     {
       name: 'GitHub',
