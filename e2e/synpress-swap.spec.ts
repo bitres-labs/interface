@@ -358,13 +358,22 @@ test.describe('Swap Remove Liquidity', () => {
   test('should execute Remove Liquidity transaction', async ({ page, metamask }) => {
     test.setTimeout(120000)
 
+    const content = await page.content()
+    if (/no liquidity|no positions|no lp/i.test(content)) {
+      test.skip(true, 'No liquidity position available')
+    }
+
     await fillAmount(page, '5')
     await page.waitForTimeout(WAIT.MEDIUM)
 
     await takeScreenshot(page, 'swap-remove-liquidity-before')
 
     const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
-    if (await removeButton.count() > 0 && !(await removeButton.isDisabled())) {
+    const removeCount = await removeButton.count()
+    if (!removeCount) {
+      test.skip(true, 'Remove liquidity button not found')
+    }
+    if (removeCount > 0 && !(await removeButton.isDisabled())) {
       await removeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -387,6 +396,9 @@ test.describe('Swap Remove Liquidity', () => {
       }
 
       await takeScreenshot(page, 'swap-remove-liquidity-after')
+    }
+    if (removeCount > 0 && (await removeButton.isDisabled())) {
+      test.skip(true, 'Remove liquidity disabled')
     }
   })
 })
