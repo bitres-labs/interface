@@ -20,8 +20,6 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  safeWait,
-  skipIfPageClosed,
   WAIT
 } from './utils/test-helpers'
 
@@ -31,13 +29,10 @@ const test = metaMaskFixtures(BasicSetup, 0)
 const POOLS = ['BTD-WBTC', 'BTB-WBTC', 'BTD-BTB']
 
 test.describe('Pool Interface', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/pool')
     await connectWallet(page, metamask)
-    if (skipIfPageClosed(page, testInfo, 'Page closed during pool setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Pool setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Pool page', async ({ page }) => {
@@ -74,13 +69,10 @@ test.describe('Pool Interface', () => {
 })
 
 test.describe('Pool BTD-WBTC', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/pool')
     await connectWallet(page, metamask)
-    if (skipIfPageClosed(page, testInfo, 'Page closed during pool setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Pool setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should select BTD-WBTC pool', async ({ page }) => {
@@ -196,13 +188,10 @@ test.describe('Pool BTD-WBTC', () => {
 })
 
 test.describe('Pool BTB-WBTC', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/pool')
     await connectWallet(page, metamask)
-    if (skipIfPageClosed(page, testInfo, 'Page closed during pool setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Pool setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should select BTB-WBTC pool', async ({ page }) => {
@@ -310,13 +299,10 @@ test.describe('Pool BTB-WBTC', () => {
 })
 
 test.describe('Pool BTD-BTB', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/pool')
     await connectWallet(page, metamask)
-    if (skipIfPageClosed(page, testInfo, 'Page closed during pool setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Pool setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should select BTD-BTB pool', async ({ page }) => {
@@ -424,13 +410,10 @@ test.describe('Pool BTD-BTB', () => {
 })
 
 test.describe('Pool User Positions', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/pool')
     await connectWallet(page, metamask)
-    if (skipIfPageClosed(page, testInfo, 'Page closed during pool setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Pool setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should show user LP positions', async ({ page }) => {

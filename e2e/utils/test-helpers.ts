@@ -2,7 +2,7 @@
  * Shared test helpers for Synpress E2E tests
  */
 
-import { type Page, type TestInfo } from '@playwright/test'
+import { type Page } from '@playwright/test'
 
 export const BASE_URL = 'http://localhost:3000'
 
@@ -77,22 +77,6 @@ export async function waitForWalletConnection(page: Page, timeout = 15000) {
   } catch {
     return false
   }
-}
-
-export async function safeWait(page: Page, ms: number) {
-  if (page.isClosed()) return false
-  try {
-    await page.waitForTimeout(ms)
-    return true
-  } catch {
-    return false
-  }
-}
-
-export function skipIfPageClosed(page: Page, testInfo: TestInfo, reason = 'Page closed') {
-  if (!page.isClosed()) return false
-  testInfo.skip(true, reason)
-  return true
 }
 
 async function ensureHardhatNetwork(page: Page, metamask: any) {

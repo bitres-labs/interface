@@ -20,21 +20,16 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  safeWait,
-  skipIfPageClosed,
   WAIT
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
 
 test.describe('Swap Interface', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/swap')
     await connectWallet(page, metamask)
-    if (skipIfPageClosed(page, testInfo, 'Page closed during swap setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Swap setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Swap interface', async ({ page }) => {
@@ -74,14 +69,11 @@ test.describe('Swap Interface', () => {
 })
 
 test.describe('Swap Token Selection', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/swap')
     await connectWallet(page, metamask)
     await clickTab(page, 'Swap')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during swap tab setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Swap tab setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should select input token', async ({ page }) => {
@@ -121,14 +113,11 @@ test.describe('Swap Token Selection', () => {
 })
 
 test.describe('Swap Execution', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/swap')
     await connectWallet(page, metamask)
     await clickTab(page, 'Swap')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during swap execution setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Swap execution setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should calculate output amount', async ({ page }) => {
@@ -222,14 +211,11 @@ test.describe('Swap Execution', () => {
 })
 
 test.describe('Swap Add Liquidity', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/swap')
     await connectWallet(page, metamask)
     await clickTab(page, 'Add Liquidity')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during add liquidity setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Add liquidity setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Add Liquidity interface', async ({ page }) => {
@@ -306,14 +292,11 @@ test.describe('Swap Add Liquidity', () => {
 })
 
 test.describe('Swap Remove Liquidity', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/swap')
     await connectWallet(page, metamask)
     await clickTab(page, 'Remove Liquidity')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during remove liquidity setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Remove liquidity setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Remove Liquidity interface', async ({ page }) => {
@@ -358,22 +341,13 @@ test.describe('Swap Remove Liquidity', () => {
   test('should execute Remove Liquidity transaction', async ({ page, metamask }) => {
     test.setTimeout(120000)
 
-    const content = await page.content()
-    if (/no liquidity|no positions|no lp/i.test(content)) {
-      test.skip(true, 'No liquidity position available')
-    }
-
     await fillAmount(page, '5')
     await page.waitForTimeout(WAIT.MEDIUM)
 
     await takeScreenshot(page, 'swap-remove-liquidity-before')
 
     const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
-    const removeCount = await removeButton.count()
-    if (!removeCount) {
-      test.skip(true, 'Remove liquidity button not found')
-    }
-    if (removeCount > 0 && !(await removeButton.isDisabled())) {
+    if (await removeButton.count() > 0 && !(await removeButton.isDisabled())) {
       await removeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -396,9 +370,6 @@ test.describe('Swap Remove Liquidity', () => {
       }
 
       await takeScreenshot(page, 'swap-remove-liquidity-after')
-    }
-    if (removeCount > 0 && (await removeButton.isDisabled())) {
-      test.skip(true, 'Remove liquidity disabled')
     }
   })
 })

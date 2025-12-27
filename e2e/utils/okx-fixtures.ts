@@ -189,43 +189,10 @@ async function onboardOkx(
   await frame.getByRole('button', { name: /confirm/i }).click()
   await page.waitForTimeout(1000)
 
-  try {
-    const startSelectors = [
-      page.getByRole('button', { name: /start your web3 journey/i }),
-      page.getByRole('button', { name: /start/i }),
-      page.getByRole('button', { name: /done/i })
-    ]
-    let clicked = false
-    for (const selector of startSelectors) {
-      if (await selector.count()) {
-        await selector.first().click()
-        clicked = true
-        break
-      }
-    }
-    if (!clicked) {
-      const frame = await waitForSesFrame(page, 2000)
-      if (frame) {
-        const frameButtons = [
-          frame.getByRole('button', { name: /start your web3 journey/i }),
-          frame.getByRole('button', { name: /start/i }),
-          frame.getByRole('button', { name: /done/i })
-        ]
-        for (const selector of frameButtons) {
-          if (await selector.count()) {
-            await selector.first().click()
-            clicked = true
-            break
-          }
-        }
-      }
-    }
-    if (clicked) {
-      await page.waitForTimeout(2000)
-    }
-  } catch {
-    // If the start screen is not present, continue without failing onboarding.
-  }
+  const startButton = page.getByRole('button', { name: /start your web3 journey/i })
+  await startButton.waitFor({ timeout: OKX_ONBOARDING_TIMEOUT })
+  await startButton.click()
+  await page.waitForTimeout(2000)
 
   return page
 }

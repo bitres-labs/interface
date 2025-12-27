@@ -20,22 +20,17 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  safeWait,
-  skipIfPageClosed,
   WAIT
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
 
 test.describe('Mint BTD', () => {
-test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/')
     await connectWallet(page, metamask)
     await clickTab(page, 'Mint')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during mint setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Mint setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Mint interface', async ({ page }) => {
@@ -134,14 +129,11 @@ test.beforeEach(async ({ page, metamask }, testInfo) => {
 })
 
 test.describe('Redeem BTD', () => {
-test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/')
     await connectWallet(page, metamask)
     await clickTab(page, 'Redeem BTD')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during redeem BTD setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Redeem BTD setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Redeem BTD interface', async ({ page }) => {
@@ -211,14 +203,11 @@ test.beforeEach(async ({ page, metamask }, testInfo) => {
 })
 
 test.describe('Redeem BTB', () => {
-test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/')
     await connectWallet(page, metamask)
     await clickTab(page, 'Redeem BTB')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during redeem BTB setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Redeem BTB setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Redeem BTB interface', async ({ page }) => {

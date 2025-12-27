@@ -21,22 +21,17 @@ import {
   handleTransaction,
   takeScreenshot,
   selectToken,
-  safeWait,
-  skipIfPageClosed,
   WAIT
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
 
 test.describe('Stake BTD', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/stake')
     await connectWallet(page, metamask)
     await clickTab(page, 'Stake')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during stake setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Stake setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Stake interface', async ({ page }) => {
@@ -145,14 +140,11 @@ test.describe('Stake BTD', () => {
 })
 
 test.describe('Stake BTB', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/stake')
     await connectWallet(page, metamask)
     await clickTab(page, 'Stake')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during stake setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Stake setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should select BTB token for staking', async ({ page }) => {
@@ -242,14 +234,11 @@ test.describe('Stake BTB', () => {
 })
 
 test.describe('Unstake stBTD', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/stake')
     await connectWallet(page, metamask)
     await clickTab(page, 'Unstake')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during unstake setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Unstake setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should display Unstake interface', async ({ page }) => {
@@ -345,14 +334,11 @@ test.describe('Unstake stBTD', () => {
 })
 
 test.describe('Unstake stBTB', () => {
-  test.beforeEach(async ({ page, metamask }, testInfo) => {
+  test.beforeEach(async ({ page, metamask }) => {
     await navigateTo(page, '/stake')
     await connectWallet(page, metamask)
     await clickTab(page, 'Unstake')
-    if (skipIfPageClosed(page, testInfo, 'Page closed during unstake setup')) return
-    if (!(await safeWait(page, WAIT.MEDIUM))) {
-      testInfo.skip(true, 'Unstake setup failed: page closed')
-    }
+    await page.waitForTimeout(WAIT.MEDIUM)
   })
 
   test('should select stBTB for unstaking', async ({ page }) => {

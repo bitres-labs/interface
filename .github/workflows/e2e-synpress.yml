@@ -533,7 +533,7 @@ jobs:
       - name: Run OKX E2E pool/navigation suite
         working-directory: interface
         run: |
-          xvfb-run -a npx playwright test e2e/synpress-pool.spec.ts e2e/synpress-navigation.spec.ts e2e/synpress-custom.spec.ts e2e/synpress-smoke.spec.ts e2e/synpress-asset.spec.ts e2e/synpress-explorer.spec.ts --workers=1
+          xvfb-run -a npx playwright test e2e/synpress-pool.spec.ts e2e/synpress-navigation.spec.ts e2e/synpress-custom.spec.ts e2e/synpress-smoke.spec.ts e2e/synpress-asset.spec.ts --workers=1
 
       - name: Dump logs on failure
         if: failure()

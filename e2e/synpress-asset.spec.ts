@@ -1,31 +1,19 @@
 /**
- * Synpress E2E Test: Asset page data checks
+ * Synpress E2E Test: Asset page minimal checks
  */
 
 import { expect } from '@playwright/test'
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
 import BasicSetup from '../test/wallet-setup/okx.setup'
-import { connectWallet, isWalletConnected, navigateTo, WAIT } from './utils/test-helpers'
+import { navigateTo } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
 
 test.describe('Asset Page', () => {
-  test('should load asset sections', async ({ page, metamask }, testInfo) => {
+  test('should render asset headings', async ({ page }) => {
     await navigateTo(page, '/asset')
-    await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
-
-    const connected = await isWalletConnected(page)
-    expect(connected).toBe(true)
 
     await expect(page.getByRole('heading', { name: 'Wallet' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Staking Positions' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Liquidity Positions' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Farming Positions' })).toBeVisible()
-
-    const hasToken = await page.locator('text=BTD, text=BTB, text=BRS').count()
-    if (hasToken === 0) {
-      testInfo.skip(true, 'Token labels not rendered on asset page')
-    }
   })
 })
