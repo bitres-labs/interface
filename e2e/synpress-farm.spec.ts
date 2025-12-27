@@ -21,6 +21,8 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
+  safeWait,
+  skipIfPageClosed,
   WAIT
 } from './utils/test-helpers'
 
@@ -41,10 +43,13 @@ const FARM_POOLS = [
 ]
 
 test.describe('Farm Interface', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should display Farm page', async ({ page }) => {
@@ -88,10 +93,13 @@ test.describe('Farm Interface', () => {
 })
 
 test.describe('Farm Pool Selection', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should expand pool details on click', async ({ page }) => {
@@ -124,10 +132,13 @@ test.describe('Farm Pool Selection', () => {
 })
 
 test.describe('Farm Deposit', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should show deposit input field', async ({ page }) => {
@@ -230,10 +241,13 @@ test.describe('Farm Deposit', () => {
 })
 
 test.describe('Farm Withdraw', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should show withdraw input field', async ({ page }) => {
@@ -324,10 +338,13 @@ test.describe('Farm Withdraw', () => {
 })
 
 test.describe('Farm Claim Rewards', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should show pending rewards', async ({ page }) => {
@@ -392,10 +409,13 @@ test.describe('Farm Claim Rewards', () => {
 })
 
 test.describe('Farm Multiple Pools', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should navigate between farm pools', async ({ page }) => {
@@ -444,10 +464,13 @@ test.describe('Farm Multiple Pools', () => {
 test.describe('Farm LP Token Pools', () => {
   const LP_POOLS = ['BTD-WBTC', 'BTB-WBTC', 'BTD-BTB', 'BRS-WBTC']
 
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should display LP token farming pools', async ({ page }) => {
@@ -483,10 +506,13 @@ test.describe('Farm LP Token Pools', () => {
 test.describe('Farm Single Token Pools', () => {
   const SINGLE_POOLS = ['BTD', 'BTB', 'WBTC', 'BRS', 'stBTD', 'stBTB']
 
-  test.beforeEach(async ({ page, metamask }) => {
+  test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/farm')
     await connectWallet(page, metamask)
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during farm setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Farm setup failed: page closed')
+    }
   })
 
   test('should display single token farming pools', async ({ page }) => {

@@ -10,6 +10,7 @@ type OkxFixtures = {
   metamask: OkxWallet
   extensionId: string
   metamaskPage: Page
+  page: Page
 }
 
 let _okxPage: Page
@@ -235,6 +236,11 @@ export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, s
       await use(context)
 
       await context.close()
+    },
+    page: async ({ context }, use) => {
+      const page = await context.newPage()
+      await use(page)
+      await page.close()
     },
     metamaskPage: async ({ context: _ }, use) => {
       await use(_okxPage)

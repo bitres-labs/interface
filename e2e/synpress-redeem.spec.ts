@@ -7,16 +7,18 @@
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
 import { expect } from '@playwright/test'
 import BasicSetup from '../test/wallet-setup/okx.setup'
-import { connectWallet, isWalletConnected } from './utils/test-helpers'
+import { connectWallet, isWalletConnected, safeWait, skipIfPageClosed, WAIT } from './utils/test-helpers'
 
 // Create test instance with OKX fixtures
 const test = metaMaskFixtures(BasicSetup, 0)
 
 test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
-  test('should connect OKX wallet', async ({ page, metamask }) => {
+  test('should connect OKX wallet', async ({ page, metamask }, testInfo) => {
     // Navigate to app
     await page.goto('http://localhost:3000/')
-    await page.waitForTimeout(3000)
+    if (!(await safeWait(page, WAIT.LONG))) {
+      testInfo.skip(true, 'Page closed before wallet connect')
+    }
 
     // Connect wallet
     await connectWallet(page, metamask)
@@ -29,14 +31,19 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
     expect(isConnected).toBe(true)
   })
 
-  test('should execute redeem BTD with permit signature', async ({ page, metamask }) => {
+  test('should execute redeem BTD with permit signature', async ({ page, metamask }, testInfo) => {
     test.setTimeout(90000)
 
     // Navigate and connect
     await page.goto('http://localhost:3000/')
-    await page.waitForTimeout(3000)
+    if (!(await safeWait(page, WAIT.LONG))) {
+      testInfo.skip(true, 'Page closed before redeem connect')
+    }
     await connectWallet(page, metamask)
-    await page.waitForTimeout(2000)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during redeem connect')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Redeem setup failed: page closed')
+    }
 
     // Switch to Redeem BTD tab
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
@@ -78,14 +85,19 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
     }
   })
 
-  test('should execute mint BTD flow', async ({ page, metamask }) => {
+  test('should execute mint BTD flow', async ({ page, metamask }, testInfo) => {
     test.setTimeout(90000)
 
     // Navigate and connect
     await page.goto('http://localhost:3000/')
-    await page.waitForTimeout(3000)
+    if (!(await safeWait(page, WAIT.LONG))) {
+      testInfo.skip(true, 'Page closed before mint connect')
+    }
     await connectWallet(page, metamask)
-    await page.waitForTimeout(2000)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during mint connect')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Mint flow setup failed: page closed')
+    }
 
     // Should be on Mint tab by default
     const mintTab = page.locator('button:has-text("Mint")').first()

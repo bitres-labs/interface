@@ -128,7 +128,7 @@ jobs:
         working-directory: interface
         if: env.TEST_SUITE == 'smoke'
         run: |
-          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts --workers=1
+          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/mint-ui-smoke.spec.ts e2e/mint-tx-smoke.spec.ts e2e/redeem-tx-smoke.spec.ts e2e/stake-tx-smoke.spec.ts e2e/swap-tx-smoke.spec.ts e2e/farm-tx-smoke.spec.ts e2e/pool-tx-smoke.spec.ts --workers=1
 
       - name: Dump logs on failure
         if: failure()
@@ -533,7 +533,7 @@ jobs:
       - name: Run OKX E2E pool/navigation suite
         working-directory: interface
         run: |
-          xvfb-run -a npx playwright test e2e/synpress-pool.spec.ts e2e/synpress-navigation.spec.ts e2e/synpress-custom.spec.ts e2e/synpress-smoke.spec.ts --workers=1
+          xvfb-run -a npx playwright test e2e/synpress-pool.spec.ts e2e/synpress-navigation.spec.ts e2e/synpress-custom.spec.ts e2e/synpress-smoke.spec.ts e2e/synpress-asset.spec.ts e2e/synpress-explorer.spec.ts --workers=1
 
       - name: Dump logs on failure
         if: failure()

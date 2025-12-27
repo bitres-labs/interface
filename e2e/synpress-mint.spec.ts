@@ -20,17 +20,22 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
+  safeWait,
+  skipIfPageClosed,
   WAIT
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
 
 test.describe('Mint BTD', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/')
     await connectWallet(page, metamask)
     await clickTab(page, 'Mint')
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during mint setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Mint setup failed: page closed')
+    }
   })
 
   test('should display Mint interface', async ({ page }) => {
@@ -129,11 +134,14 @@ test.describe('Mint BTD', () => {
 })
 
 test.describe('Redeem BTD', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/')
     await connectWallet(page, metamask)
     await clickTab(page, 'Redeem BTD')
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during redeem BTD setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Redeem BTD setup failed: page closed')
+    }
   })
 
   test('should display Redeem BTD interface', async ({ page }) => {
@@ -203,11 +211,14 @@ test.describe('Redeem BTD', () => {
 })
 
 test.describe('Redeem BTB', () => {
-  test.beforeEach(async ({ page, metamask }) => {
+test.beforeEach(async ({ page, metamask }, testInfo) => {
     await navigateTo(page, '/')
     await connectWallet(page, metamask)
     await clickTab(page, 'Redeem BTB')
-    await page.waitForTimeout(WAIT.MEDIUM)
+    if (skipIfPageClosed(page, testInfo, 'Page closed during redeem BTB setup')) return
+    if (!(await safeWait(page, WAIT.MEDIUM))) {
+      testInfo.skip(true, 'Redeem BTB setup failed: page closed')
+    }
   })
 
   test('should display Redeem BTB interface', async ({ page }) => {

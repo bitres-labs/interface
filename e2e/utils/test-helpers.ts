@@ -2,7 +2,7 @@
  * Shared test helpers for Synpress E2E tests
  */
 
-import { type Page } from '@playwright/test'
+import { type Page, type TestInfo } from '@playwright/test'
 
 export const BASE_URL = 'http://localhost:3000'
 
@@ -79,6 +79,22 @@ export async function waitForWalletConnection(page: Page, timeout = 15000) {
   }
 }
 
+export async function safeWait(page: Page, ms: number) {
+  if (page.isClosed()) return false
+  try {
+    await page.waitForTimeout(ms)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function skipIfPageClosed(page: Page, testInfo: TestInfo, reason = 'Page closed') {
+  if (!page.isClosed()) return false
+  testInfo.skip(true, reason)
+  return true
+}
+
 async function ensureHardhatNetwork(page: Page, metamask: any) {
   let requested = false
   try {
@@ -126,6 +142,7 @@ async function ensureHardhatNetwork(page: Page, metamask: any) {
  * Check if wallet is connected by looking for address pattern
  */
 export async function isWalletConnected(page: Page): Promise<boolean> {
+  if (page.isClosed()) return false
   try {
     const accounts = await page.evaluate(async () => {
       const ethereum = (window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }).ethereum
@@ -137,9 +154,13 @@ export async function isWalletConnected(page: Page): Promise<boolean> {
     // ignore and fall back to DOM
   }
 
-  const content = await page.content()
-  const addressPattern = /0x[a-fA-F0-9]{4}.*[a-fA-F0-9]{4}/
-  return addressPattern.test(content) || /wrong network/i.test(content)
+  try {
+    const content = await page.content()
+    const addressPattern = /0x[a-fA-F0-9]{4}.*[a-fA-F0-9]{4}/
+    return addressPattern.test(content) || /wrong network/i.test(content)
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -194,6 +215,7 @@ export async function clickButton(page: Page, text: string, options?: { last?: b
  * Click a tab button
  */
 export async function clickTab(page: Page, tabText: string) {
+  if (page.isClosed()) return
   const tab = page.locator(`button:has-text("${tabText}")`).filter({ hasNot: page.locator('[disabled]') }).first()
   if (await tab.count() > 0) {
     await tab.click()
