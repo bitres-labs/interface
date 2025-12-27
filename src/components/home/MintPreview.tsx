@@ -352,7 +352,8 @@ Your transaction succeeded - check your balance!`)
 
     if (hasInsufficientBalance()) return true
 
-    if (!isPricingReady) return true
+    // Note: We no longer disable button when price is not ready
+    // Contract will auto-update TWAP when user executes the transaction
 
     // BTB can only be redeemed when CR >= 100%
     if (mode === 'redeemBTB' && collateralRatio < 100) return true
@@ -374,10 +375,8 @@ Your transaction succeeded - check your balance!`)
       return
     }
 
-    if (!isPricingReady) {
-      alert('⏳ Price data is still loading. Please try again in a moment.')
-      return
-    }
+    // Note: We no longer block when price is not ready
+    // Contract will auto-update TWAP when executing the transaction
 
     try {
       const expectedOutput =
@@ -528,15 +527,16 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
     if (isRedeemingBTD) return 'Confirming Redeem BTD...'
     if (isRedeemingBTB) return 'Converting BTB to BTD...'
 
-    if (!isPricingReady) return 'Waiting for prices...'
-
+    // Show action button even if price is not ready
+    // Contract will auto-update TWAP when executing the transaction
     if (mode === 'mint') {
-      return needsWBTCApproval ? 'Approve WBTC & Mint BTD' : 'Mint BTD'
+      const label = needsWBTCApproval ? 'Approve WBTC & Mint BTD' : 'Mint BTD'
+      return !isPricingReady ? `${label} ⏳` : label
     }
     if (mode === 'redeemBTD') {
-      return 'Redeem BTD'
+      return !isPricingReady ? 'Redeem BTD ⏳' : 'Redeem BTD'
     }
-    return 'Convert BTB to BTD'
+    return !isPricingReady ? 'Convert BTB to BTD ⏳' : 'Convert BTB to BTD'
   }
 
   const handleButtonClick = () => {
@@ -971,6 +971,14 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
       >
         {getButtonText()}
       </button>
+
+      {/* Price Updating Notice */}
+      {!isPricingReady && isConnected && (
+        <div className="flex items-center justify-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+          <Clock className="w-3 h-3" />
+          <span>Price will be fetched when transaction executes</span>
+        </div>
+      )}
 
       {/* Mint BTD Info */}
       {mode === 'mint' && (

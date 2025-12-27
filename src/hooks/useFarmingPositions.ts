@@ -68,6 +68,7 @@ export function useFarmingPositions() {
   const reward9 = useLocalRewardCalculation(9, 30000)
 
   // LP token prices - using real on-chain data for LP tokens
+  // All prices from Chainlink (BTC, ETH) or LP spot prices (BTD, BTB, BRS)
   const lpPrices: Record<number, number> = useMemo(
     () => ({
       0: realLPPrices[0] || 0, // BRS/BTD LP (from chain)
@@ -75,11 +76,11 @@ export function useFarmingPositions() {
       2: realLPPrices[2] || 0, // BTB/BTD LP (from chain)
       3: 1.0, // USDC
       4: 1.0, // USDT
-      5: prices.WBTC, // WBTC
-      6: 3000, // WETH (ETH price, TODO: get from oracle)
-      7: prices.BTD, // stBTD
-      8: prices.BTB, // stBTB
-      9: prices.BRS, // BRS
+      5: prices.WBTC, // WBTC (from Chainlink BTC/USD)
+      6: prices.WETH, // WETH (from Chainlink ETH/USD)
+      7: prices.BTD, // stBTD (uses BTD price from LP)
+      8: prices.BTB, // stBTB (uses BTB price from LP)
+      9: prices.BRS, // BRS (from LP spot price)
     }),
     [realLPPrices, prices]
   )
@@ -157,7 +158,7 @@ export function useFarmingPositions() {
       const allocation =
         totalAllocPoint > 0 ? ((allocPoint / totalAllocPoint) * 100).toFixed(1) : '0'
 
-      // Calculate TVL
+      // Calculate TVL (spot prices from LP pools)
       const tvl = totalStaked * lpPrice
 
       return {

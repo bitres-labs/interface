@@ -106,6 +106,54 @@ export function useBRSPrice() {
   }
 }
 
+// Chainlink AggregatorV3 ABI (minimal for latestRoundData)
+const CHAINLINK_AGGREGATOR_ABI = [
+  {
+    inputs: [],
+    name: 'latestRoundData',
+    outputs: [
+      { name: 'roundId', type: 'uint80' },
+      { name: 'answer', type: 'int256' },
+      { name: 'startedAt', type: 'uint256' },
+      { name: 'updatedAt', type: 'uint256' },
+      { name: 'answeredInRound', type: 'uint80' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const
+
+// Read ETH price from Chainlink ETH/USD feed
+export function useETHPrice() {
+  const chainlinkAddress = (CONTRACTS as Record<string, `0x${string}`>).ChainlinkETHUSD
+
+  const { data, isLoading, error } = useReadContract({
+    address: chainlinkAddress,
+    abi: CHAINLINK_AGGREGATOR_ABI,
+    functionName: 'latestRoundData',
+    query: {
+      ...PRICE_QUERY_OPTIONS,
+      enabled: !!chainlinkAddress,
+    },
+  })
+
+  // Chainlink ETH/USD has 8 decimals
+  const ethPrice = data ? Number(data[1]) / 1e8 : 0
+
+  return {
+    ethPrice,
+    isLoading,
+    error,
+  }
+}
+
 // Read IUSD price from PriceOracle
 export function useIUSDPrice() {
   const { data, isLoading, error } = useReadContract({

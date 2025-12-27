@@ -2,13 +2,18 @@ import { useMemo } from 'react'
 import { logger } from '@/utils/logger'
 import { useBTCPrice, useIUSDPrice } from './useMinter'
 import { useCurrentRewardPerSecond, useTotalAllocPoint } from './useFarming'
-import { useBRSPrice, useBTBPrice, useBTDPrice } from './useSystemStats'
+import { useBRSPrice, useBTBPrice, useBTDPrice, useETHPrice } from './useSystemStats'
 
 /**
  * Token prices for APY calculation
+ * - BTC/WBTC: from Chainlink BTC/USD
+ * - ETH/WETH: from Chainlink ETH/USD
+ * - USDC/USDT: hardcoded $1
+ * - BTD/BTB/BRS: from PriceOracle (LP spot prices)
  */
 export function useTokenPrices() {
   const { btcPrice } = useBTCPrice()
+  const { ethPrice } = useETHPrice()
   const { iusdPrice } = useIUSDPrice()
   const { brsPrice } = useBRSPrice()
   const { btbPrice } = useBTBPrice()
@@ -22,6 +27,8 @@ export function useTokenPrices() {
   return {
     BTC: btcPrice,
     WBTC: btcPrice,
+    ETH: ethPrice,
+    WETH: ethPrice,
     USDC: 1.0,
     USDT: 1.0,
     BTD: resolvedBTDPrice,

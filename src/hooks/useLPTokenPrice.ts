@@ -159,7 +159,7 @@ export function useLPTokenPrice(lpTokenAddress: `0x${string}` | undefined) {
     let token0Price = 1
     let token1Price = 1
 
-    // Map token symbols to prices
+    // Map token symbols to prices (all from Chainlink or LP spot prices)
     const priceMap: Record<string, number> = {
       BRS: prices.BRS,
       BTD: prices.BTD,
@@ -167,7 +167,7 @@ export function useLPTokenPrice(lpTokenAddress: `0x${string}` | undefined) {
       USDC: 1.0,
       USDT: 1.0,
       WBTC: prices.WBTC,
-      WETH: 3000, // TODO: get from oracle
+      WETH: prices.WETH || 0,
     }
 
     token0Price = priceMap[token0Symbol] || 1

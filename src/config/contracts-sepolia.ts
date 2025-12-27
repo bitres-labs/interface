@@ -20,6 +20,7 @@ export const CONTRACTS_SEPOLIA = {
 
   // Oracles
   ChainlinkBTCUSD: '0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43' as `0x${string}`,  // Real Chainlink feed
+  ChainlinkETHUSD: '0x694AA1769357215DE4FAC081bf1f309aDC325306' as `0x${string}`,  // Real Chainlink feed
   ChainlinkWBTCBTC: '0xFa5c0847E7BdBD527341eb58b8Ef92A004a81343' as `0x${string}`, // Mock (1:1)
   MockPyth: '0xDb44663eEdDf0f905489c1AcA9C8DC3fB4E84534' as `0x${string}`,
   MockRedstone: '0xb0002ad8971b6f97D6dBD265C3255E29Ab784d3A' as `0x${string}`,
