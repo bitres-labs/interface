@@ -13,7 +13,7 @@ import { blockInvalidNumberInput } from '@/utils/input'
 import { useApproveAndExecute } from '@/hooks/useApproveAndExecute'
 import { useFarmingPositions } from '@/hooks/useFarmingPositions'
 import { TokenIcon, DualTokenIcon } from '@/components/common/TokenIcon'
-import { formatCurrency, getTokenDecimals, formatLPBalance, formatSmartPercentage } from '@/utils/format'
+import { formatCurrency, getTokenDecimals, formatLPBalance, formatSmartPercentage, formatSmallAmount } from '@/utils/format'
 import { useBRSMined, useBRSMaxSupply, useWBTCPrice, useBTDPrice, useBTBPrice, useBRSPrice, useWETHPrice } from '@/hooks/useSystemStats'
 import { ConvertAndStakeModal } from '@/components/farm/ConvertAndStakeModal'
 import { WithdrawConvertModal } from '@/components/farm/WithdrawConvertModal'
@@ -305,9 +305,7 @@ function FarmPage() {
         yourStake: pool.userInfo.stakedAmount,
         yourStakeDisplay: pool.type === 'LP' && index <= 2
           ? formatLPBalance(pool.userInfo.stakedAmount)
-          : pool.userInfo.stakedAmount.toLocaleString(undefined, {
-              maximumFractionDigits: getTokenDecimals(pool.name),
-            }),
+          : formatSmallAmount(pool.userInfo.stakedAmount, getTokenDecimals(pool.name)),
         yourRewards: pool.pending.amount,
         yourRewardsDisplay: pool.pending.amount.toLocaleString(undefined, {
           maximumFractionDigits: 2, // BRS rewards always use 2 decimals
@@ -876,9 +874,10 @@ function FarmPage() {
                       {pool.balance
                         ? pool.type === 'LP' && pool.id <= 2
                           ? formatLPBalance(Number(formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)))
-                          : Number(
-                              formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)
-                            ).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.name) })
+                          : formatSmallAmount(
+                              Number(formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)),
+                              getTokenDecimals(pool.name)
+                            )
                         : '0'}
                       {/* Show base token balance for WETH/stBTD/stBTB pools */}
                       {pool.id === 6 && ethBalanceRaw && (

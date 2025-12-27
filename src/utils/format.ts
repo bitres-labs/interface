@@ -167,6 +167,58 @@ export function getTokenDecimals(symbol: string): number {
 }
 
 /**
+ * Format token amount with smart precision for small values
+ * Similar to formatLPBalance but for single tokens
+ * Prevents small amounts from showing as "0"
+ *
+ * @param amount Token amount (already formatted with decimals)
+ * @param baseDecimals Base display decimals (from getTokenDecimals)
+ * @returns Formatted string
+ */
+export function formatSmallAmount(amount: number, baseDecimals: number = 2): string {
+  if (!Number.isFinite(amount) || amount === 0) return '0'
+
+  const absAmount = Math.abs(amount)
+
+  // If amount is large enough for base decimals, use standard formatting
+  if (absAmount >= Math.pow(10, -baseDecimals)) {
+    return formatTruncated(amount, baseDecimals, 0)
+  }
+
+  // For very small amounts, use smart precision like formatLPBalance
+  const str = absAmount.toString()
+
+  // Handle scientific notation (e.g.: 1e-8)
+  if (str.includes('e')) {
+    const [, exponent] = str.split('e')
+    const exp = parseInt(exponent)
+    if (exp < 0) {
+      // Show 4 significant digits after leading zeros
+      const leadingZeros = Math.abs(exp) - 1
+      const totalDecimals = leadingZeros + 4
+      return formatTruncated(amount, totalDecimals, 0)
+    }
+  }
+
+  // Normal decimal format - find first non-zero and show 4 digits
+  const parts = str.split('.')
+  if (parts.length === 2) {
+    const decimalPart = parts[1]
+    let firstNonZeroIndex = 0
+    for (let i = 0; i < decimalPart.length; i++) {
+      if (decimalPart[i] !== '0') {
+        firstNonZeroIndex = i
+        break
+      }
+    }
+    const totalDecimals = firstNonZeroIndex + 4
+    return formatTruncated(amount, totalDecimals, 0)
+  }
+
+  return formatTruncated(amount, baseDecimals, 0)
+}
+
+/**
  * Format LP token amount display (smart precision, truncated)
  * @param amount LP token amount
  * @returns Formatted string
