@@ -50,7 +50,7 @@ test.describe('Sepolia Debug', () => {
     const content = await page.content()
 
     // Look for error messages in UI
-    const errorElements = await page.locator('[class*="error"], [class*="Error"], text=/error/i').all()
+    const errorElements = await page.locator('[class*="error"], [class*="Error"]').all()
     console.log('\n=== UI Error Elements ===')
     for (const el of errorElements.slice(0, 5)) {
       const text = await el.textContent()
@@ -97,7 +97,8 @@ test.describe('Sepolia Debug', () => {
 
     console.log('\n=== RPC Calls ===')
     rpcCalls.forEach(call => {
-      console.log(`${call.method}: ${JSON.stringify(call.params).slice(0, 100)}`)
+      const params = JSON.stringify(call.params) || ''
+      console.log(`${call.method}: ${params.slice(0, 100)}`)
     })
 
     // Check for eth_call failures
