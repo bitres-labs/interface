@@ -148,7 +148,7 @@ async function getOkxExtensionId(context: BrowserContext) {
 async function onboardOkx(
   context: BrowserContext,
   extensionId: string,
-  seedPhrase: string,
+  seedOrPrivateKey: string,
   walletPassword: string
 ) {
   const page = await context.newPage()
@@ -165,9 +165,26 @@ async function onboardOkx(
     throw new Error('OKX onboarding frame not found')
   }
 
-  const words = seedPhrase.split(' ')
-  for (let i = 0; i < 12; i += 1) {
-    await frame.locator('input').nth(i).fill(words[i])
+  // Detect if input is private key (0x + 64 hex chars) or seed phrase
+  const isPrivateKey = /^(0x)?[a-fA-F0-9]{64}$/.test(seedOrPrivateKey.trim())
+
+  if (isPrivateKey) {
+    // Switch to private key tab
+    const privateKeyTab = frame.getByText('Private key', { exact: false })
+    if (await privateKeyTab.count() > 0) {
+      await privateKeyTab.click()
+      await sleep(1000)
+    }
+
+    // Fill private key input (usually a textarea or single input)
+    const pkInput = frame.locator('textarea, input[type="password"], input[type="text"]').first()
+    await pkInput.fill(seedOrPrivateKey.trim())
+  } else {
+    // Fill seed phrase (12 inputs)
+    const words = seedOrPrivateKey.split(' ')
+    for (let i = 0; i < 12; i += 1) {
+      await frame.locator('input').nth(i).fill(words[i])
+    }
   }
 
   await frame.getByRole('button', { name: /confirm/i }).click()
@@ -210,7 +227,8 @@ export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, s
     },
     context: async ({ _contextPath }, use) => {
       const { walletPassword } = walletSetup
-      const seedPhrase = process.env.OKX_SEED_PHRASE || DEFAULT_SEED_PHRASE
+      // Support both private key and seed phrase
+      const seedOrKey = process.env.OKX_PRIVATE_KEY || process.env.OKX_SEED_PHRASE || DEFAULT_SEED_PHRASE
 
       const { extensionPath } = await prepareOkxExtension()
       const context = await chromium.launchPersistentContext(_contextPath, {
@@ -231,7 +249,7 @@ export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, s
 
       await sleep(3000)
       const extensionId = await getOkxExtensionId(context)
-      _okxPage = await onboardOkx(context, extensionId, seedPhrase, walletPassword)
+      _okxPage = await onboardOkx(context, extensionId, seedOrKey, walletPassword)
 
       await use(context)
 

@@ -16,22 +16,19 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-# Check for seed phrase
-if [ -z "$TEST_SEED_PHRASE" ] && [ -z "$OKX_SEED_PHRASE" ]; then
-    echo "ERROR: No wallet seed phrase provided."
+# Check for seed phrase or private key
+if [ -z "$OKX_PRIVATE_KEY" ] && [ -z "$OKX_SEED_PHRASE" ]; then
+    echo "ERROR: No wallet credentials provided."
     echo ""
     echo "Set one of these environment variables:"
-    echo "  export TEST_SEED_PHRASE='your 12 word seed phrase'"
+    echo "  export OKX_PRIVATE_KEY='0x...'  (deployer private key)"
     echo "  export OKX_SEED_PHRASE='your 12 word seed phrase'"
     echo ""
     echo "The wallet needs:"
-    echo "  - Sepolia ETH (for gas) - get from https://sepoliafaucet.com"
-    echo "  - WBTC tokens - get from our faucet script"
+    echo "  - Sepolia ETH (for gas)"
+    echo "  - WBTC tokens (from our faucet)"
     exit 1
 fi
-
-# Use OKX_SEED_PHRASE if TEST_SEED_PHRASE not set
-export OKX_SEED_PHRASE="${TEST_SEED_PHRASE:-$OKX_SEED_PHRASE}"
 
 echo "============================================"
 echo "  Sepolia E2E Test Runner"
