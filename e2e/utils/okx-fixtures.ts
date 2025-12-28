@@ -169,8 +169,8 @@ async function onboardOkx(
   const isPrivateKey = /^(0x)?[a-fA-F0-9]{64}$/.test(seedOrPrivateKey.trim())
 
   if (isPrivateKey) {
-    // Switch to private key tab
-    const privateKeyTab = frame.getByText('Private key', { exact: false })
+    // Switch to private key tab (use role selector to avoid matching title)
+    const privateKeyTab = frame.getByRole('tab', { name: /private key/i })
     if (await privateKeyTab.count() > 0) {
       await privateKeyTab.click()
       await sleep(1000)
@@ -179,23 +179,43 @@ async function onboardOkx(
     // Fill private key input (usually a textarea or single input)
     const pkInput = frame.locator('textarea, input[type="password"], input[type="text"]').first()
     await pkInput.fill(seedOrPrivateKey.trim())
+
+    // Click confirm to submit private key
+    await frame.getByRole('button', { name: /confirm/i }).click()
+    await page.waitForTimeout(3000)
+
+    // Handle "Select network" screen - select EVM and confirm
+    // This screen appears outside of the iframe
+    try {
+      const evmOption = page.getByText('EVM-compatible networks')
+      await evmOption.waitFor({ timeout: 10000 })
+      await evmOption.click()
+      await sleep(1000)
+
+      const confirmBtn = page.getByRole('button', { name: 'Confirm' })
+      await confirmBtn.waitFor({ timeout: 5000 })
+      await confirmBtn.click()
+      await page.waitForTimeout(2000)
+    } catch (e) {
+      console.log('Network selection screen not found or already passed:', e)
+    }
   } else {
     // Fill seed phrase (12 inputs)
     const words = seedOrPrivateKey.split(' ')
     for (let i = 0; i < 12; i += 1) {
       await frame.locator('input').nth(i).fill(words[i])
     }
-  }
 
-  await frame.getByRole('button', { name: /confirm/i }).click()
-  await page.waitForTimeout(1000)
+    await frame.getByRole('button', { name: /confirm/i }).click()
+    await page.waitForTimeout(1000)
 
-  frame = await waitForSesFrame(page)
-  if (!frame) {
-    throw new Error('OKX onboarding frame not found after seed confirm')
+    frame = await waitForSesFrame(page)
+    if (!frame) {
+      throw new Error('OKX onboarding frame not found after seed confirm')
+    }
+    await frame.getByRole('button', { name: /next/i }).click()
+    await page.waitForTimeout(1000)
   }
-  await frame.getByRole('button', { name: /next/i }).click()
-  await page.waitForTimeout(1000)
 
   frame = await waitForSesFrame(page)
   if (!frame) {

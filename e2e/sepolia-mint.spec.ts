@@ -101,7 +101,7 @@ test.describe('Sepolia Mint BTD', () => {
     await page.screenshot({ path: 'test-results/sepolia-mint-with-amount.png' })
 
     // Log any error messages
-    const errorMessages = page.locator('[class*="error"], [class*="warning"], text=/error|fail|insufficient/i')
+    const errorMessages = page.locator('[class*="error"], [class*="warning"]')
     const errorCount = await errorMessages.count()
     if (errorCount > 0) {
       for (let i = 0; i < errorCount; i++) {
