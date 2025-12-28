@@ -1,0 +1,23 @@
+
+> brs-interface@1.0.0 dev
+> vite --host 0.0.0.0 --port 3000
+
+
+  [32m[1mVITE[22m v7.3.0[39m  [2mready in [0m[1m216[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.1.0.49:[1m3000[22m/[39m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/domain-warning.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/fullscreen.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/home.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/notification.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/offscreen.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/popup-init.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/popup.html[22m
+[2m1:56:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/sandbox.html[22m
+[2m1:56:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/secure-iframe.html[22m
+[2m1:56:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/ses-sandbox.html[22m
+[2m1:56:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/ses.html[22m
+[2m1:56:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/sidepanel-init.html[22m
+[2m1:56:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/sidepanel.html[22m
+[2m1:56:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.cache-okx/okx/trezor-usb-permissions.html[22m

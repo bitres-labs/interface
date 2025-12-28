@@ -1,0 +1,155 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e6]:
+    - button "Smart account disabled" [disabled] [ref=e7] [cursor=pointer]:
+      - generic [ref=e8]:
+        - img [ref=e9]: 
+        - generic [ref=e10]: Smart account disabled
+      - img [ref=e11]: 
+    - generic [ref=e12]:
+      - img [ref=e16] [cursor=pointer]: 
+      - generic [ref=e18] [cursor=pointer]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: Account 01
+          - generic [ref=e22]: 
+        - generic [ref=e24]: Wallet 01
+      - generic [ref=e25]:
+        - img [ref=e28] [cursor=pointer]: 
+        - img [ref=e33] [cursor=pointer]: 
+        - img [ref=e37] [cursor=pointer]: 
+    - generic [ref=e38]:
+      - generic [ref=e40] [cursor=pointer]: $1.45
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: +<$0.01
+          - generic [ref=e44]: (+0.29%)
+        - combobox [ref=e46]:
+          - generic [ref=e47] [cursor=pointer]:
+            - generic [ref=e48]: 1D
+            - img [ref=e49]: 
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - img [ref=e53] [cursor=pointer]: 
+          - generic [ref=e54]: Send
+        - generic [ref=e55]:
+          - img [ref=e57] [cursor=pointer]: 
+          - generic [ref=e58]: Receive
+        - generic [ref=e59]:
+          - img [ref=e61] [cursor=pointer]: 
+          - generic [ref=e62]: Swap
+        - generic [ref=e63]:
+          - img [ref=e65] [cursor=pointer]: 
+          - generic [ref=e66]: History
+        - generic [ref=e68]:
+          - generic [ref=e69] [cursor=pointer]:
+            - generic [ref=e71]: 
+            - generic [ref=e73]: 
+          - generic [ref=e74]: More
+    - generic [ref=e76]:
+      - tablist [ref=e79]:
+        - generic [ref=e80]:
+          - tab "Crypto" [selected] [ref=e81] [cursor=pointer]:
+            - generic [ref=e82]: Crypto
+          - tab "DeFi" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]: DeFi
+          - tab "NFT" [ref=e85] [cursor=pointer]:
+            - generic [ref=e86]: NFT
+          - tab "Approvals" [ref=e87] [cursor=pointer]:
+            - generic [ref=e88]: Approvals
+      - generic:
+        - tabpanel "Crypto"
+    - listbox [ref=e94]:
+      - generic [ref=e95] [cursor=pointer]:
+        - generic [ref=e98]:
+          - generic [ref=e100]: XRP
+          - generic [ref=e102]: "0.670665"
+        - generic [ref=e103]:
+          - generic [ref=e105]: $1.25
+          - generic [ref=e106]:
+            - generic [ref=e107]: $1.8719
+            - generic [ref=e108]: (+0.53%)
+      - generic [ref=e109] [cursor=pointer]:
+        - generic [ref=e112]:
+          - generic [ref=e113]:
+            - generic [ref=e114]: SOL
+            - generic [ref=e116]: Up to 6.43% APY
+          - generic [ref=e118]: "0.00145"
+        - generic [ref=e119]:
+          - generic [ref=e121]: $0.17
+          - generic [ref=e122]:
+            - generic [ref=e123]: $123.81
+            - generic [ref=e124]: (+1.64%)
+      - generic [ref=e125] [cursor=pointer]:
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - generic [ref=e130]: ETH
+            - generic [ref=e132]: Up to 3.6% APY
+          - generic [ref=e134]: "0.000006"
+        - generic [ref=e135]:
+          - generic [ref=e137]: $0.01
+          - generic [ref=e138]:
+            - generic [ref=e139]: $2,970.75
+            - generic [ref=e140]: (+1.58%)
+      - generic [ref=e141] [cursor=pointer]:
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - generic [ref=e146]: USDC
+            - generic [ref=e148]: Up to 6.77% APY
+          - generic [ref=e150]: <0.01
+        - generic [ref=e153]: <$0.01
+      - generic [ref=e154] [cursor=pointer]:
+        - generic [ref=e157]:
+          - generic [ref=e159]: OKB
+          - generic [ref=e161]: <0.000001
+        - generic [ref=e162]:
+          - generic [ref=e164]: <$0.01
+          - generic [ref=e165]:
+            - generic [ref=e166]: $108.01
+            - generic [ref=e167]: (-0.73%)
+      - generic [ref=e168] [cursor=pointer]:
+        - generic [ref=e171]:
+          - generic [ref=e173]: USDG
+          - generic [ref=e175]: "0"
+        - generic [ref=e178]: $0.00
+      - generic [ref=e179] [cursor=pointer]:
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - generic [ref=e184]: USDT
+            - generic [ref=e186]: Up to 5.65% APY
+          - generic [ref=e188]: "0"
+        - generic [ref=e191]: $0.00
+      - generic [ref=e192] [cursor=pointer]:
+        - generic [ref=e195]:
+          - generic [ref=e197]: BTC
+          - generic [ref=e199]: "0"
+        - generic [ref=e200]:
+          - generic [ref=e202]: $0.00
+          - generic [ref=e203]:
+            - generic [ref=e204]: $88,692.3
+            - generic [ref=e205]: (+1.39%)
+      - generic [ref=e206] [cursor=pointer]:
+        - generic [ref=e209]:
+          - generic [ref=e211]: BNB
+          - generic [ref=e213]: "0"
+        - generic [ref=e214]:
+          - generic [ref=e216]: $0.00
+          - generic [ref=e217]:
+            - generic [ref=e218]: $841.2
+            - generic [ref=e219]: (+0.56%)
+      - generic [ref=e220] [cursor=pointer]:
+        - generic [ref=e223]:
+          - generic [ref=e225]: TRX
+          - generic [ref=e227]: "0"
+        - generic [ref=e228]:
+          - generic [ref=e230]: $0.00
+          - generic [ref=e231]:
+            - generic [ref=e232]: $0.27884
+            - generic [ref=e233]: (+0.03%)
+      - generic [ref=e234] [cursor=pointer]:
+        - generic [ref=e235]: Low-value assets (865)
+        - img [ref=e236]: 
+  - iframe [ref=e238]:
+    
+```
