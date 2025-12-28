@@ -170,19 +170,142 @@ export function useIUSDPrice() {
   }
 }
 
-// Read WETH price from PriceOracle
+// Chainlink AggregatorV3 ABI (only latestRoundData)
+const CHAINLINK_AGGREGATOR_ABI = [
+  {
+    inputs: [],
+    name: 'latestRoundData',
+    outputs: [
+      { name: 'roundId', type: 'uint80' },
+      { name: 'answer', type: 'int256' },
+      { name: 'startedAt', type: 'uint256' },
+      { name: 'updatedAt', type: 'uint256' },
+      { name: 'answeredInRound', type: 'uint80' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const
+
+// Read WETH price directly from Chainlink ETH/USD feed
 export function useWETHPrice() {
+  const chainlinkAddress = CONTRACTS.ChainlinkETHUSD
+  const isValidAddress = chainlinkAddress && chainlinkAddress !== ZERO_ADDRESS
+
   const { data, isLoading, error } = useReadContract({
-    address: CONTRACTS.PriceOracle,
-    abi: PriceOracleABI,
-    functionName: 'getWETHPrice',
-    query: PRICE_QUERY_OPTIONS,
+    address: chainlinkAddress,
+    abi: CHAINLINK_AGGREGATOR_ABI,
+    functionName: 'latestRoundData',
+    query: {
+      ...PRICE_QUERY_OPTIONS,
+      enabled: isValidAddress,
+    },
   })
 
+  // Chainlink returns 8 decimals, convert to number
+  // For local network (zero address), fallback to $3000
+  let wethPrice = 3000 // Default fallback for local
+  if (isValidAddress && data) {
+    const [, answer] = data as [bigint, bigint, bigint, bigint, bigint]
+    wethPrice = Number(answer) / 1e8
+  }
+
   return {
-    wethPrice: data ? Number(formatUnits(data as bigint, 18)) : 0,
-    isLoading,
-    error,
+    wethPrice,
+    isLoading: isValidAddress ? isLoading : false,
+    error: isValidAddress ? error : null,
+  }
+}
+
+// Read USDC price directly from Chainlink USDC/USD feed
+// Note: Not available on Sepolia, fallback to $1
+export function useUSDCPrice() {
+  const chainlinkAddress = CONTRACTS.ChainlinkUSDCUSD
+  const isValidAddress = chainlinkAddress && chainlinkAddress !== ZERO_ADDRESS
+
+  const { data, isLoading, error } = useReadContract({
+    address: chainlinkAddress,
+    abi: CHAINLINK_AGGREGATOR_ABI,
+    functionName: 'latestRoundData',
+    query: {
+      ...PRICE_QUERY_OPTIONS,
+      enabled: isValidAddress,
+    },
+  })
+
+  // Chainlink returns 8 decimals, convert to number
+  // For Sepolia/local (zero address), fallback to $1
+  let usdcPrice = 1 // Default fallback
+  if (isValidAddress && data) {
+    const [, answer] = data as [bigint, bigint, bigint, bigint, bigint]
+    usdcPrice = Number(answer) / 1e8
+  }
+
+  return {
+    usdcPrice,
+    isLoading: isValidAddress ? isLoading : false,
+    error: isValidAddress ? error : null,
+  }
+}
+
+// Read USDT price directly from Chainlink USDT/USD feed
+// Note: Not available on Sepolia, fallback to $1
+export function useUSDTPrice() {
+  const chainlinkAddress = CONTRACTS.ChainlinkUSDTUSD
+  const isValidAddress = chainlinkAddress && chainlinkAddress !== ZERO_ADDRESS
+
+  const { data, isLoading, error } = useReadContract({
+    address: chainlinkAddress,
+    abi: CHAINLINK_AGGREGATOR_ABI,
+    functionName: 'latestRoundData',
+    query: {
+      ...PRICE_QUERY_OPTIONS,
+      enabled: isValidAddress,
+    },
+  })
+
+  // Chainlink returns 8 decimals, convert to number
+  // For Sepolia/local (zero address), fallback to $1
+  let usdtPrice = 1 // Default fallback
+  if (isValidAddress && data) {
+    const [, answer] = data as [bigint, bigint, bigint, bigint, bigint]
+    usdtPrice = Number(answer) / 1e8
+  }
+
+  return {
+    usdtPrice,
+    isLoading: isValidAddress ? isLoading : false,
+    error: isValidAddress ? error : null,
+  }
+}
+
+// Read BTC price directly from Chainlink BTC/USD feed (for display purposes)
+export function useChainlinkBTCPrice() {
+  const chainlinkAddress = CONTRACTS.ChainlinkBTCUSD
+  const isValidAddress = chainlinkAddress && chainlinkAddress !== ZERO_ADDRESS
+
+  const { data, isLoading, error } = useReadContract({
+    address: chainlinkAddress,
+    abi: CHAINLINK_AGGREGATOR_ABI,
+    functionName: 'latestRoundData',
+    query: {
+      ...PRICE_QUERY_OPTIONS,
+      enabled: isValidAddress,
+    },
+  })
+
+  // Chainlink returns 8 decimals, convert to number
+  // For local network (zero address), fallback to $100000
+  let btcPrice = 100000 // Default fallback for local
+  if (isValidAddress && data) {
+    const [, answer] = data as [bigint, bigint, bigint, bigint, bigint]
+    btcPrice = Number(answer) / 1e8
+  }
+
+  return {
+    btcPrice,
+    isLoading: isValidAddress ? isLoading : false,
+    error: isValidAddress ? error : null,
   }
 }
 

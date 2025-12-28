@@ -164,8 +164,8 @@ export function useLPTokenPrice(lpTokenAddress: `0x${string}` | undefined) {
       BRS: prices.BRS,
       BTD: prices.BTD,
       BTB: prices.BTB,
-      USDC: 1.0,
-      USDT: 1.0,
+      USDC: prices.USDC,
+      USDT: prices.USDT,
       WBTC: prices.WBTC,
       WETH: prices.WETH || 0,
     }

@@ -1,19 +1,31 @@
 import { useMemo } from 'react'
 import { logger } from '@/utils/logger'
-import { useBTCPrice, useIUSDPrice } from './useMinter'
+import { useIUSDPrice } from './useMinter'
 import { useCurrentRewardPerSecond, useTotalAllocPoint } from './useFarming'
-import { useBRSPrice, useBTBPrice, useBTDPrice, useETHPrice } from './useSystemStats'
+import {
+  useBRSPrice,
+  useBTBPrice,
+  useBTDPrice,
+  useWETHPrice,
+  useUSDCPrice,
+  useUSDTPrice,
+  useChainlinkBTCPrice,
+} from './useSystemStats'
 
 /**
  * Token prices for APY calculation
+ * All prices from Chainlink feeds (for display purposes):
  * - BTC/WBTC: from Chainlink BTC/USD
  * - ETH/WETH: from Chainlink ETH/USD
- * - USDC/USDT: hardcoded $1
+ * - USDC: from Chainlink USDC/USD (fallback $1 on Sepolia)
+ * - USDT: from Chainlink USDT/USD (fallback $1 on Sepolia)
  * - BTD/BTB/BRS: from PriceOracle (LP spot prices)
  */
 export function useTokenPrices() {
-  const { btcPrice } = useBTCPrice()
-  const { ethPrice } = useETHPrice()
+  const { btcPrice } = useChainlinkBTCPrice()
+  const { wethPrice } = useWETHPrice()
+  const { usdcPrice } = useUSDCPrice()
+  const { usdtPrice } = useUSDTPrice()
   const { iusdPrice } = useIUSDPrice()
   const { brsPrice } = useBRSPrice()
   const { btbPrice } = useBTBPrice()
@@ -27,10 +39,10 @@ export function useTokenPrices() {
   return {
     BTC: btcPrice,
     WBTC: btcPrice,
-    ETH: ethPrice,
-    WETH: ethPrice,
-    USDC: 1.0,
-    USDT: 1.0,
+    ETH: wethPrice,
+    WETH: wethPrice,
+    USDC: usdcPrice,
+    USDT: usdtPrice,
     BTD: resolvedBTDPrice,
     BTB: btbPrice || resolvedBTDPrice,
     BRS: brsPrice || 0,

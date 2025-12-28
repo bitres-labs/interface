@@ -110,10 +110,10 @@ export function usePortfolio() {
     // 8: BRS single
     const lpPrices = {
       0: prices.BRS * 0.5 + prices.BTD * 0.5, // BRS/BTD LP
-      1: prices.BTD * 0.5 + 1.0 * 0.5, // BTD/USDC LP
+      1: prices.BTD * 0.5 + prices.USDC * 0.5, // BTD/USDC LP
       2: prices.BTB * 0.5 + prices.BTD * 0.5, // BTB/BTD LP
-      3: 1.0, // USDC
-      4: 1.0, // USDT
+      3: prices.USDC, // USDC (from Chainlink, fallback $1 on Sepolia)
+      4: prices.USDT, // USDT (from Chainlink, fallback $1 on Sepolia)
       5: prices.WBTC, // WBTC
       6: prices.BTD, // stBTD
       7: prices.BTB, // stBTB

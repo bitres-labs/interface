@@ -22,10 +22,13 @@ const CONTRACTS_LOCAL = {
   stBTD: '0x4A679253410272dd5232B3Ff7cF5dbB88f295319' as `0x${string}`,
   stBTB: '0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f' as `0x${string}`,
 
-  // Oracles
+  // Oracles - Chainlink Price Feeds (local uses mocks, zero address = use fallback)
   BTCPriceFeed: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9' as `0x${string}`,
   ChainlinkBTCUSD: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9' as `0x${string}`,
   ChainlinkWBTCBTC: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9' as `0x${string}`,
+  ChainlinkETHUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`,  // Local: fallback $3000
+  ChainlinkUSDCUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Local: fallback $1
+  ChainlinkUSDTUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Local: fallback $1
   MockPyth: '0x0165878A594ca255338adfa4d48449f69242Eb8F' as `0x${string}`,
   MockRedstone: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853' as `0x${string}`,
   IdealUSDManager: '0x7a2088a1bFc9d81c55368AE168C2C02570cB814F' as `0x${string}`,

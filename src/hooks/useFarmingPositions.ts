@@ -74,8 +74,8 @@ export function useFarmingPositions() {
       0: realLPPrices[0] || 0, // BRS/BTD LP (from chain)
       1: realLPPrices[1] || 0, // BTD/USDC LP (from chain)
       2: realLPPrices[2] || 0, // BTB/BTD LP (from chain)
-      3: 1.0, // USDC
-      4: 1.0, // USDT
+      3: prices.USDC, // USDC (from Chainlink, fallback $1 on Sepolia)
+      4: prices.USDT, // USDT (from Chainlink, fallback $1 on Sepolia)
       5: prices.WBTC, // WBTC (from Chainlink BTC/USD)
       6: prices.WETH, // WETH (from Chainlink ETH/USD)
       7: prices.BTD, // stBTD (uses BTD price from LP)
