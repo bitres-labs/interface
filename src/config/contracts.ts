@@ -50,6 +50,9 @@ const CONTRACTS_LOCAL = {
   InterestPool: '0x09635F643e140090A9A8Dcd712eD6285858ceBef' as `0x${string}`,
   FarmingPool: '0x851356ae760d987E095750cCeb3bC6014560891C' as `0x${string}`,
   StakingRouter: '0xf5059a5D33d5853360D16C683c16e67980206f36' as `0x${string}`,
+
+  // Faucet (for test token distribution)
+  Faucet: '0x0000000000000000000000000000000000000000' as `0x${string}`, // To be deployed
 }
 
 const WINDOWS_IP = '172.29.182.131'

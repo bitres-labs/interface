@@ -60,6 +60,9 @@ export const CONTRACTS_SEPOLIA = {
   // Official Uniswap V2 on Sepolia
   UniswapV2Factory: (uniswap?.UniswapV2Factory || UNISWAP_V2_SEPOLIA.FACTORY) as `0x${string}`,
   UniswapV2Router: (uniswap?.UniswapV2Router || UNISWAP_V2_SEPOLIA.ROUTER) as `0x${string}`,
+
+  // Faucet (for test token distribution)
+  Faucet: ((contracts as { Faucet?: string }).Faucet || '0x0000000000000000000000000000000000000000') as `0x${string}`,
 }
 
 export const NETWORK_CONFIG_SEPOLIA = {

@@ -18,6 +18,7 @@ import USDC_ABI from './USDC.json'
 import USDT_ABI from './USDT.json'
 import WETH_ABI from './WETH.json'
 import UniswapV2Pair_ABI from './UniswapV2Pair.json'
+import Faucet_ABI from './Faucet.json'
 
 export {
   BRS_ABI,
@@ -37,6 +38,7 @@ export {
   USDT_ABI,
   WETH_ABI,
   UniswapV2Pair_ABI,
+  Faucet_ABI,
 }
 
 // ERC20 standard ABI (use BTD, BTB, BRS, or mock tokens)

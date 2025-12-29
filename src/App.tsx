@@ -12,6 +12,7 @@ import ExplorerPage from './pages/ExplorerPage'
 import FAQPage from './pages/FAQPage'
 import WhitepaperPage from './pages/WhitepaperPage'
 import AboutPage from './pages/AboutPage'
+import FaucetPage from './pages/FaucetPage'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/whitepaper" element={<WhitepaperPage />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/faucet" element={<FaucetPage />} />
         </Routes>
       </MobileLayout>
     </ErrorBoundary>

@@ -29,14 +29,14 @@ class OkxWallet {
   }
 
   async confirmSignature() {
-    await this.confirmInPopup(['Sign', 'Confirm', 'Approve'])
+    await this.confirmInPopup(['Sign', 'Confirm', 'Approve', 'Continue'])
   }
 
   async approveNetworkChange() {
     await this.confirmInPopup(['Add', 'Switch', 'Approve', 'Confirm'])
   }
 
-  private async confirmInPopup(labels: string[], timeout = 15_000) {
+  private async confirmInPopup(labels: string[], timeout = 30_000) {
     const deadline = Date.now() + timeout
     while (Date.now() < deadline) {
       const pages = this.context
@@ -54,15 +54,31 @@ class OkxWallet {
             return
           }
 
+          // Scroll down to reveal hidden buttons (OKX often hides confirm buttons)
+          await popup.evaluate(() => {
+            window.scrollTo(0, document.body.scrollHeight)
+            const main = document.querySelector('main, [role="main"], .container, .content')
+            if (main) main.scrollTop = main.scrollHeight
+          }).catch(() => undefined)
+          await sleep(300)
+
           if (await tryClickLabels(popup, labels)) {
             await sleep(1000)
             continue
           }
 
           const frame = await waitForSesFrame(popup, 2000)
-          if (frame && (await tryClickLabels(frame, labels))) {
-            await sleep(1000)
-            continue
+          if (frame) {
+            // Also scroll in frame
+            await frame.evaluate(() => {
+              window.scrollTo(0, document.body.scrollHeight)
+            }).catch(() => undefined)
+            await sleep(300)
+
+            if (await tryClickLabels(frame, labels)) {
+              await sleep(1000)
+              continue
+            }
           }
         } catch {
           // ignore closed/invalid pages and keep polling
@@ -167,37 +183,132 @@ async function onboardOkx(
 
   // Detect if input is private key (0x + 64 hex chars) or seed phrase
   const isPrivateKey = /^(0x)?[a-fA-F0-9]{64}$/.test(seedOrPrivateKey.trim())
+  console.log('[OKX] Input type:', isPrivateKey ? 'Private Key' : 'Seed Phrase')
+  console.log('[OKX] Key prefix:', seedOrPrivateKey.substring(0, 10) + '...')
 
   if (isPrivateKey) {
     // Switch to private key tab (use role selector to avoid matching title)
     const privateKeyTab = frame.getByRole('tab', { name: /private key/i })
-    if (await privateKeyTab.count() > 0) {
+    const tabCount = await privateKeyTab.count()
+    console.log('[OKX] Private key tab count:', tabCount)
+    if (tabCount > 0) {
       await privateKeyTab.click()
       await sleep(1000)
+      console.log('[OKX] Switched to private key tab')
     }
 
     // Fill private key input (usually a textarea or single input)
     const pkInput = frame.locator('textarea, input[type="password"], input[type="text"]').first()
+    console.log('[OKX] Filling private key...')
     await pkInput.fill(seedOrPrivateKey.trim())
+    console.log('[OKX] Private key filled')
 
     // Click confirm to submit private key
     await frame.getByRole('button', { name: /confirm/i }).click()
-    await page.waitForTimeout(3000)
+    console.log('[OKX] Waiting for network selection screen...')
+    await page.waitForTimeout(5000)
 
     // Handle "Select network" screen - select EVM and confirm
-    // This screen appears outside of the iframe
+    // This screen appears outside of the iframe, need to poll for it
     try {
-      const evmOption = page.getByText('EVM-compatible networks')
-      await evmOption.waitFor({ timeout: 10000 })
-      await evmOption.click()
-      await sleep(1000)
+      // Wait for page to load and look for network selection
+      const deadline = Date.now() + 20000
+      let found = false
+      while (Date.now() < deadline && !found) {
+        // Try main page first
+        const evmOption = page.locator('text=EVM-compatible networks').first()
+        if (await evmOption.count() > 0) {
+          console.log('[OKX] Found EVM option on main page')
+          await evmOption.click()
+          found = true
+          break
+        }
 
-      const confirmBtn = page.getByRole('button', { name: 'Confirm' })
-      await confirmBtn.waitFor({ timeout: 5000 })
-      await confirmBtn.click()
-      await page.waitForTimeout(2000)
+        // Try frames
+        for (const frameObj of page.frames()) {
+          const frameEvmOption = frameObj.locator('text=EVM-compatible networks').first()
+          if (await frameEvmOption.count() > 0) {
+            console.log('[OKX] Found EVM option in frame')
+            await frameEvmOption.click()
+            found = true
+            break
+          }
+        }
+
+        if (!found) {
+          await sleep(500)
+        }
+      }
+
+      if (found) {
+        await sleep(1000)
+        // Click Confirm button - check main page and frames
+        let confirmClicked = false
+
+        // Try main page first
+        const confirmBtn = page.locator('button:has-text("Confirm")').first()
+        if (await confirmBtn.count() > 0) {
+          console.log('[OKX] Clicking Confirm button on main page')
+          await confirmBtn.click()
+          confirmClicked = true
+        }
+
+        // Try frames if not found on main page
+        if (!confirmClicked) {
+          for (const frameObj of page.frames()) {
+            const frameConfirmBtn = frameObj.locator('button:has-text("Confirm")').first()
+            if (await frameConfirmBtn.count() > 0) {
+              console.log('[OKX] Clicking Confirm button in frame')
+              await frameConfirmBtn.click()
+              confirmClicked = true
+              break
+            }
+          }
+        }
+
+        if (confirmClicked) {
+          await page.waitForTimeout(2000)
+        } else {
+          console.log('[OKX] Confirm button not found')
+        }
+      } else {
+        console.log('[OKX] Network selection screen not found, may have already passed')
+      }
     } catch (e) {
-      console.log('Network selection screen not found or already passed:', e)
+      console.log('[OKX] Network selection error (may be OK):', e)
+    }
+
+    // Handle "Secure your wallet" screen - click Next to proceed to password
+    try {
+      console.log('[OKX] Looking for Secure wallet screen...')
+      await page.waitForTimeout(2000)
+
+      // Look for Next button on main page or in frames
+      let nextClicked = false
+      const nextBtn = page.locator('button:has-text("Next")').first()
+      if (await nextBtn.count() > 0) {
+        console.log('[OKX] Clicking Next on Secure wallet screen')
+        await nextBtn.click()
+        nextClicked = true
+      }
+
+      if (!nextClicked) {
+        for (const frameObj of page.frames()) {
+          const frameNextBtn = frameObj.locator('button:has-text("Next")').first()
+          if (await frameNextBtn.count() > 0) {
+            console.log('[OKX] Clicking Next in frame')
+            await frameNextBtn.click()
+            nextClicked = true
+            break
+          }
+        }
+      }
+
+      if (nextClicked) {
+        await page.waitForTimeout(2000)
+      }
+    } catch (e) {
+      console.log('[OKX] Secure wallet screen not found (may be OK):', e)
     }
   } else {
     // Fill seed phrase (12 inputs)
@@ -237,7 +348,7 @@ async function onboardOkx(
 export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, slowMo = 0) => {
   return base.extend<OkxFixtures>({
     _contextPath: async ({ browserName }, use, testInfo) => {
-      testInfo.setTimeout(120_000)
+      testInfo.setTimeout(300_000) // 5 minutes for wallet setup and tests
       const contextPath = await createTempContextDir(browserName, testInfo.testId)
       await use(contextPath)
       const error = await removeTempContextDir(contextPath)

@@ -64,6 +64,12 @@ function TopBar() {
                     >
                       Pool
                     </Link>
+                    <Link
+                      to="/faucet"
+                      className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Faucet
+                    </Link>
                   </div>
                 </div>
               )}
@@ -169,6 +175,13 @@ function TopBar() {
                   className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   Swap
+                </Link>
+                <Link
+                  to="/faucet"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  Faucet
                 </Link>
               </div>
 
