@@ -13,7 +13,7 @@
       },
       {
         "internalType": "address",
-        "name": "config_",
+        "name": "_core",
         "type": "address"
       },
       {
@@ -148,31 +148,6 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newValuePerToken",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
-    "name": "LPValueUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
         "type": "address"
@@ -230,19 +205,6 @@
     ],
     "name": "Withdraw",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "PRICE_UPDATE_INTERVAL",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -358,29 +320,11 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "claimFor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "config",
+    "name": "core",
     "outputs": [
       {
-        "internalType": "contract IConfig",
+        "internalType": "contract ConfigCore",
         "name": "",
         "type": "address"
       }
@@ -415,29 +359,6 @@
       }
     ],
     "name": "deposit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
-      }
-    ],
-    "name": "depositFor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -507,96 +428,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPoolInfo",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "contract IERC20",
-            "name": "lpToken",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "allocPoint",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lastRewardTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "accRewardPerShare",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalStaked",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "cachedLPValuePerToken",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lastPriceUpdate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum IFarmingPool.PoolKind",
-            "name": "kind",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct IFarmingPool.PoolInfo",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getUserInfo",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rewardDebt",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "massUpdatePools",
     "outputs": [],
@@ -610,30 +441,6 @@
       {
         "internalType": "uint256",
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "needsUpdate",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "needs",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "timeSince",
         "type": "uint256"
       }
     ],
@@ -710,16 +517,6 @@
       {
         "internalType": "uint256",
         "name": "totalStaked",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "cachedLPValuePerToken",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastPriceUpdate",
         "type": "uint256"
       },
       {
@@ -871,19 +668,6 @@
         "type": "uint256"
       }
     ],
-    "name": "updateLPValue",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      }
-    ],
     "name": "updatePool",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -932,34 +716,6 @@
       }
     ],
     "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "withdrawFor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -8,23 +8,18 @@
       },
       {
         "internalType": "address",
-        "name": "_config",
+        "name": "_core",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_gov",
         "type": "address"
       },
       {
         "internalType": "address",
         "name": "_rateOracle",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_ffrOracle",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_initialAnnualRateBps",
-        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -124,19 +119,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "newOracle",
-        "type": "address"
-      }
-    ],
-    "name": "FFROracleUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "user",
         "type": "address"
       },
@@ -154,6 +136,25 @@
       }
     ],
     "name": "InterestClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "btdUpdated",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "btbUpdated",
+        "type": "bool"
+      }
+    ],
+    "name": "LazyRateUpdateAttempted",
     "type": "event"
   },
   {
@@ -186,25 +187,6 @@
       }
     ],
     "name": "RateOracleUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "stBTD",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "stBTB",
-        "type": "address"
-      }
-    ],
-    "name": "StTokenVaultsConfigured",
     "type": "event"
   },
   {
@@ -337,6 +319,32 @@
   },
   {
     "inputs": [],
+    "name": "btdLastPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "btdLastRateUpdate",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "btdPool",
     "outputs": [
       {
@@ -370,41 +378,10 @@
   },
   {
     "inputs": [],
-    "name": "config",
+    "name": "core",
     "outputs": [
       {
-        "internalType": "contract IConfig",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_stBTD",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_stBTB",
-        "type": "address"
-      }
-    ],
-    "name": "configureStTokenVaults",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "ffrOracle",
-    "outputs": [
-      {
-        "internalType": "contract IFederalFundsRateOracle",
+        "internalType": "contract ConfigCore",
         "name": "",
         "type": "address"
       }
@@ -420,6 +397,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gov",
+    "outputs": [
+      {
+        "internalType": "contract ConfigGov",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -462,19 +452,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_ffrOracle",
-        "type": "address"
-      }
-    ],
-    "name": "setFFROracle",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "newOracle",
         "type": "address"
       }
@@ -485,42 +462,11 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "stBTB",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "stBTD",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
       }
     ],
     "name": "stakeBTB",
@@ -534,42 +480,11 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
       }
     ],
     "name": "stakeBTD",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalBTBAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalBTDAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -605,16 +520,29 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "tryUpdateRates",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "btdUpdated",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "btbUpdated",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
       }
     ],
     "name": "unstakeBTB",
@@ -628,11 +556,6 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
       }
     ],
     "name": "unstakeBTD",
@@ -649,7 +572,34 @@
   },
   {
     "inputs": [],
+    "name": "updateBTBRateLazy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "updateBTDAnnualRate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updateBTDRateLazy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newGov",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeGov",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -20,16 +20,6 @@
         "internalType": "bytes32",
         "name": "_pythWbtcPriceId",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_redstoneWbtcDataFeedId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_redstoneWbtcDecimals",
-        "type": "uint8"
       }
     ],
     "stateMutability": "nonpayable",
@@ -125,56 +115,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bytes32",
-        "name": "oldId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "newId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "PythPriceIdUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "oldId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "oldDecimals",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "newId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "newDecimals",
-        "type": "uint8"
-      }
-    ],
-    "name": "RedstoneConfigUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "bool",
         "name": "enabled",
         "type": "bool"
@@ -201,6 +141,58 @@
     ],
     "name": "TWAPOracleUpdated",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "BRS_TWAP_SPOT_MAX_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BTB_TWAP_SPOT_MAX_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BTD_FLOOR_MULTIPLIER_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BTD_TWAP_SPOT_MAX_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -270,6 +262,19 @@
   {
     "inputs": [],
     "name": "PYTH_MAX_STALENESS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "STABLECOIN_MAX_DEVIATION_BPS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -447,7 +452,7 @@
   },
   {
     "inputs": [],
-    "name": "getWBTCPrice",
+    "name": "getUSDCPrice",
     "outputs": [
       {
         "internalType": "uint256",
@@ -460,7 +465,7 @@
   },
   {
     "inputs": [],
-    "name": "getWETHPrice",
+    "name": "getUSDTPrice",
     "outputs": [
       {
         "internalType": "uint256",
@@ -468,7 +473,20 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWBTCPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -531,32 +549,6 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "redstoneWbtcDataFeedId",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "redstoneWbtcDecimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",

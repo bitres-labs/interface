@@ -23,7 +23,7 @@ test.describe('Debug TVL', () => {
     // Click Farm tab
     const farmTab = page.locator('a[href="/farm"], button:has-text("Farm")').first()
     await farmTab.click()
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(10000) // Wait longer for data to load
 
     // Print debug logs
     console.log('\n========== DEBUG LOGS ==========\n')

@@ -61,12 +61,14 @@ export function usePoolInfo(poolId: number) {
     }
   }
 
-  const [lpToken, allocPoint, lastRewardTime, accRewardPerShare, totalStaked] = data as [
+  // poolInfo returns: lpToken, allocPoint, lastRewardTime, accRewardPerShare, totalStaked, kind
+  const [lpToken, allocPoint, lastRewardTime, accRewardPerShare, totalStaked, kind] = data as [
     `0x${string}`,
     bigint,
     bigint,
     bigint,
     bigint,
+    number,
   ]
 
   if (poolId === 0) {
@@ -75,6 +77,7 @@ export function usePoolInfo(poolId: number) {
       allocPoint: allocPoint.toString(),
       totalStaked: formatUnits(totalStaked, decimals),
       totalStakedRaw: totalStaked.toString(),
+      kind,
     })
   }
 
