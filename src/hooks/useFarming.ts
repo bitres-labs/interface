@@ -30,13 +30,22 @@ const DEFAULT_DECIMALS = 18
 export function usePoolInfo(poolId: number) {
   const decimals = POOL_DECIMALS[poolId] ?? DEFAULT_DECIMALS
 
-  const { data, isLoading, refetch } = useReadContract({
+  const { data, isLoading, error, refetch } = useReadContract({
     address: CONTRACTS.FarmingPool,
     abi: FarmingPoolABI,
     functionName: 'poolInfo',
     args: [BigInt(poolId)],
     query: REFETCH_CONFIG_BY_TYPE.pool,
   })
+
+  if (poolId === 0) {
+    console.log('[usePoolInfo 0] state:', {
+      hasData: !!data,
+      isLoading,
+      error: error?.message?.slice(0, 100),
+      farmingPool: CONTRACTS.FarmingPool,
+    })
+  }
 
   if (!data || isLoading) {
     return {
