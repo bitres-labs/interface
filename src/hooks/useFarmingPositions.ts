@@ -161,10 +161,6 @@ export function useFarmingPositions() {
       // Calculate TVL (spot prices from LP pools)
       const tvl = totalStaked * lpPrice
 
-      if (index === 0) {
-        console.log('[Farm Pool 0] TVL calc:', { totalStaked, lpPrice, tvl })
-      }
-
       return {
         ...meta,
         userInfo: {

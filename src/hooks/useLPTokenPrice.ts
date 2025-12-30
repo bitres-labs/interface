@@ -133,7 +133,6 @@ export function useLPTokenPrice(lpTokenAddress: `0x${string}` | undefined) {
 
   const lpPrice = useMemo(() => {
     if (!reserves || !totalSupply || !tokenData) {
-      console.log('[LP Price] Missing data:', { reserves: !!reserves, totalSupply: !!totalSupply, tokenData: !!tokenData, lpTokenAddress })
       return 0
     }
 
@@ -144,7 +143,6 @@ export function useLPTokenPrice(lpTokenAddress: `0x${string}` | undefined) {
     const token1Decimals = tokenData[3]?.result as number
 
     if (!token0Symbol || !token1Symbol || !token0Decimals || !token1Decimals) {
-      console.log('[LP Price] Missing token data:', { token0Symbol, token0Decimals, token1Symbol, token1Decimals })
       return 0
     }
 
@@ -179,14 +177,6 @@ export function useLPTokenPrice(lpTokenAddress: `0x${string}` | undefined) {
     // Price = (reserve0 * price0 + reserve1 * price1) / totalSupply
     const totalValue = reserve0Num * token0Price + reserve1Num * token1Price
     const lpTokenPrice = totalValue / totalSupplyNum
-
-    console.log('[LP Price] Calculated:', {
-      lpTokenAddress,
-      token0Symbol, token1Symbol,
-      reserve0Num, reserve1Num, totalSupplyNum,
-      token0Price, token1Price,
-      totalValue, lpTokenPrice
-    })
 
     return lpTokenPrice
   }, [reserves, totalSupply, tokenData, prices])

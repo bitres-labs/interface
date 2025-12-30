@@ -38,15 +38,6 @@ export function usePoolInfo(poolId: number) {
     query: REFETCH_CONFIG_BY_TYPE.pool,
   })
 
-  if (poolId === 0) {
-    console.log('[usePoolInfo 0] state:', {
-      hasData: !!data,
-      isLoading,
-      error: error?.message?.slice(0, 100),
-      farmingPool: CONTRACTS.FarmingPool,
-    })
-  }
-
   if (!data || isLoading) {
     return {
       lpToken: '0x0',
@@ -70,16 +61,6 @@ export function usePoolInfo(poolId: number) {
     bigint,
     number,
   ]
-
-  if (poolId === 0) {
-    console.log('[Pool Info 0]', {
-      lpToken,
-      allocPoint: allocPoint.toString(),
-      totalStaked: formatUnits(totalStaked, decimals),
-      totalStakedRaw: totalStaked.toString(),
-      kind,
-    })
-  }
 
   return {
     lpToken,
