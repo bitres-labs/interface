@@ -36,7 +36,7 @@ export function useTokenPrices() {
     return btdPrice || fallback
   }, [btdPrice, iusdPrice])
 
-  return {
+  const result = {
     BTC: btcPrice,
     WBTC: btcPrice,
     ETH: wethPrice,
@@ -47,6 +47,10 @@ export function useTokenPrices() {
     BTB: btbPrice || resolvedBTDPrice,
     BRS: brsPrice || 0,
   }
+
+  console.log('[Token Prices]', result)
+
+  return result
 }
 
 /**

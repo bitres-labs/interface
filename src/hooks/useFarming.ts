@@ -60,6 +60,15 @@ export function usePoolInfo(poolId: number) {
     bigint,
   ]
 
+  if (poolId === 0) {
+    console.log('[Pool Info 0]', {
+      lpToken,
+      allocPoint: allocPoint.toString(),
+      totalStaked: formatUnits(totalStaked, decimals),
+      totalStakedRaw: totalStaked.toString(),
+    })
+  }
+
   return {
     lpToken,
     allocPoint,
