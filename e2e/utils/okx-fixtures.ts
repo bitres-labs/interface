@@ -342,7 +342,96 @@ async function onboardOkx(
   await startButton.click()
   await page.waitForTimeout(2000)
 
+  // Try to add bitres.org to trusted sites to avoid phishing warning
+  try {
+    await addTrustedSite(page, extensionId, 'bitres.org')
+  } catch (e) {
+    console.log('[OKX] Could not add trusted site (will handle phishing warning in tests):', e)
+  }
+
   return page
+}
+
+// Add a domain to OKX trusted sites whitelist
+async function addTrustedSite(page: Page, extensionId: string, domain: string) {
+  console.log(`[OKX] Attempting to add ${domain} to trusted sites...`)
+
+  // Navigate to OKX settings
+  await page.goto(`chrome-extension://${extensionId}/notification.html#/settings`)
+  await page.waitForTimeout(2000)
+
+  // Look for Security settings
+  const securityLink = page.locator('text=Security').first()
+  if (await securityLink.count() > 0) {
+    await securityLink.click()
+    await page.waitForTimeout(1000)
+
+    // Look for Trusted Sites or similar option
+    const trustedSitesLink = page.locator('text=/Trusted|Whitelist|Safe sites/i').first()
+    if (await trustedSitesLink.count() > 0) {
+      await trustedSitesLink.click()
+      await page.waitForTimeout(1000)
+
+      // Look for Add button
+      const addBtn = page.locator('button:has-text("Add"), text=Add site').first()
+      if (await addBtn.count() > 0) {
+        await addBtn.click()
+        await page.waitForTimeout(500)
+
+        // Fill domain input
+        const domainInput = page.locator('input[type="text"], input[placeholder*="domain"], input[placeholder*="site"]').first()
+        if (await domainInput.count() > 0) {
+          await domainInput.fill(domain)
+          await page.waitForTimeout(500)
+
+          // Click confirm/save
+          const confirmBtn = page.locator('button:has-text("Confirm"), button:has-text("Save"), button:has-text("Add")').first()
+          if (await confirmBtn.count() > 0) {
+            await confirmBtn.click()
+            await page.waitForTimeout(1000)
+            console.log(`[OKX] Successfully added ${domain} to trusted sites`)
+            return
+          }
+        }
+      }
+    }
+  }
+
+  // If we couldn't find the settings path, try alternative approaches
+  // Try going directly to phishing settings URL if it exists
+  const possibleUrls = [
+    `chrome-extension://${extensionId}/notification.html#/settings/security`,
+    `chrome-extension://${extensionId}/notification.html#/settings/security/trusted-sites`,
+    `chrome-extension://${extensionId}/notification.html#/phishing-whitelist`,
+  ]
+
+  for (const url of possibleUrls) {
+    try {
+      await page.goto(url)
+      await page.waitForTimeout(1500)
+
+      // Check if we're on a page with whitelist functionality
+      const pageContent = await page.content()
+      if (pageContent.includes('trusted') || pageContent.includes('whitelist') || pageContent.includes('safe')) {
+        console.log(`[OKX] Found settings page at ${url}`)
+        // Try to add the domain here
+        const input = page.locator('input').first()
+        if (await input.count() > 0) {
+          await input.fill(domain)
+          const btn = page.locator('button').first()
+          if (await btn.count() > 0) {
+            await btn.click()
+            console.log(`[OKX] Added ${domain} via ${url}`)
+            return
+          }
+        }
+      }
+    } catch {
+      // Continue to next URL
+    }
+  }
+
+  console.log(`[OKX] Could not find trusted sites settings - phishing warning will need to be handled in tests`)
 }
 
 export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, slowMo = 0) => {

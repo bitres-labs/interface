@@ -22,6 +22,14 @@
  *
  * Prerequisites:
  *   - OKX_PRIVATE_KEY with deployer wallet (has WBTC)
+ *
+ * IMPORTANT - OKX Phishing Warning:
+ *   OKX Wallet may show a phishing warning for bitres.org.
+ *   The test will automatically click "Continue anyway" to proceed.
+ *   To avoid this warning entirely, add bitres.org to OKX trusted sites:
+ *   1. Open OKX Wallet extension
+ *   2. Go to Settings > Security > Trusted Sites
+ *   3. Add bitres.org to the whitelist
  */
 
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
@@ -38,19 +46,19 @@ const BASE_URL = 'https://bitres.org'
 // Contract addresses for formula verification
 const SEPOLIA_CONTRACTS = {
   // Core tokens
-  WBTC: '0x497785c4d311508d820F3E5757f0E6703D8a73FB' as `0x${string}`,
-  USDC: '0xD4835080ce80ee63239792db5610f143496d5493' as `0x${string}`,
-  BTD: '0xBb89728569A6B33cF7B4AAc2197D09df03E8BaD2' as `0x${string}`,
-  BTB: '0xd771705A92DF2e552581400b404Dc2751Ef743A5' as `0x${string}`,
-  BRS: '0x6E9F135A7F2004fD2AaEDB8fcA1788F60528d7b7' as `0x${string}`,
-  stBTD: '0xd8F3a169DFD7b4726b32D8d93cc334Bb21f6E4C7' as `0x${string}`,
-  stBTB: '0x200dF7C18C65101aD86242A0323f104c3bC968Ab' as `0x${string}`,
+  WBTC: '0x7A945c8B5ca13a82bf554A6B7b3894B7C1c3aC3a' as `0x${string}`,
+  USDC: '0x9F93d1D7d45C201c57A8c5DD88D97952C0018D29' as `0x${string}`,
+  BTD: '0x256B5353b19aC1C9bcd8D9F2DDb1D1261536F626' as `0x${string}`,
+  BTB: '0xeb047790217E1ad0118aDD43D0Fb08Ef28290Ff2' as `0x${string}`,
+  BRS: '0x032B73f7bD14732ab48F90bc392f004B8CD5E85F' as `0x${string}`,
+  stBTD: '0x2AA6480e5394a99E9D030870E89b21D8c8C192e4' as `0x${string}`,
+  stBTB: '0xF9289c8B2E70BcbD0FFE5db18B027c55e60923E7' as `0x${string}`,
   // Core contracts
-  Minter: '0xB4673e73fAd3Ac144cE75d65Dd5eF6c2792f1E3f' as `0x${string}`,
-  PriceOracle: '0x4e6C8893B7bDE41B5ED5cB46339BE956E0514223' as `0x${string}`,
-  FarmingPool: '0x4Eb5620A89745fe9658A9549F17Ce0B4f7cc30d5' as `0x${string}`,
-  // Uniswap V2 pairs
-  BTD_USDC: '0xA988C2DA88b7886F84aC5b81AE73fAAf316163eB' as `0x${string}`,
+  Minter: '0xBdaebDb50cF72fF55bd875F20dA06C5b58A5f110' as `0x${string}`,
+  PriceOracle: '0xEd6331Ea4aF01d6ad78B4b8f58d6B560307cc778' as `0x${string}`,
+  FarmingPool: '0xC8B17f8BAFD7CE7147d1127Cc9E6D2998de51c84' as `0x${string}`,
+  // Uniswap V2 pairs (from ConfigCore)
+  BTD_USDC: '0x8F8b8CFB0DB63d936ab6904F5f53678A9fc204f8' as `0x${string}`,
 }
 
 // ABIs for on-chain verification
@@ -90,6 +98,108 @@ const FARMING_POOL_ABI = [
 ] as const
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+/**
+ * Handle OKX wallet's phishing site warning for bitres.org
+ *
+ * IMPORTANT: To avoid this warning, add bitres.org to OKX wallet's trusted sites:
+ * 1. Open OKX Wallet extension
+ * 2. Go to Settings > Security > Trusted Sites
+ * 3. Add bitres.org to the whitelist
+ *
+ * If the warning appears, this function will:
+ * 1. Detect the warning page
+ * 2. Click "Continue anyway"
+ * 3. Wait for navigation and find the actual bitres.org page
+ *
+ * Note: OKX may close the original tab and open a new one after clicking "Continue anyway"
+ */
+async function handlePhishingWarning(page: any, context: any, targetUrl: string): Promise<any> {
+  try {
+    // Wait a moment for any warning dialog to appear
+    await page.waitForTimeout(2000)
+
+    // Check for OKX phishing warning dialog
+    const continueBtn = page.locator('button:has-text("Continue anyway")')
+    const count = await continueBtn.count().catch(() => 0)
+
+    if (count > 0) {
+      console.log('[Phishing Warning] ⚠️ OKX phishing warning detected!')
+      console.log('[Phishing Warning] To avoid this warning, add bitres.org to OKX trusted sites')
+      console.log('[Phishing Warning] Attempting to click "Continue anyway"...')
+
+      // Set up listener for new page before clicking
+      const pagePromise = context.waitForEvent('page', { timeout: 20000 }).catch(() => null)
+
+      await continueBtn.first().click()
+      await page.waitForTimeout(3000)
+
+      // Check if new page was opened
+      const newPage = await pagePromise
+      if (newPage) {
+        console.log('[Phishing Warning] New tab opened')
+        await newPage.waitForLoadState('domcontentloaded').catch(() => {})
+        const url = newPage.url()
+        console.log('[Phishing Warning] New tab URL:', url)
+        if (url.includes('bitres.org')) {
+          return newPage
+        }
+      }
+
+      // Search all pages in context for bitres.org
+      await page.waitForTimeout(3000)
+      const pages = context.pages()
+      console.log('[Phishing Warning] Searching', pages.length, 'pages for bitres.org...')
+
+      for (const p of pages) {
+        try {
+          if (p.isClosed()) continue
+          const url = p.url()
+          console.log('[Phishing Warning] Page:', url.slice(0, 60))
+          if (url.includes('bitres.org') && !url.includes('phishing')) {
+            console.log('[Phishing Warning] ✓ Found bitres.org page')
+            await p.bringToFront()
+            return p
+          }
+        } catch { /* Page may be closed */ }
+      }
+
+      // If still not found, create new page and navigate
+      console.log('[Phishing Warning] Creating new page and navigating to', targetUrl)
+      const freshPage = await context.newPage()
+      await freshPage.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 })
+
+      // Check if warning appears again on new page
+      const warningAgain = await freshPage.locator('button:has-text("Continue anyway")').count().catch(() => 0)
+      if (warningAgain > 0) {
+        console.log('[Phishing Warning] Warning appeared again, clicking...')
+        await freshPage.locator('button:has-text("Continue anyway")').first().click()
+        await freshPage.waitForTimeout(5000)
+      }
+
+      return freshPage
+    }
+
+    console.log('[Phishing Warning] No warning detected, proceeding normally')
+  } catch (e) {
+    console.log('[Phishing Warning] Handler error:', e)
+  }
+  return page
+}
+
+// Helper to navigate, handle phishing warning, and connect wallet
+// Returns the active page after all steps complete
+async function navigateAndConnect(page: any, metamask: any, url: string): Promise<any> {
+  let activePage = page
+  await activePage.goto(url)
+  await activePage.waitForLoadState('domcontentloaded')
+  const context = activePage.context()
+  activePage = await handlePhishingWarning(activePage, context, url)
+  await connectWallet(activePage, metamask)
+  await activePage.waitForLoadState('networkidle').catch(() => {})
+  await activePage.waitForTimeout(WAIT.MEDIUM)
+  return activePage
+}
 
 // Helper to create public client for formula verification
 function createVerificationClient() {
@@ -259,43 +369,42 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
       }
     }
 
+    let activePage = page
     try {
-      await page.goto(BASE_URL)
-      await page.waitForLoadState('domcontentloaded')
-      await connectWallet(page, metamask)
-      if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
+      activePage = await navigateAndConnect(page, metamask, BASE_URL)
+      if (activePage.isClosed()) { console.log("[Page closed, completing test]"); return }
 
       // Ensure we're on Mint tab
-      const mintTab = page.locator('button:has-text("Mint BTD")').first()
+      const mintTab = activePage.locator('button:has-text("Mint BTD")').first()
       await mintTab.click()
-      await page.waitForTimeout(WAIT.MEDIUM)
-      if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
+      await activePage.waitForTimeout(WAIT.MEDIUM)
+      if (activePage.isClosed()) { console.log("[Page closed, completing test]"); return }
 
       // Enter WBTC amount
-      const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
+      const input = activePage.locator('input[type="number"], input[inputmode="decimal"]').first()
       await input.fill(AMOUNTS.WBTC_MINT)
-      await page.waitForTimeout(WAIT.MEDIUM)
+      await activePage.waitForTimeout(WAIT.MEDIUM)
 
-      await screenshot(page, '01-mint-input')
+      await screenshot(activePage, '01-mint-input')
 
       // Handle approval if needed
-      const approveBtn = page.locator('button:has-text("Approve WBTC")')
+      const approveBtn = activePage.locator('button:has-text("Approve WBTC")')
       if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Mint] Approving WBTC...')
         await approveBtn.click()
-        await waitForTx(page, metamask, 'Approve WBTC')
-        if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
+        await waitForTx(activePage, metamask, 'Approve WBTC')
+        if (activePage.isClosed()) { console.log("[Page closed, completing test]"); return }
       }
 
       // Click Mint button
       let mintSuccess = false
-      const mintBtn = page.locator('button.btn-primary:has-text("Mint BTD")')
+      const mintBtn = activePage.locator('button.btn-primary:has-text("Mint BTD")')
       if (await mintBtn.count() > 0) {
         const isDisabled = await mintBtn.isDisabled()
         if (!isDisabled) {
           console.log('[Mint] Minting BTD...')
           await mintBtn.click()
-          mintSuccess = await waitForTx(page, metamask, 'Mint BTD')
+          mintSuccess = await waitForTx(activePage, metamask, 'Mint BTD')
         } else {
           console.log('[Mint] Button disabled, checking reason...')
           const btnText = await mintBtn.textContent()
@@ -341,7 +450,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
         }
       }
 
-      await screenshot(page, '01-mint-result')
+      await screenshot(activePage, '01-mint-result')
       console.log('[Mint] Complete')
     } catch (e) {
       console.log('[Mint] Error:', e)
@@ -395,42 +504,44 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     }
 
     try {
+      // Navigate and handle phishing warning
       await page.goto(`${BASE_URL}/swap`)
       await page.waitForLoadState('domcontentloaded')
-      await connectWallet(page, metamask)
-      if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
+      const context = page.context()
+      const activePage = await handlePhishingWarning(page, context, `${BASE_URL}/swap`)
+      await connectWallet(activePage, metamask)
+      if (activePage.isClosed()) { console.log("[Page closed, completing test]"); return }
 
-      await page.waitForTimeout(WAIT.MEDIUM)
-      if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
+      await activePage.waitForTimeout(WAIT.MEDIUM)
 
       // Click Swap tab
-      const swapTab = page.locator('button:has-text("Swap")').first()
+      const swapTab = activePage.locator('button:has-text("Swap")').first()
       await swapTab.click()
-      await page.waitForTimeout(WAIT.SHORT)
+      await activePage.waitForTimeout(WAIT.SHORT)
 
       // Enter amount
-      const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
+      const input = activePage.locator('input[type="number"], input[inputmode="decimal"]').first()
       await input.fill(AMOUNTS.BTD_SWAP)
-      await page.waitForTimeout(WAIT.MEDIUM)
+      await activePage.waitForTimeout(WAIT.MEDIUM)
 
-      await screenshot(page, '02-swap-input')
+      await screenshot(activePage, '02-swap-input')
 
       // Approve if needed
-      const approveBtn = page.locator('button:has-text("Approve")')
+      const approveBtn = activePage.locator('button:has-text("Approve")')
       if (await approveBtn.count() > 0 && !(await approveBtn.first().isDisabled())) {
         console.log('[Swap] Approving token...')
         await approveBtn.first().click()
-        await waitForTx(page, metamask, 'Approve')
-        if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
+        await waitForTx(activePage, metamask, 'Approve')
+        if (activePage.isClosed()) { console.log("[Page closed, completing test]"); return }
       }
 
       // Click Swap button
       let swapSuccess = false
-      const swapBtn = page.locator('button.btn-primary:has-text("Swap")')
+      const swapBtn = activePage.locator('button.btn-primary:has-text("Swap")')
       if (await swapBtn.count() > 0 && !(await swapBtn.first().isDisabled())) {
         console.log('[Swap] Swapping...')
         await swapBtn.first().click()
-        swapSuccess = await waitForTx(page, metamask, 'Swap')
+        swapSuccess = await waitForTx(activePage, metamask, 'Swap')
       }
 
       // ===== FORMULA VERIFICATION =====
@@ -471,7 +582,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
         }
       }
 
-      await screenshot(page, '02-swap-result')
+      await screenshot(activePage, '02-swap-result')
       console.log('[Swap] Complete')
     } catch (e) {
       console.log('[Swap] Error:', e)
@@ -523,6 +634,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(`${BASE_URL}/swap`)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -643,6 +755,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(`${BASE_URL}/farm`)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -763,6 +876,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(`${BASE_URL}/stake`)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -893,6 +1007,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(`${BASE_URL}/stake`)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -1032,6 +1147,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(`${BASE_URL}/farm`)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -1217,6 +1333,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(`${BASE_URL}/swap`)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -1374,6 +1491,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(BASE_URL)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 
@@ -1531,6 +1649,7 @@ test.describe.serial('Sepolia Integrated E2E Tests', () => {
     try {
       await page.goto(BASE_URL)
       await page.waitForLoadState('domcontentloaded')
+      await handlePhishingWarning(page)
       await connectWallet(page, metamask)
       if (page.isClosed()) { console.log("[Page closed, completing test]"); return }
 

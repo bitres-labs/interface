@@ -125,8 +125,9 @@ function FaucetPage() {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Check if faucet is configured
-  const isFaucetConfigured = !!CONTRACTS.Faucet
+  // Check if faucet is configured (not zero address)
+  const isFaucetConfigured = !!CONTRACTS.Faucet &&
+    CONTRACTS.Faucet !== '0x0000000000000000000000000000000000000000'
 
   // Faucet balances display
   const faucetWBTC = faucetBalances ? Number(faucetBalances[0]) / 1e8 : 0

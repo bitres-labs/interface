@@ -30,6 +30,13 @@ function TopBar() {
               Home
             </Link>
 
+            <Link
+              to="/faucet"
+              className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors"
+            >
+              Faucet
+            </Link>
+
             {/* Trade Dropdown */}
             <div
               className="relative"
@@ -63,12 +70,6 @@ function TopBar() {
                       className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       Pool
-                    </Link>
-                    <Link
-                      to="/faucet"
-                      className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      Faucet
                     </Link>
                   </div>
                 </div>
@@ -156,6 +157,13 @@ function TopBar() {
               >
                 Home
               </Link>
+              <Link
+                to="/faucet"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors"
+              >
+                Faucet
+              </Link>
 
               {/* Trade Group */}
               <div className="px-2">
@@ -175,13 +183,6 @@ function TopBar() {
                   className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   Swap
-                </Link>
-                <Link
-                  to="/faucet"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                >
-                  Faucet
                 </Link>
               </div>
 
