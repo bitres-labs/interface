@@ -296,10 +296,10 @@ export function useChainlinkBTCPrice() {
 // CONFIG HOOKS
 // ============================================================================
 
-// Read BTB minimum price from Config
+// Read BTB minimum price from ConfigGov
 export function useBTBMinPrice() {
   const { data, isLoading, error } = useReadContract({
-    address: CONTRACTS.Config,
+    address: CONTRACTS.ConfigGov,
     abi: ConfigABI,
     functionName: 'minBTBPrice',
     query: REFETCH_CONFIG_BY_TYPE.staticData, // Static data, rarely changes

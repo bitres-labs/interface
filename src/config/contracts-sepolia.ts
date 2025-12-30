@@ -36,7 +36,7 @@ export const CONTRACTS_SEPOLIA = {
   ChainlinkUSDTUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Not available on Sepolia (mainnet: 0x3E7d1eAB13ad0104d2750B8863b489D65364e32D)
   ChainlinkWBTCBTC: oracles.ChainlinkWBTCBTC as `0x${string}`,
   MockPyth: oracles.MockPyth as `0x${string}`,
-  MockRedstone: oracles.MockRedstone as `0x${string}`,
+  MockRedstone: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Not used on Sepolia
   IdealUSDManager: contracts.IdealUSDManager as `0x${string}`,
   PriceOracle: contracts.PriceOracle as `0x${string}`,
   TWAPOracle: contracts.TWAPOracle as `0x${string}`,
@@ -55,7 +55,7 @@ export const CONTRACTS_SEPOLIA = {
   Minter: contracts.Minter as `0x${string}`,
   InterestPool: contracts.InterestPool as `0x${string}`,
   FarmingPool: contracts.FarmingPool as `0x${string}`,
-  StakingRouter: contracts.StakingRouter as `0x${string}`,
+  StakingRouter: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Removed from system
 
   // Official Uniswap V2 on Sepolia
   UniswapV2Factory: (uniswap?.UniswapV2Factory || UNISWAP_V2_SEPOLIA.FACTORY) as `0x${string}`,
