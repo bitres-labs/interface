@@ -61,3 +61,6 @@ CLAUDE.md
 .vercel
 .cache-synpress/
 .cache-okx/
+
+# CI temp files
+.tmp-ci*/
