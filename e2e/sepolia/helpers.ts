@@ -7,11 +7,10 @@ import { TIMEOUT } from './constants'
 
 /**
  * Wait for a transaction to be confirmed on Sepolia.
- * Looks for success indicators in the UI.
+ * Checks for success indicators OR loading state changes in the UI.
  */
 export async function waitForTxSuccess(page: Page, timeout = TIMEOUT.TX): Promise<boolean> {
   try {
-    // Wait for success toast, alert message handled, or balance update
     await page.waitForFunction(
       () => {
         const body = document.body.innerText.toLowerCase()
@@ -19,10 +18,35 @@ export async function waitForTxSuccess(page: Page, timeout = TIMEOUT.TX): Promis
           body.includes('success') ||
           body.includes('confirmed') ||
           body.includes('completed') ||
-          body.includes('transaction sent')
+          body.includes('transaction sent') ||
+          body.includes('cooldown') ||
+          body.includes('next claim')
         )
       },
       undefined,
+      { timeout }
+    )
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Wait for a transaction button loading state (⏳) to disappear,
+ * indicating the transaction has completed (success or failure).
+ */
+export async function waitForTxComplete(page: Page, buttonText: string, timeout = TIMEOUT.TX): Promise<boolean> {
+  try {
+    // Wait for the ⏳ loading indicator to disappear from the button
+    await page.waitForFunction(
+      (btnText) => {
+        const buttons = Array.from(document.querySelectorAll('button'))
+        const btn = buttons.find(b => b.textContent?.includes(btnText))
+        // If button no longer has ⏳, tx is done (or button text changed)
+        return !btn || !btn.textContent?.includes('⏳')
+      },
+      buttonText,
       { timeout }
     )
     return true

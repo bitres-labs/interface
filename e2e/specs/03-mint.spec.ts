@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, fillInput, clickButton, waitForTxSuccess, clickTab } from '../sepolia/helpers'
+import { navigateTo, waitForTxComplete } from '../sepolia/helpers'
 import { TIMEOUT } from '../sepolia/constants'
 
 test.describe('Mint BTD', () => {
@@ -54,9 +54,10 @@ test.describe('Mint BTD', () => {
 
     // Check WBTC balance
     const body = await page.textContent('body')
-    const hasZeroBalance = body?.includes('Balance: 0') || body?.includes('Balance:0')
+    const hasBalance = body?.match(/Balance:\s*([\d,.]+)/)
+    const firstBalance = hasBalance?.[1]
 
-    if (hasZeroBalance) {
+    if (!firstBalance || parseFloat(firstBalance.replace(/,/g, '')) === 0) {
       console.log('[Mint] No WBTC balance available - skipping mint transaction test')
       test.skip()
       return
@@ -69,13 +70,20 @@ test.describe('Mint BTD', () => {
       await page.waitForTimeout(TIMEOUT.MEDIUM)
     }
 
-    // Look for Mint submit button (not tab button)
-    // The submit button typically contains "Mint BTD" and may have extra icons
+    // Look for Mint submit button (the last "Mint BTD" button is the submit, not the tab)
     const submitBtn = page.locator('button:has-text("Mint BTD")').last()
 
     if ((await submitBtn.count()) > 0 && !(await submitBtn.isDisabled())) {
       await submitBtn.click()
-      await waitForTxSuccess(page, TIMEOUT.TX)
+      console.log('[Mint] Transaction submitted, waiting for confirmation...')
+
+      // Wait for tx to complete (⏳ disappears from button)
+      const completed = await waitForTxComplete(page, 'Mint BTD', TIMEOUT.TX)
+      if (completed) {
+        console.log('[Mint] Transaction completed')
+      } else {
+        console.log('[Mint] Transaction still pending after timeout - Sepolia may be slow')
+      }
     } else {
       console.log('[Mint] Mint button is disabled - may need approval or prices not loaded')
     }

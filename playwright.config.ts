@@ -53,7 +53,7 @@ export default defineConfig({
     {
       name: 'sepolia',
       testDir: './e2e/specs',
-      timeout: 120 * 1000,
+      timeout: 180 * 1000,
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'https://bitres.org',

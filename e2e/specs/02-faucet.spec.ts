@@ -5,7 +5,7 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, clickButton, waitForTxSuccess } from '../sepolia/helpers'
+import { navigateTo } from '../sepolia/helpers'
 import { TIMEOUT, TEST_ADDRESS } from '../sepolia/constants'
 
 test.describe('Faucet', () => {
@@ -33,6 +33,7 @@ test.describe('Faucet', () => {
 
   test('can claim test tokens if faucet is available', async ({ sepoliaPage: page }) => {
     await navigateTo(page, '/faucet')
+    await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     const body = await page.textContent('body')
 
@@ -43,6 +44,14 @@ test.describe('Faucet', () => {
       return
     }
 
+    // Check if already in cooldown (already claimed recently)
+    if (body?.toLowerCase().includes('cooldown') || body?.includes('Next claim available')) {
+      console.log('[Faucet] Already in cooldown - tokens were claimed previously')
+      // Verify we have balances (proves faucet works)
+      expect(body).toContain('Your Balance')
+      return
+    }
+
     // Look for enabled claim button
     const claimBtn = page.locator(
       'button:has-text("Claim"), button:has-text("Get Tokens")'
@@ -50,18 +59,28 @@ test.describe('Faucet', () => {
 
     if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
       await claimBtn.click()
-      await page.waitForTimeout(TIMEOUT.SHORT)
 
-      const success = await waitForTxSuccess(page, TIMEOUT.TX)
-      if (!success) {
-        const pageText = await page.textContent('body')
-        // Faucet may have cooldown
-        if (pageText?.toLowerCase().includes('cooldown') || pageText?.toLowerCase().includes('wait')) {
-          console.log('[Faucet] Cooldown active - expected behavior')
-        }
+      // Wait for either tx success text or cooldown (which means tx succeeded)
+      try {
+        await page.waitForFunction(
+          () => {
+            const text = document.body.innerText.toLowerCase()
+            return (
+              text.includes('success') ||
+              text.includes('confirmed') ||
+              text.includes('cooldown') ||
+              text.includes('next claim available')
+            )
+          },
+          undefined,
+          { timeout: TIMEOUT.TX }
+        )
+        console.log('[Faucet] Claim transaction completed')
+      } catch {
+        console.log('[Faucet] Claim may still be processing')
       }
     } else {
-      console.log('[Faucet] No enabled claim button found')
+      console.log('[Faucet] No enabled claim button found (may be in cooldown)')
     }
   })
 })

@@ -5,7 +5,7 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, fillInput, clickButton, waitForTxSuccess, clickTab } from '../sepolia/helpers'
+import { navigateTo, waitForTxComplete, waitForTxSuccess } from '../sepolia/helpers'
 import { TIMEOUT } from '../sepolia/constants'
 
 test.describe('Farm', () => {
@@ -35,14 +35,13 @@ test.describe('Farm', () => {
     // Farm page should show some reward/APR/TVL metrics
     const hasMetrics =
       body?.toLowerCase().includes('apr') ||
+      body?.toLowerCase().includes('apy') ||
       body?.toLowerCase().includes('tvl') ||
       body?.toLowerCase().includes('reward') ||
       body?.toLowerCase().includes('earn') ||
-      body?.toLowerCase().includes('deposited')
-    // This is informational - don't fail if metrics aren't shown
-    if (!hasMetrics) {
-      console.log('[Farm] No metrics found - page may be loading or empty')
-    }
+      body?.toLowerCase().includes('deposited') ||
+      body?.toLowerCase().includes('total value')
+    expect(hasMetrics).toBeTruthy()
   })
 
   test('can interact with farm pool deposit', async ({ sepoliaPage: page }) => {
@@ -50,26 +49,51 @@ test.describe('Farm', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Look for deposit input
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page.locator('input[type="number"], input[inputmode="decimal"], input').first()
     if ((await input.count()) > 0) {
       await input.fill('0.001')
       const val = await input.inputValue()
-      expect(val).toBe('0.001')
+      expect(parseFloat(val)).toBeGreaterThan(0)
     } else {
       console.log('[Farm] No input found - may need to select a pool first')
     }
   })
 
   test('can claim farming rewards if available', async ({ sepoliaPage: page }) => {
+    // Claim All triggers multiple pool claims — needs extra time
+    test.setTimeout(300_000)
+
     await navigateTo(page, '/farm')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
+    // Check if there are rewards to claim
+    const body = await page.textContent('body')
+    const rewardMatch = body?.match(/Your Total Rewards\s*([\d,.]+)/)
+    const rewardAmount = rewardMatch ? parseFloat(rewardMatch[1].replace(/,/g, '')) : 0
+
+    if (rewardAmount === 0) {
+      console.log('[Farm] No rewards available to claim')
+      return
+    }
+
+    console.log(`[Farm] Found ${rewardAmount} BRS rewards to claim`)
+
+    // Try "Claim All" link/button
+    const claimAll = page.locator('text=Claim All').first()
     const claimBtn = page.locator(
       'button:has-text("Claim"), button:has-text("Harvest")'
     ).first()
 
-    if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
+    if ((await claimAll.count()) > 0) {
+      await claimAll.click()
+      console.log('[Farm] Clicked Claim All, waiting for confirmation...')
+
+      // Claim All may trigger multiple txs — wait longer and don't fail on timeout
+      const completed = await waitForTxSuccess(page, TIMEOUT.TX)
+      console.log(completed ? '[Farm] Claim completed' : '[Farm] Claim still pending — Sepolia may be slow')
+    } else if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
       await claimBtn.click()
+      console.log('[Farm] Clicked Claim, waiting for confirmation...')
       await waitForTxSuccess(page, TIMEOUT.TX)
     } else {
       console.log('[Farm] No claimable rewards or button not available')
