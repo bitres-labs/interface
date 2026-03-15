@@ -52,8 +52,7 @@ node_modules/
 public/deployment-local-state.json
 # Note: contracts.json is committed for Sepolia testnet support
 
-# E2E tests (local development only)
-playwright.config.ts
+# Vitest config (local only)
 vitest.config.ts
 
 # Project rules (local only)

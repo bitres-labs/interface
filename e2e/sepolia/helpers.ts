@@ -1,0 +1,144 @@
+/**
+ * Test Helper Functions for Sepolia E2E Tests
+ */
+
+import { type Page, expect } from '@playwright/test'
+import { TIMEOUT } from './constants'
+
+/**
+ * Wait for a transaction to be confirmed on Sepolia.
+ * Looks for success indicators in the UI.
+ */
+export async function waitForTxSuccess(page: Page, timeout = TIMEOUT.TX): Promise<boolean> {
+  try {
+    // Wait for success toast, alert message handled, or balance update
+    await page.waitForFunction(
+      () => {
+        const body = document.body.innerText.toLowerCase()
+        return (
+          body.includes('success') ||
+          body.includes('confirmed') ||
+          body.includes('completed') ||
+          body.includes('transaction sent')
+        )
+      },
+      undefined,
+      { timeout }
+    )
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Fill an amount input field.
+ */
+export async function fillInput(page: Page, amount: string, index = 0): Promise<void> {
+  const input = page.locator('input[type="number"], input[inputmode="decimal"]').nth(index)
+  await input.waitFor({ state: 'visible', timeout: TIMEOUT.READ })
+  await input.clear()
+  await input.fill(amount)
+  await page.waitForTimeout(TIMEOUT.SHORT)
+}
+
+/**
+ * Click a button by its text content.
+ */
+export async function clickButton(
+  page: Page,
+  text: string,
+  options?: { timeout?: number; force?: boolean }
+): Promise<void> {
+  const button = page.locator(`button:has-text("${text}")`).first()
+  await button.waitFor({ state: 'visible', timeout: options?.timeout || TIMEOUT.READ })
+  // Wait until button is enabled
+  await page.waitForFunction(
+    (btnText) => {
+      const btns = Array.from(document.querySelectorAll('button'))
+      const btn = btns.find(b => b.textContent?.includes(btnText))
+      return btn && !btn.disabled
+    },
+    text,
+    { timeout: options?.timeout || TIMEOUT.READ }
+  )
+  await button.click({ force: options?.force })
+  await page.waitForTimeout(500)
+}
+
+/**
+ * Navigate to a specific page path using SPA client-side routing.
+ * Uses window.history to avoid full page reload (which loses wagmi state).
+ */
+export async function navigateTo(page: Page, path: string): Promise<void> {
+  // Use React Router's navigation by dispatching a popstate event
+  await page.evaluate((targetPath) => {
+    window.history.pushState({}, '', targetPath)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }, path)
+  await page.waitForTimeout(TIMEOUT.SHORT)
+  // Wait for content to settle
+  await page.waitForLoadState('networkidle').catch(() => {})
+}
+
+/**
+ * Check if a specific text is visible on the page.
+ */
+export async function hasText(page: Page, text: string): Promise<boolean> {
+  return (await page.locator(`text=${text}`).count()) > 0
+}
+
+/**
+ * Wait for balance to be displayed and return its text.
+ */
+export async function getBalanceText(page: Page, tokenSymbol: string): Promise<string> {
+  const balanceEl = page.locator(`text=/${tokenSymbol}/i`).first()
+  if ((await balanceEl.count()) > 0) {
+    return await balanceEl.innerText()
+  }
+  return ''
+}
+
+/**
+ * Click a tab (e.g., Mint/Redeem toggle, Deposit/Withdraw).
+ */
+export async function clickTab(page: Page, tabText: string): Promise<void> {
+  const tab = page.locator(`button:has-text("${tabText}")`).first()
+  if ((await tab.count()) > 0) {
+    await tab.click()
+    await page.waitForTimeout(TIMEOUT.SHORT)
+  }
+}
+
+/**
+ * Capture dialog messages for assertion.
+ * Returns a function to get collected messages.
+ */
+export function captureDialogs(page: Page): () => string[] {
+  const messages: string[] = []
+  page.on('dialog', async (dialog) => {
+    messages.push(dialog.message())
+    await dialog.accept()
+  })
+  return () => messages
+}
+
+/**
+ * Wait for an element containing text to appear.
+ */
+export async function waitForText(
+  page: Page,
+  text: string | RegExp,
+  timeout = TIMEOUT.READ
+): Promise<boolean> {
+  try {
+    if (typeof text === 'string') {
+      await page.locator(`text=${text}`).first().waitFor({ state: 'visible', timeout })
+    } else {
+      await page.locator(`text=/${text.source}/${text.flags}`).first().waitFor({ state: 'visible', timeout })
+    }
+    return true
+  } catch {
+    return false
+  }
+}

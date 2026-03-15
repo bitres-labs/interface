@@ -10,6 +10,21 @@ import { config } from './config/wagmi'
 import './index.css'
 import '@rainbow-me/rainbowkit/styles.css'
 
+// Expose wagmi APIs for E2E testing (Sepolia testnet — no security concern)
+Promise.all([
+  import('@wagmi/core'),
+  import('wagmi'),
+]).then(([core, wagmi]) => {
+  ;(window as any).__e2e = {
+    config,
+    connect: core.connect,
+    disconnect: core.disconnect,
+    reconnect: core.reconnect,
+    getAccount: core.getAccount,
+    injected: wagmi.injected,
+  }
+})
+
 const queryClient = new QueryClient()
 
 // Custom orange theme for RainbowKit
