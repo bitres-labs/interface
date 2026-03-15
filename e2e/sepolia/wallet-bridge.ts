@@ -108,4 +108,26 @@ export async function setupBridge(page: Page): Promise<void> {
     })
     return signature
   })
+
+  // Bridge: read ERC20 token balance on-chain
+  await page.exposeFunction(
+    '__e2e_readERC20Balance',
+    async (tokenAddress: string, ownerAddress: string) => {
+      const balance = await publicClient.readContract({
+        address: tokenAddress as `0x${string}`,
+        abi: [
+          {
+            name: 'balanceOf',
+            type: 'function',
+            stateMutability: 'view',
+            inputs: [{ name: 'account', type: 'address' }],
+            outputs: [{ name: '', type: 'uint256' }],
+          },
+        ],
+        functionName: 'balanceOf',
+        args: [ownerAddress as `0x${string}`],
+      })
+      return balance.toString()
+    }
+  )
 }

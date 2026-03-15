@@ -3,7 +3,7 @@
  */
 
 import { type Page, expect } from '@playwright/test'
-import { TIMEOUT } from './constants'
+import { TIMEOUT, ADDRESSES, TEST_ADDRESS } from './constants'
 
 /**
  * Wait for a transaction to be confirmed on Sepolia.
@@ -38,13 +38,33 @@ export async function waitForTxSuccess(page: Page, timeout = TIMEOUT.TX): Promis
  */
 export async function waitForTxComplete(page: Page, buttonText: string, timeout = TIMEOUT.TX): Promise<boolean> {
   try {
-    // Wait for the ⏳ loading indicator to disappear from the button
+    // Wait for the loading/pending state to disappear
+    // UI shows ⏳, "Staking...", "Unstaking...", "Confirming..." etc.
     await page.waitForFunction(
       (btnText) => {
         const buttons = Array.from(document.querySelectorAll('button'))
-        const btn = buttons.find(b => b.textContent?.includes(btnText))
-        // If button no longer has ⏳, tx is done (or button text changed)
-        return !btn || !btn.textContent?.includes('⏳')
+        // Find a button that contains the original text OR is in loading state
+        const btn = buttons.find(b => {
+          const text = b.textContent || ''
+          return text.includes(btnText) || text.includes('⏳') ||
+            text.includes('...') && (
+              text.toLowerCase().includes('staking') ||
+              text.toLowerCase().includes('unstaking') ||
+              text.toLowerCase().includes('confirming') ||
+              text.toLowerCase().includes('minting') ||
+              text.toLowerCase().includes('redeeming') ||
+              text.toLowerCase().includes('swapping') ||
+              text.toLowerCase().includes('depositing') ||
+              text.toLowerCase().includes('withdrawing') ||
+              text.toLowerCase().includes('approving') ||
+              text.toLowerCase().includes('claiming') ||
+              text.toLowerCase().includes('pending')
+            )
+        })
+        // Done when no button is in loading state
+        if (!btn) return true
+        const text = btn.textContent || ''
+        return !text.includes('⏳') && !text.includes('...')
       },
       buttonText,
       { timeout }
@@ -165,4 +185,48 @@ export async function waitForText(
   } catch {
     return false
   }
+}
+
+/**
+ * Read on-chain ERC20 balance via the wallet bridge.
+ * Returns the raw balance as bigint.
+ */
+export async function readBalance(
+  page: Page,
+  tokenAddr: string,
+  owner: string = TEST_ADDRESS
+): Promise<bigint> {
+  const result = await page.evaluate(
+    async ({ token, ownerAddr }) => {
+      return await (window as any).__e2e_readERC20Balance(token, ownerAddr)
+    },
+    { token: tokenAddr, ownerAddr: owner }
+  )
+  return BigInt(result)
+}
+
+/**
+ * Assert that on-chain ERC20 balance increased after an operation.
+ */
+export async function expectBalanceIncrease(
+  page: Page,
+  tokenAddr: string,
+  beforeBalance: bigint,
+  owner: string = TEST_ADDRESS
+): Promise<void> {
+  const afterBalance = await readBalance(page, tokenAddr, owner)
+  expect(afterBalance).toBeGreaterThan(beforeBalance)
+}
+
+/**
+ * Assert that on-chain ERC20 balance decreased after an operation.
+ */
+export async function expectBalanceDecrease(
+  page: Page,
+  tokenAddr: string,
+  beforeBalance: bigint,
+  owner: string = TEST_ADDRESS
+): Promise<void> {
+  const afterBalance = await readBalance(page, tokenAddr, owner)
+  expect(afterBalance).toBeLessThan(beforeBalance)
 }

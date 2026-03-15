@@ -15,6 +15,8 @@ const ROUTES = [
   { path: '/swap', title: 'Swap', expectedText: ['Swap'] },
   { path: '/faucet', title: 'Faucet', expectedText: ['Faucet'] },
   { path: '/pool', title: 'Pool', expectedText: ['Pool', 'Liquidity'] },
+  { path: '/explorer', title: 'Data', expectedText: ['Data'] },
+  { path: '/asset', title: 'Asset', expectedText: ['Wallet'] },
 ]
 
 test.describe('Navigation & Page Load', () => {
@@ -55,5 +57,49 @@ test.describe('Navigation & Page Load', () => {
       await page.goto('/mint', { waitUntil: 'networkidle', timeout: 15000 })
       expect(page.url()).toContain('/mint')
     }
+  })
+
+  test('About page loads with protocol description', async ({ page }) => {
+    await page.goto('/about', { waitUntil: 'networkidle', timeout: 15000 })
+    const body = await page.textContent('body')
+    expect(body).not.toContain('Application error')
+    // Should contain protocol-related content
+    const hasContent =
+      body?.toLowerCase().includes('bitres') ||
+      body?.toLowerCase().includes('protocol') ||
+      body?.toLowerCase().includes('btd') ||
+      body?.toLowerCase().includes('bitcoin')
+    expect(hasContent).toBeTruthy()
+  })
+
+  test('FAQ page loads with FAQ content', async ({ page }) => {
+    await page.goto('/faq', { waitUntil: 'networkidle', timeout: 15000 })
+    const body = await page.textContent('body')
+    expect(body).not.toContain('Application error')
+    const hasContent =
+      body?.toLowerCase().includes('faq') ||
+      body?.toLowerCase().includes('question') ||
+      body?.toLowerCase().includes('what is') ||
+      body?.toLowerCase().includes('how')
+    expect(hasContent).toBeTruthy()
+  })
+
+  test('Whitepaper page loads', async ({ page }) => {
+    await page.goto('/whitepaper', { waitUntil: 'networkidle', timeout: 15000 })
+    const body = await page.textContent('body')
+    expect(body).not.toContain('Application error')
+  })
+
+  test('Explorer page displays system data', async ({ page }) => {
+    await page.goto('/explorer', { waitUntil: 'networkidle', timeout: 15000 })
+    const body = await page.textContent('body')
+    expect(body).not.toContain('Application error')
+    const hasData =
+      body?.toLowerCase().includes('treasury') ||
+      body?.toLowerCase().includes('supply') ||
+      body?.toLowerCase().includes('contract') ||
+      body?.toLowerCase().includes('network') ||
+      body?.toLowerCase().includes('explorer')
+    expect(hasData).toBeTruthy()
   })
 })
