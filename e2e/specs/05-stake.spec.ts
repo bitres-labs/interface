@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, readBalance } from '../sepolia/helpers'
+import { navigateTo, waitForTxComplete, readBalance, readBalanceUntilChanged } from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Stake BTD → stBTD', () => {
@@ -124,13 +124,13 @@ test.describe('Stake BTD → stBTD', () => {
 
       await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-      // Verify stBTD balance increased
-      const stBtdAfter = await readBalance(page, ADDRESSES.stBTD)
+      // Poll for stBTD balance change — Sepolia RPC may lag
+      const stBtdAfter = await readBalanceUntilChanged(page, ADDRESSES.stBTD, stBtdBefore)
       console.log(`[Stake] stBTD after: ${stBtdAfter}`)
       if (stBtdAfter > stBtdBefore) {
         console.log('[Stake] stBTD balance increase verified')
       } else {
-        console.log('[Stake] stBTD balance did not increase - tx may have reverted or still pending')
+        console.log('[Stake] stBTD balance did not increase - tx may have reverted')
       }
     } else {
       console.log('[Stake] Deposit button is disabled or not found')

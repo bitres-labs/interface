@@ -94,50 +94,32 @@ test.describe('Error Handling & Edge Cases', () => {
     await navigateTo(page, '/farm')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-    // Try to find withdraw UI — may need to click a pool first
-    const poolNames = page.locator('text=BRS/BTD, text=BTD/USDC, text=USDC')
-    if ((await poolNames.count()) > 0) {
-      await poolNames.first().click()
-      await page.waitForTimeout(TIMEOUT.MEDIUM)
-    }
-
-    // Switch to withdraw tab
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
-    if ((await withdrawTab.count()) === 0) {
-      console.log('[Error] No withdraw tab on farm page - skipping')
+    // Farm page shows pools with Deposit/Withdraw/Claim buttons directly
+    // Input a very large amount in the first pool's input
+    const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
+    if ((await input.count()) === 0) {
+      console.log('[Error] No input field on farm page - skipping')
       test.skip()
       return
     }
 
-    try {
-      await withdrawTab.click({ timeout: TIMEOUT.SHORT })
-    } catch {
-      console.log('[Error] Withdraw tab found but not interactable - skipping')
-      test.skip()
-      return
-    }
-    await page.waitForTimeout(TIMEOUT.SHORT)
+    await input.fill('999999999')
+    await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-    // Input a very large amount
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], input').first()
-    if ((await input.count()) > 0) {
-      await input.fill('999999999')
-      await page.waitForTimeout(TIMEOUT.MEDIUM)
-    }
-
-    // Should show error or disabled button
+    // The first Withdraw button should be disabled or show "Low Balance"
+    const withdrawBtn = page.locator('button:has-text("Withdraw")').first()
     const body = await page.textContent('body')
-    const withdrawBtn = page.locator(
-      'button:has-text("Withdraw"), button:has-text("Unstake")'
-    ).last()
 
     if ((await withdrawBtn.count()) > 0) {
       const isDisabled = await withdrawBtn.isDisabled()
+      const btnText = await withdrawBtn.textContent()
       const hasError =
         isDisabled ||
+        btnText?.includes('Low Balance') ||
         body?.toLowerCase().includes('insufficient') ||
         body?.toLowerCase().includes('exceeds') ||
-        body?.toLowerCase().includes('not enough')
+        body?.toLowerCase().includes('low balance')
+      console.log(`[Error] Withdraw button state: disabled=${isDisabled}, text="${btnText}"`)
       expect(hasError).toBeTruthy()
     }
   })

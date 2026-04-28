@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, waitForTxSuccess, readBalance } from '../sepolia/helpers'
+import { navigateTo, waitForTxComplete, waitForTxSuccess, readBalance, readBalanceUntilChanged } from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Farm', () => {
@@ -138,39 +138,52 @@ test.describe('Farm', () => {
     await navigateTo(page, '/farm')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-    // Record USDC balance before (common farm deposit token)
+    // Log visible pool names to help debugging
+    const body = await page.textContent('body')
+    const poolNames = body?.match(/(?:BRS|BTD|BTB|USDC|USDT|WBTC|WETH|stBTD|stBTB)(?:\/(?:BRS|BTD|BTB|USDC|USDT|WBTC|WETH|stBTD|stBTB))?(?:\s*(?:LP|Pool|Single))?/g)
+    console.log(`[Farm] Pool names on page: ${JSON.stringify([...new Set(poolNames || [])].slice(0, 10))}`)
+
+    // Find a pool where the Deposit button is NOT disabled after filling amount
+    const allInputs = page.locator('input[type="number"], input[inputmode="decimal"]')
+    const allDepositBtns = page.locator('button:has-text("Deposit")')
+    const inputCount = await allInputs.count()
+    const depositCount = await allDepositBtns.count()
+    console.log(`[Farm] Found ${inputCount} inputs, ${depositCount} Deposit buttons`)
+
+    // Record USDC balance
     const usdcBefore = await readBalance(page, ADDRESSES.USDC)
-    console.log(`[Farm] USDC before deposit: ${usdcBefore}`)
+    console.log(`[Farm] USDC before: ${usdcBefore}`)
 
-    if (usdcBefore === 0n) {
-      console.log('[Farm] No USDC balance - skipping deposit balance check')
-      test.skip()
-      return
-    }
-
-    // Try to deposit to a USDC pool
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], input').first()
-    if ((await input.count()) > 0) {
+    // Try each pool until we find one where Deposit is enabled after filling input
+    let deposited = false
+    for (let i = 0; i < Math.min(inputCount, depositCount); i++) {
+      const input = allInputs.nth(i)
       await input.fill('0.001')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
+
+      const btn = allDepositBtns.nth(i)
+      const btnText = await btn.textContent().catch(() => '')
+      const isDisabled = await btn.isDisabled()
+      console.log(`[Farm] Pool ${i}: Deposit text="${btnText}", disabled=${isDisabled}`)
+
+      if (!isDisabled) {
+        await btn.click()
+        await waitForTxComplete(page, 'Deposit', TIMEOUT.TX)
+
+        const usdcAfter = await readBalanceUntilChanged(page, ADDRESSES.USDC, usdcBefore)
+        console.log(`[Farm] USDC after deposit: ${usdcAfter}`)
+        if (usdcAfter < usdcBefore) {
+          console.log('[Farm] USDC balance decrease verified')
+        }
+        deposited = true
+        break
+      }
+      // Clear for next pool
+      await input.fill('')
     }
 
-    const depositBtn = page.locator(
-      'button:has-text("Deposit"), button:has-text("Stake")'
-    ).last()
-
-    if ((await depositBtn.count()) > 0 && !(await depositBtn.isDisabled())) {
-      await depositBtn.click()
-      await waitForTxComplete(page, 'Deposit', TIMEOUT.TX)
-
-      const usdcAfter = await readBalance(page, ADDRESSES.USDC)
-      console.log(`[Farm] USDC after deposit: ${usdcAfter}`)
-      // Balance should decrease (or stay same if tx failed)
-      if (usdcAfter < usdcBefore) {
-        console.log('[Farm] USDC balance decrease verified')
-      }
-    } else {
-      console.log('[Farm] No deposit button available')
+    if (!deposited) {
+      console.log('[Farm] No pool accepted deposit — all buttons disabled')
       test.skip()
     }
   })
@@ -202,41 +215,34 @@ test.describe('Farm', () => {
     await navigateTo(page, '/farm')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-    // Look for withdraw tab or button on the main page
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
-    if ((await withdrawTab.count()) === 0 || (await withdrawTab.isDisabled())) {
-      console.log('[Farm] No withdraw option or withdraw disabled - skipping')
+    // Check if first pool has any staked amount
+    const body = await page.textContent('body')
+    const stakedMatch = body?.match(/Staked:\s*([\d,.]+)/)
+    if (!stakedMatch?.[1] || parseFloat(stakedMatch[1].replace(/,/g, '')) === 0) {
+      console.log('[Farm] No staked amount in any pool - skipping withdraw')
       test.skip()
       return
     }
 
-    try {
-      await withdrawTab.click({ timeout: TIMEOUT.SHORT })
-    } catch {
-      console.log('[Farm] Withdraw tab not interactable - skipping')
-      test.skip()
-      return
-    }
-    await page.waitForTimeout(TIMEOUT.SHORT)
-
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], input').first()
+    // Fill withdraw amount in the first pool's input
+    const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
     if ((await input.count()) > 0) {
       await input.fill('0.0005')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
     }
 
-    const withdrawBtn = page.locator(
-      'button:has-text("Withdraw"), button:has-text("Unstake")'
-    ).last()
+    // Click the FIRST Withdraw button (same pool as the first input)
+    const withdrawBtn = page.locator('button:has-text("Withdraw")').first()
 
     if ((await withdrawBtn.count()) > 0 && !(await withdrawBtn.isDisabled())) {
       const btnText = await withdrawBtn.textContent()
       await withdrawBtn.click()
       console.log(`[Farm] Clicked "${btnText}" for withdraw`)
-      await waitForTxComplete(page, btnText || 'Withdraw', TIMEOUT.TX)
+      await waitForTxComplete(page, 'Withdraw', TIMEOUT.TX)
       console.log('[Farm] Withdraw completed')
     } else {
-      console.log('[Farm] Withdraw button disabled or not found')
+      console.log('[Farm] Withdraw button disabled - may have insufficient stake or need amount')
+      test.skip()
     }
   })
 
@@ -244,47 +250,39 @@ test.describe('Farm', () => {
     await navigateTo(page, '/farm')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
-    if ((await withdrawTab.count()) === 0 || (await withdrawTab.isDisabled())) {
-      console.log('[Farm] No withdraw option or disabled - skipping balance check')
+    // Check if first pool has any staked amount
+    const body = await page.textContent('body')
+    const stakedMatch = body?.match(/Staked:\s*([\d,.]+)/)
+    if (!stakedMatch?.[1] || parseFloat(stakedMatch[1].replace(/,/g, '')) === 0) {
+      console.log('[Farm] No staked amount - skipping withdraw balance check')
       test.skip()
       return
     }
 
     const usdcBefore = await readBalance(page, ADDRESSES.USDC)
 
-    try {
-      await withdrawTab.click({ timeout: TIMEOUT.SHORT })
-    } catch {
-      console.log('[Farm] Withdraw tab not interactable - skipping')
-      test.skip()
-      return
-    }
-    await page.waitForTimeout(TIMEOUT.SHORT)
-
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], input').first()
+    // Fill withdraw amount in the first pool's input
+    const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
     if ((await input.count()) > 0) {
       await input.fill('0.0005')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
     }
 
-    const withdrawBtn = page.locator(
-      'button:has-text("Withdraw"), button:has-text("Unstake")'
-    ).last()
+    // Click the FIRST Withdraw button
+    const withdrawBtn = page.locator('button:has-text("Withdraw")').first()
 
     if ((await withdrawBtn.count()) > 0 && !(await withdrawBtn.isDisabled())) {
-      const btnText = await withdrawBtn.textContent()
       await withdrawBtn.click()
-      await waitForTxComplete(page, btnText || 'Withdraw', TIMEOUT.TX)
+      await waitForTxComplete(page, 'Withdraw', TIMEOUT.TX)
 
-      const usdcAfter = await readBalance(page, ADDRESSES.USDC)
+      const usdcAfter = await readBalanceUntilChanged(page, ADDRESSES.USDC, usdcBefore)
       if (usdcAfter > usdcBefore) {
-        console.log('[Farm] Token balance increase after withdraw verified')
+        console.log('[Farm] USDC balance increase after withdraw verified')
       } else {
-        console.log('[Farm] Token balance did not increase - tx may still be pending')
+        console.log('[Farm] USDC balance unchanged - tx may have reverted')
       }
     } else {
-      console.log('[Farm] Withdraw button not available')
+      console.log('[Farm] Withdraw button disabled')
       test.skip()
     }
   })

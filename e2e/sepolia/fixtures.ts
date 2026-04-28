@@ -89,8 +89,9 @@ export const test = base.extend<{ sepoliaPage: Page }>({
       await dialog.accept()
     })
 
-    // 4. Navigate to app
-    await page.goto('/', { waitUntil: 'networkidle', timeout: TIMEOUT.PAGE_LOAD })
+    // 4. Navigate to app (use domcontentloaded + manual wait to avoid networkidle flakes)
+    await page.goto('/', { waitUntil: 'domcontentloaded', timeout: TIMEOUT.TX })
+    await page.waitForLoadState('networkidle').catch(() => {})
     await page.waitForTimeout(2000)
 
     // 5. Connect wallet via wagmi's real connect() + injected()

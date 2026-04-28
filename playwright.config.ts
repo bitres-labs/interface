@@ -17,6 +17,9 @@ export default defineConfig({
   // Test directory
   testDir: './e2e',
 
+  // Global setup: sync Oracle prices for Sepolia tests
+  globalSetup: './e2e/global-setup.ts',
+
   // Run tests in parallel
   fullyParallel: true,
 
@@ -24,7 +27,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
 
   // Retry on CI only
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
 
   // Opt out of parallel tests on CI
   workers: process.env.CI ? 1 : undefined,

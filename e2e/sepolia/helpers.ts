@@ -35,38 +35,50 @@ export async function waitForTxSuccess(page: Page, timeout = TIMEOUT.TX): Promis
 /**
  * Wait for a transaction button loading state (⏳) to disappear,
  * indicating the transaction has completed (success or failure).
+ *
+ * Strategy: first wait briefly for loading state to START (button text changes),
+ * then wait for loading state to END (button returns to normal).
+ * This prevents false-positive early returns when the button hasn't entered loading yet.
  */
 export async function waitForTxComplete(page: Page, buttonText: string, timeout = TIMEOUT.TX): Promise<boolean> {
+  const loadingPatterns = [
+    '⏳', 'staking', 'unstaking', 'confirming', 'minting', 'redeeming',
+    'swapping', 'depositing', 'withdrawing', 'approving', 'claiming',
+    'pending', 'processing', 'transferring'
+  ]
+
+  // Phase 1: Wait up to 10s for the button to enter loading state
   try {
-    // Wait for the loading/pending state to disappear
-    // UI shows ⏳, "Staking...", "Unstaking...", "Confirming..." etc.
     await page.waitForFunction(
-      (btnText) => {
+      ({ btnText, patterns }) => {
         const buttons = Array.from(document.querySelectorAll('button'))
-        // Find a button that contains the original text OR is in loading state
-        const btn = buttons.find(b => {
-          const text = b.textContent || ''
-          return text.includes(btnText) || text.includes('⏳') ||
-            text.includes('...') && (
-              text.toLowerCase().includes('staking') ||
-              text.toLowerCase().includes('unstaking') ||
-              text.toLowerCase().includes('confirming') ||
-              text.toLowerCase().includes('minting') ||
-              text.toLowerCase().includes('redeeming') ||
-              text.toLowerCase().includes('swapping') ||
-              text.toLowerCase().includes('depositing') ||
-              text.toLowerCase().includes('withdrawing') ||
-              text.toLowerCase().includes('approving') ||
-              text.toLowerCase().includes('claiming') ||
-              text.toLowerCase().includes('pending')
-            )
+        return buttons.some(b => {
+          const text = (b.textContent || '').toLowerCase()
+          return patterns.some(p => text.includes(p)) ||
+            (text.includes('⏳')) ||
+            (text.includes('...') && !text.includes(btnText.toLowerCase()))
         })
-        // Done when no button is in loading state
-        if (!btn) return true
-        const text = btn.textContent || ''
-        return !text.includes('⏳') && !text.includes('...')
       },
-      buttonText,
+      { btnText: buttonText, patterns: loadingPatterns },
+      { timeout: 10_000 }
+    )
+  } catch {
+    // Button may never enter loading state (tx not submitted, or very fast)
+    // Continue to phase 2 anyway
+  }
+
+  // Phase 2: Wait for loading state to disappear (tx completes)
+  try {
+    await page.waitForFunction(
+      ({ patterns }) => {
+        const buttons = Array.from(document.querySelectorAll('button'))
+        return !buttons.some(b => {
+          const text = (b.textContent || '').toLowerCase()
+          return text.includes('⏳') ||
+            patterns.some(p => text.includes(p) && text.includes('...'))
+        })
+      },
+      { patterns: loadingPatterns },
       { timeout }
     )
     return true
@@ -206,7 +218,28 @@ export async function readBalance(
 }
 
 /**
+ * Read on-chain balance with polling until it differs from a reference value.
+ * Sepolia RPC may return stale state right after tx confirmation.
+ */
+export async function readBalanceUntilChanged(
+  page: Page,
+  tokenAddr: string,
+  referenceBalance: bigint,
+  owner: string = TEST_ADDRESS,
+  maxRetries = 6,
+  intervalMs = 3000
+): Promise<bigint> {
+  for (let i = 0; i < maxRetries; i++) {
+    const balance = await readBalance(page, tokenAddr, owner)
+    if (balance !== referenceBalance) return balance
+    if (i < maxRetries - 1) await page.waitForTimeout(intervalMs)
+  }
+  return await readBalance(page, tokenAddr, owner)
+}
+
+/**
  * Assert that on-chain ERC20 balance increased after an operation.
+ * Polls up to ~18s for Sepolia state to settle.
  */
 export async function expectBalanceIncrease(
   page: Page,
@@ -214,12 +247,13 @@ export async function expectBalanceIncrease(
   beforeBalance: bigint,
   owner: string = TEST_ADDRESS
 ): Promise<void> {
-  const afterBalance = await readBalance(page, tokenAddr, owner)
+  const afterBalance = await readBalanceUntilChanged(page, tokenAddr, beforeBalance, owner)
   expect(afterBalance).toBeGreaterThan(beforeBalance)
 }
 
 /**
  * Assert that on-chain ERC20 balance decreased after an operation.
+ * Polls up to ~18s for Sepolia state to settle.
  */
 export async function expectBalanceDecrease(
   page: Page,
@@ -227,6 +261,6 @@ export async function expectBalanceDecrease(
   beforeBalance: bigint,
   owner: string = TEST_ADDRESS
 ): Promise<void> {
-  const afterBalance = await readBalance(page, tokenAddr, owner)
+  const afterBalance = await readBalanceUntilChanged(page, tokenAddr, beforeBalance, owner)
   expect(afterBalance).toBeLessThan(beforeBalance)
 }
