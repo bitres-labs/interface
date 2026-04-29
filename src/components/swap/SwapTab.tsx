@@ -6,7 +6,7 @@ import { useAccount, useChainId, useWalletClient, usePublicClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { parseUnits, formatUnits } from 'viem'
 import { ERC20_ABI, UniswapV2Pair_ABI } from '@/abis'
-import { NETWORK_CONFIG } from '@/config/contracts'
+import { NETWORK_CONFIG, displayTokenSymbol } from '@/config/contracts'
 import { formatSmartNumber } from '@/utils/formatNumber'
 import { POOLS, usePairReserves, calculateSwapOutput, useTokenBalance } from '@/hooks/useUniswapV2'
 import { blockInvalidNumberInput } from '@/utils/input'
@@ -222,7 +222,7 @@ function SwapTab() {
       await publicClient.waitForTransactionReceipt({ hash: swapHash })
 
       alert(
-        `✅ Successfully swapped ${amountIn} ${tokenInSymbol} for ${minAmountOut} ${tokenOutSymbol}!`
+        `✅ Successfully swapped ${amountIn} ${displayTokenSymbol(tokenInSymbol)} for ${minAmountOut} ${displayTokenSymbol(tokenOutSymbol)}!`
       )
       setAmountIn('')
       refetchReserves()
@@ -242,7 +242,7 @@ function SwapTab() {
     const rate =
       Number(formatUnits(reserveOut, tokenOutData.decimals)) /
       Number(formatUnits(reserveIn, tokenInData.decimals))
-    return `1 ${tokenInSymbol} ≈ ${formatSmartNumber(rate)} ${tokenOutSymbol}`
+    return `1 ${displayTokenSymbol(tokenInSymbol)} ≈ ${formatSmartNumber(rate)} ${displayTokenSymbol(tokenOutSymbol)}`
   }, [pool, reserveIn, reserveOut, tokenInSymbol, tokenOutSymbol, tokenInData, tokenOutData])
 
   // Balance validation
@@ -307,7 +307,7 @@ function SwapTab() {
           >
             {ALL_TOKENS.map(token => (
               <option key={token.symbol} value={token.symbol}>
-                {token.symbol}
+                {displayTokenSymbol(token.symbol)}
               </option>
             ))}
           </select>
@@ -354,7 +354,7 @@ function SwapTab() {
           >
             {ALL_TOKENS.map(token => (
               <option key={token.symbol} value={token.symbol}>
-                {token.symbol}
+                {displayTokenSymbol(token.symbol)}
               </option>
             ))}
           </select>
@@ -391,7 +391,7 @@ function SwapTab() {
             disabled
             className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            No Pool for {tokenInSymbol}/{tokenOutSymbol}
+            No Pool for {displayTokenSymbol(tokenInSymbol)}/{displayTokenSymbol(tokenOutSymbol)}
           </button>
         ) : (
           <button
@@ -404,7 +404,7 @@ function SwapTab() {
               : wrongNetwork
                 ? 'Switch Network'
                 : hasInsufficientBalance
-                  ? `Insufficient ${tokenInSymbol} Balance`
+                  ? `Insufficient ${displayTokenSymbol(tokenInSymbol)} Balance`
                   : isSwapping
                     ? 'Swapping...'
                     : 'Swap'}

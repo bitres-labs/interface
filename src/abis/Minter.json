@@ -246,6 +246,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "bool",
+        "name": "updated",
+        "type": "bool"
+      }
+    ],
+    "name": "IUSDUpdateAttempted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint64",
         "name": "version",
         "type": "uint64"
@@ -400,6 +413,30 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "collateralAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateMintCollateralAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "btdAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "configCore",
     "outputs": [
@@ -534,6 +571,19 @@
       }
     ],
     "name": "mintBTD",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "collateralAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "mintBTDWithCollateral",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -698,6 +748,19 @@
   },
   {
     "inputs": [],
+    "name": "totalBTCCollateral",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "totalBTD",
     "outputs": [
       {
@@ -719,7 +782,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {

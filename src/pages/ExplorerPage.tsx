@@ -16,7 +16,7 @@ import {
   Vault,
   Pickaxe,
 } from 'lucide-react'
-import { CONTRACTS, TOKEN_DECIMALS, NETWORK_CONFIG } from '@/config/contracts'
+import { CONTRACTS, TOKEN_DECIMALS, NETWORK_CONFIG, BTC_COLLATERAL_SYMBOL, BTC_COLLATERAL_NAME } from '@/config/contracts'
 import {
   useSystemMetrics,
   useBTCPrice,
@@ -273,11 +273,11 @@ function ExplorerPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
-            {/* WBTC Holdings */}
+            {/* BTC Collateral Holdings */}
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">WBTC Holdings</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{BTC_COLLATERAL_SYMBOL} Holdings</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                {wbtcBalance.toFixed(4)} WBTC
+                {wbtcBalance.toFixed(4)} {BTC_COLLATERAL_SYMBOL}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 ≈ ${formatNumber(wbtcBalance * wbtcPrice)}
@@ -313,12 +313,12 @@ function ExplorerPage() {
       <div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Token Information</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {/* WBTC */}
+          {/* BTC Collateral */}
           <div className="card">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">WBTC</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Wrapped Bitcoin</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{BTC_COLLATERAL_SYMBOL}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{BTC_COLLATERAL_NAME}</p>
               </div>
               <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center">
                 <DollarSign className="w-6 h-6 text-primary-600 dark:text-primary-400" />
@@ -328,11 +328,11 @@ function ExplorerPage() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Address</span>
                 <button
-                  onClick={() => copyToClipboard(CONTRACTS.WBTC, 'WBTC')}
+                  onClick={() => copyToClipboard(CONTRACTS.WBTC, BTC_COLLATERAL_SYMBOL)}
                   className="flex items-center gap-1 text-sm font-mono text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   {CONTRACTS.WBTC.slice(0, 6)}...{CONTRACTS.WBTC.slice(-4)}
-                  {copied === 'WBTC' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied === BTC_COLLATERAL_SYMBOL ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                 </button>
               </div>
               <div className="flex justify-between">

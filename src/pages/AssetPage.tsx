@@ -18,6 +18,7 @@ import { useLiquidityPools } from '@/hooks/useLiquidityPools'
 import { useFarmingPositions } from '@/hooks/useFarmingPositions'
 import { formatUSD, formatTokenAmount, formatCompact, getTokenDecimals, formatLPAmount } from '@/utils/format'
 import { toNumber } from '@/utils/numbers'
+import { displayTokenSymbol } from '@/config/contracts'
 
 // Sub-component for Staking Position
 function StakingPositionCard({ position }: { position: any }) {
@@ -187,7 +188,7 @@ function LiquidityPositionCard({
         <div>
           <h3 className="font-bold text-gray-900 dark:text-white">{pool.name} LP</h3>
           <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-            {pool.token0.symbol}/{pool.token1.symbol}
+            {displayTokenSymbol(pool.token0.symbol)}/{displayTokenSymbol(pool.token1.symbol)}
           </div>
         </div>
         <div className="text-right">
@@ -216,8 +217,8 @@ function LiquidityPositionCard({
         </div>
       </div>
       <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-primary-100 dark:border-primary-900/30 pt-2 mb-3">
-        Pool: {Number(reserves.reserve0Formatted).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.token0.symbol) })} {pool.token0.symbol} +{' '}
-        {Number(reserves.reserve1Formatted).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.token1.symbol) })} {pool.token1.symbol}
+        Pool: {Number(reserves.reserve0Formatted).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.token0.symbol) })} {displayTokenSymbol(pool.token0.symbol)} +{' '}
+        {Number(reserves.reserve1Formatted).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.token1.symbol) })} {displayTokenSymbol(pool.token1.symbol)}
       </div>
       <div className="flex gap-2">
         <button

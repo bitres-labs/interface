@@ -5,7 +5,7 @@ import { Droplets, Info, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQueryClient } from '@tanstack/react-query'
-import { CONTRACTS } from '@/config/contracts'
+import { CONTRACTS, BTC_COLLATERAL_SYMBOL, BTC_COLLATERAL_NAME } from '@/config/contracts'
 import { Faucet_ABI } from '@/abis'
 import { useWBTCBalance, useUSDCBalance, useUSDTBalance } from '@/hooks/useBalances'
 import { formatTokenAmount } from '@/utils/format'
@@ -137,9 +137,9 @@ function FaucetPage() {
   // Token list to display
   const tokens = [
     {
-      symbol: 'WBTC',
+      symbol: BTC_COLLATERAL_SYMBOL,
       amount: '0.0001',
-      description: 'Wrapped Bitcoin',
+      description: BTC_COLLATERAL_NAME,
       balance: wbtcBalance,
       faucetBalance: faucetWBTC,
       color: 'bg-orange-500',
@@ -296,7 +296,7 @@ function FaucetPage() {
             </h3>
             <div className="grid grid-cols-3 gap-4 text-center text-sm">
               <div>
-                <div className="text-gray-500 dark:text-gray-400">WBTC</div>
+                <div className="text-gray-500 dark:text-gray-400">{BTC_COLLATERAL_SYMBOL}</div>
                 <div className="font-medium text-gray-900 dark:text-white">
                   {faucetWBTC.toLocaleString(undefined, { maximumFractionDigits: 4 })}
                 </div>

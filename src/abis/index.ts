@@ -1,5 +1,5 @@
 // Auto-generated ABI exports
-// Generated at: 2025-11-17T10:58:15.771Z
+// Generated at: 2026-04-29T03:14:49.126Z
 
 import BRS_ABI from './BRS.json'
 import BTD_ABI from './BTD.json'
@@ -11,7 +11,6 @@ import Treasury_ABI from './Treasury.json'
 import Config_ABI from './Config.json'
 import InterestPool_ABI from './InterestPool.json'
 import FarmingPool_ABI from './FarmingPool.json'
-import StakingRouter_ABI from './StakingRouter.json'
 import PriceOracle_ABI from './PriceOracle.json'
 import WBTC_ABI from './WBTC.json'
 import USDC_ABI from './USDC.json'
@@ -31,7 +30,6 @@ export {
   Config_ABI,
   InterestPool_ABI,
   FarmingPool_ABI,
-  StakingRouter_ABI,
   PriceOracle_ABI,
   WBTC_ABI,
   USDC_ABI,

@@ -16,6 +16,7 @@ import { ERC20_ABI, UniswapV2Pair_ABI } from '@/abis'
 import { useApproveAndExecute } from '@/hooks/useApproveAndExecute'
 import { blockInvalidNumberInput } from '@/utils/input'
 import { useLiquidityPools } from '@/hooks/useLiquidityPools'
+import { displayTokenSymbol } from '@/config/contracts'
 
 // Convert POOLS to LIQUIDITY_POOLS format
 const LIQUIDITY_POOLS = POOLS.map(pool => ({
@@ -207,7 +208,7 @@ function PoolCard({
       })
     } else if (addingStep === 3) {
       alert(
-        `✅ Successfully added ${amount0} ${poolConfig.token0.symbol} + ${amount1} ${poolConfig.token1.symbol}!`
+        `✅ Successfully added ${amount0} ${displayTokenSymbol(poolConfig.token0.symbol)} + ${amount1} ${displayTokenSymbol(poolConfig.token1.symbol)}!`
       )
       setAmount0('')
       setAmount1('')
@@ -276,7 +277,7 @@ function PoolCard({
         },
       })
       alert(
-        `✅ Removed liquidity! Received ${amount0Out} ${poolConfig.token0.symbol} + ${amount1Out} ${poolConfig.token1.symbol}`
+        `✅ Removed liquidity! Received ${amount0Out} ${displayTokenSymbol(poolConfig.token0.symbol)} + ${amount1Out} ${displayTokenSymbol(poolConfig.token1.symbol)}`
       )
       setLpAmount('')
       setPercentage(25)
@@ -389,7 +390,7 @@ function PoolCard({
             <div className="space-y-3">
               <div>
                 <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  {pool.token0} Amount (Balance: {balance0})
+                  {displayTokenSymbol(pool.token0)} Amount (Balance: {balance0})
                 </label>
                 <div className="relative">
                   <input
@@ -413,7 +414,7 @@ function PoolCard({
               </div>
               <div>
                 <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  {pool.token1} Amount (Balance: {balance1})
+                  {displayTokenSymbol(pool.token1)} Amount (Balance: {balance1})
                 </label>
                 <div className="relative">
                   <input
@@ -451,9 +452,9 @@ function PoolCard({
                   : hasInsufficientBalanceForAdd
                     ? 'Insufficient Balance'
                     : addingStep === 1
-                      ? `Transferring ${poolConfig.token0.symbol}...`
+                      ? `Transferring ${displayTokenSymbol(poolConfig.token0.symbol)}...`
                       : addingStep === 2
-                        ? `Transferring ${poolConfig.token1.symbol}...`
+                        ? `Transferring ${displayTokenSymbol(poolConfig.token1.symbol)}...`
                         : addingStep === 3
                           ? 'Minting LP...'
                           : 'Add Liquidity'}
@@ -501,10 +502,10 @@ function PoolCard({
                   <div className="text-primary-900 dark:text-blue-100">
                     You will receive:
                     <div className="font-semibold mt-1">
-                      {Number(amount0Out).toFixed(6)} {poolConfig.token0.symbol}
+                      {Number(amount0Out).toFixed(6)} {displayTokenSymbol(poolConfig.token0.symbol)}
                     </div>
                     <div className="font-semibold">
-                      {Number(amount1Out).toFixed(6)} {poolConfig.token1.symbol}
+                      {Number(amount1Out).toFixed(6)} {displayTokenSymbol(poolConfig.token1.symbol)}
                     </div>
                   </div>
                 </div>

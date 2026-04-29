@@ -18,7 +18,7 @@ import {
 } from '@/hooks/useMinter'
 import { useWBTCBalance, useBTDBalance, useBTBBalance } from '@/hooks/useBalances'
 import { useBTBPrice, useBRSPrice, useBTDPrice } from '@/hooks/useSystemStats'
-import { CONTRACTS, TOKEN_DECIMALS } from '@/config/contracts'
+import { CONTRACTS, TOKEN_DECIMALS, BTC_COLLATERAL_SYMBOL, BTC_COLLATERAL_NAME } from '@/config/contracts'
 import { blockInvalidNumberInput } from '@/utils/input'
 import { useApproveAndExecute, useNeedsApproval } from '@/hooks/useApproveAndExecute'
 import { formatTokenAmount } from '@/utils/format'
@@ -51,6 +51,7 @@ function MintPreview({ embedded = false }: MintPreviewProps = {}) {
   const { mintFeeBP } = useMintFee()
   const { redeemFeeBP } = useRedeemFee()
   const isPricingReady = btcPrice > 0 && iusdPrice > 0
+  const btcCollateralSymbol = BTC_COLLATERAL_SYMBOL
 
   // Balances
   const { balance: wbtcBalance, refetch: refetchWBTCBalance } = useWBTCBalance()
@@ -229,7 +230,7 @@ Your transaction actually succeeded - check your balance!`)
   useEffect(() => {
     if (redeemBTDSuccess && pendingResult?.type === 'redeemBTD') {
       const wbtcAmount = pendingResult.output || '0'
-      alert(`✅ Successfully redeemed BTD for ${wbtcAmount} WBTC!
+      alert(`✅ Successfully redeemed BTD for ${wbtcAmount} ${btcCollateralSymbol}!
 
 ⚠️ Note: Ignore MetaMask "0 GO" or "failed" errors.
 Your transaction succeeded - check your balance!`)
@@ -249,7 +250,7 @@ Your transaction succeeded - check your balance!`)
       alert(`✅ Successfully converted BTB to ${btdAmount} BTD!
 
 ℹ️ BTB bonds have been converted to BTD stablecoin.
-You can now use BTD or redeem it for WBTC.
+You can now use BTD or redeem it for ${btcCollateralSymbol}.
 
 ⚠️ Note: Ignore MetaMask "0 GO" or "failed" errors.
 Your transaction succeeded - check your balance!`)
@@ -463,7 +464,7 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
         else if (msg.includes('insufficient') || msg.includes('exceeds balance')) {
           errorMessage = 'Insufficient Balance'
           errorDetails = `Please check:
-1. WBTC balance is sufficient
+1. ${btcCollateralSymbol} balance is sufficient
 2. ETH balance is enough to pay for gas`
         }
         // Not approved
@@ -510,7 +511,7 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
 
     // Check insufficient balance first
     if (hasInsufficientBalance()) {
-      if (mode === 'mint') return 'Insufficient WBTC Balance'
+      if (mode === 'mint') return `Insufficient ${btcCollateralSymbol} Balance`
       if (mode === 'redeemBTD') return 'Insufficient BTD Balance'
       return 'Insufficient BTB Balance'
     }
@@ -530,7 +531,7 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
     // Show action button even if price is not ready
     // Contract will auto-update TWAP when executing the transaction
     if (mode === 'mint') {
-      const label = needsWBTCApproval ? 'Approve WBTC & Mint BTD' : 'Mint BTD'
+      const label = needsWBTCApproval ? `Approve ${btcCollateralSymbol} & Mint BTD` : 'Mint BTD'
       return !isPricingReady ? `${label} ⏳` : label
     }
     if (mode === 'redeemBTD') {
@@ -676,9 +677,9 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0 min-h-[2.25rem] sm:min-h-0">
               {mode === 'mint' ? (
                 <>
-                  <img src="/tokens/wbtc.png" alt="WBTC" className="w-5 h-5 rounded-full" />
+                  <img src="/tokens/wbtc.png" alt={btcCollateralSymbol} className="w-5 h-5 rounded-full" />
                   <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                    WBTC
+                    {btcCollateralSymbol}
                   </span>
                 </>
               ) : mode === 'redeemBTD' ? (
@@ -752,9 +753,9 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
                 </>
               ) : mode === 'redeemBTD' ? (
                 <>
-                  <img src="/tokens/wbtc.png" alt="WBTC" className="w-5 h-5 rounded-full" />
+                  <img src="/tokens/wbtc.png" alt={btcCollateralSymbol} className="w-5 h-5 rounded-full" />
                   <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                    WBTC
+                    {btcCollateralSymbol}
                   </span>
                 </>
               ) : (
@@ -866,9 +867,9 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
           <span className="text-gray-600 dark:text-gray-400">Exchange Rate</span>
           <span className="font-medium text-gray-900 dark:text-white">
             {mode === 'mint'
-              ? `1 WBTC = ${(btcPrice / iusdPrice).toFixed(2)} BTD`
+              ? `1 ${btcCollateralSymbol} = ${(btcPrice / iusdPrice).toFixed(2)} BTD`
               : mode === 'redeemBTD'
-                ? `1 BTD = ${(iusdPrice / btcPrice).toFixed(6)} WBTC`
+                ? `1 BTD = ${(iusdPrice / btcPrice).toFixed(6)} ${btcCollateralSymbol}`
                 : `1 BTB = 1 BTD`}
           </span>
         </div>
@@ -926,14 +927,14 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
           <div className="text-sm flex-1">
             <p className="font-medium text-yellow-900 dark:text-yellow-100">First-time approval required</p>
             <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-              You'll approve WBTC spending once. Future mints won't need approval.
+              You'll approve {btcCollateralSymbol} spending once. Future mints won't need approval.
             </p>
             <div className="mt-2 space-y-1">
               <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
                 <span className="w-4 h-4 rounded-full bg-yellow-200 dark:bg-yellow-800 text-xs flex items-center justify-center font-bold">
                   1
                 </span>
-                <span className="text-xs">Approve WBTC</span>
+                <span className="text-xs">Approve {btcCollateralSymbol}</span>
               </div>
               <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
                 <span className="w-4 h-4 rounded-full bg-yellow-200 dark:bg-yellow-800 text-xs flex items-center justify-center font-bold">
@@ -988,7 +989,7 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <div className="text-primary-900 dark:text-blue-100">
               <p className="font-semibold mb-1">About Minting BTD</p>
               <p className="text-primary-800 dark:text-blue-200 text-xs">
-                Convert WBTC (Wrapped Bitcoin) into BTD stablecoin at current market rate. This is a
+                Convert {btcCollateralSymbol} ({BTC_COLLATERAL_NAME}) into BTD stablecoin at current market rate. This is a
                 conversion, not collateralization - your BTC value becomes BTD value based on BTC/IUSD
                 exchange rate. BTD maintains parity with IUSD (CPI-adjusted purchasing power).
               </p>
@@ -1005,8 +1006,8 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <div className="text-primary-900 dark:text-blue-100">
               <p className="font-semibold mb-1">About Redeeming BTD</p>
               <p className="text-primary-800 dark:text-blue-200 text-xs">
-                Redeem your BTD stablecoin for WBTC. When CR ≥ 100%, you receive full WBTC value.
-                When CR &lt; 100%, you receive partial WBTC plus BTB bond compensation (and BRS if
+                Redeem your BTD stablecoin for {btcCollateralSymbol}. When CR ≥ 100%, you receive full {btcCollateralSymbol} value.
+                When CR &lt; 100%, you receive partial {btcCollateralSymbol} plus BTB bond compensation (and BRS if
                 BTB price is low). This ensures fair value distribution during market stress.
               </p>
             </div>
@@ -1024,7 +1025,7 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
               <p className="text-primary-800 dark:text-blue-200 text-xs">
                 BTB bonds can only be converted to BTD when the Collateral Ratio (CR) ≥ 100%. The
                 conversion rate is 1:1 (1 BTB = 1 BTD). After conversion, you can redeem BTD for
-                WBTC.
+                {btcCollateralSymbol}.
               </p>
             </div>
           </div>

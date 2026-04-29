@@ -124,7 +124,7 @@ export function formatTokenAmount(amount: number, symbol: string): string {
 
   const upperSymbol = symbol.toUpperCase()
 
-  if (upperSymbol === 'BTC' || upperSymbol === 'WBTC') {
+  if (upperSymbol === 'BTC' || upperSymbol === 'WBTC' || upperSymbol === 'CBBTC') {
     const fixed = amount.toFixed(6)
     return removeTrailingZeros(fixed)
   }
@@ -153,7 +153,7 @@ export function getTokenDecimals(symbol: string): number {
   const upperSymbol = symbol.toUpperCase()
 
   // BTC series: 8 decimals
-  if (upperSymbol === 'BTC' || upperSymbol === 'WBTC') {
+  if (upperSymbol === 'BTC' || upperSymbol === 'WBTC' || upperSymbol === 'CBBTC') {
     return 8
   }
 

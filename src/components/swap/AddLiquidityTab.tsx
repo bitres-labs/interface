@@ -9,6 +9,7 @@ import { ERC20_ABI, UniswapV2Pair_ABI } from '@/abis'
 import { POOLS, usePairReserves, useTokenBalance } from '@/hooks/useUniswapV2'
 import { blockInvalidNumberInput } from '@/utils/input'
 import { logger } from '@/utils/logger'
+import { displayTokenSymbol } from '@/config/contracts'
 
 export interface AddLiquidityTabProps {
   selectedPool: number
@@ -119,7 +120,7 @@ function AddLiquidityTab({
       // Step 3 completed (LP minted), done!
       logger.log('Step 3 completed. Liquidity added successfully!')
       logger.log(
-        `✅ Successfully added liquidity! ${amount0} ${pool.token0.symbol} + ${amount1} ${pool.token1.symbol} to ${pool.name} pool`
+        `✅ Successfully added liquidity! ${amount0} ${displayTokenSymbol(pool.token0.symbol)} + ${amount1} ${displayTokenSymbol(pool.token1.symbol)} to ${pool.name} pool`
       )
       // TODO: Replace with toast notification
       setAmount0('')
@@ -183,7 +184,7 @@ function AddLiquidityTab({
     const ratio =
       Number(formatUnits(reserve1, pool.token1.decimals)) /
       Number(formatUnits(reserve0, pool.token0.decimals))
-    return `1 ${pool.token0.symbol} = ${ratio.toFixed(6)} ${pool.token1.symbol}`
+    return `1 ${displayTokenSymbol(pool.token0.symbol)} = ${ratio.toFixed(6)} ${displayTokenSymbol(pool.token1.symbol)}`
   }, [reserve0, reserve1, pool])
 
   // Balance validation
@@ -238,7 +239,7 @@ function AddLiquidityTab({
         {/* Token 0 Input */}
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-1 min-h-[100px]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">{pool.token0.symbol}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{displayTokenSymbol(pool.token0.symbol)}</span>
             <span className="text-sm text-gray-600 dark:text-gray-400">Balance: {balance0}</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -274,7 +275,7 @@ function AddLiquidityTab({
                 <div className="w-5 h-5 bg-gray-400 rounded-full" />
               )}
               <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                {pool.token0.symbol}
+                {displayTokenSymbol(pool.token0.symbol)}
               </span>
             </div>
           </div>
@@ -290,7 +291,7 @@ function AddLiquidityTab({
         {/* Token 1 Input */}
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mt-1 min-h-[100px]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">{pool.token1.symbol}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{displayTokenSymbol(pool.token1.symbol)}</span>
             <span className="text-sm text-gray-600 dark:text-gray-400">Balance: {balance1}</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -328,7 +329,7 @@ function AddLiquidityTab({
                 <div className="w-5 h-5 bg-gray-400 rounded-full" />
               )}
               <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                {pool.token1.symbol}
+                {displayTokenSymbol(pool.token1.symbol)}
               </span>
             </div>
           </div>
@@ -358,9 +359,9 @@ function AddLiquidityTab({
           : hasInsufficientBalance
             ? 'Insufficient Balance'
             : addingStep === 1
-              ? `Transferring ${pool.token0.symbol}...`
+              ? `Transferring ${displayTokenSymbol(pool.token0.symbol)}...`
               : addingStep === 2
-                ? `Transferring ${pool.token1.symbol}...`
+                ? `Transferring ${displayTokenSymbol(pool.token1.symbol)}...`
                 : addingStep === 3
                   ? 'Minting LP...'
                   : 'Add Liquidity'}

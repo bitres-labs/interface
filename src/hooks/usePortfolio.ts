@@ -13,6 +13,7 @@ import { useStakedBTD, useStakedBTB } from './useStaking'
 import { usePendingReward, useUserInfo } from './useFarming'
 import { useTokenPrices } from './useAPY'
 import { formatUnits } from 'viem'
+import { BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 
 function toNumber(value: any) {
   const num = Number(value ?? 0)
@@ -171,7 +172,7 @@ export function usePortfolio() {
           value: toNumber(brsBalance) * prices.BRS,
         },
         {
-          symbol: 'WBTC',
+          symbol: BTC_COLLATERAL_SYMBOL,
           amount: toNumber(wbtcBalance),
           value: toNumber(wbtcBalance) * prices.WBTC,
         },

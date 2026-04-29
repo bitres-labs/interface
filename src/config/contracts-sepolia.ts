@@ -37,6 +37,8 @@ export const CONTRACTS_SEPOLIA = {
   ChainlinkWBTCBTC: oracles.ChainlinkWBTCBTC as `0x${string}`,
   MockPyth: oracles.MockPyth as `0x${string}`,
   MockRedstone: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Not used on Sepolia
+  CPIOracle: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+  FFROracle: '0x0000000000000000000000000000000000000000' as `0x${string}`,
   IdealUSDManager: contracts.IdealUSDManager as `0x${string}`,
   PriceOracle: contracts.PriceOracle as `0x${string}`,
   TWAPOracle: contracts.TWAPOracle as `0x${string}`,

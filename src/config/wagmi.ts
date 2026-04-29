@@ -1,7 +1,11 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { http } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
-import { NETWORK_CONFIG, NETWORK_CONFIG_LOCAL, NETWORK_CONFIG_SEPOLIA } from './contracts'
+import { baseSepolia, sepolia } from 'wagmi/chains'
+import {
+  NETWORK_CONFIG_LOCAL,
+  NETWORK_CONFIG_SEPOLIA,
+  NETWORK_CONFIG_BASE_SEPOLIA
+} from './contracts'
 
 const WALLETCONNECT_PROJECT_ID =
   import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '0123456789abcdef0123456789abcdef'
@@ -25,10 +29,10 @@ const hardhat = {
 // Detect environment using Vite's build mode
 const isProductionBuild = import.meta.env.PROD
 
-// Use Sepolia only in production, both networks in development
+// Use Base Sepolia first in production; keep Sepolia available in dev for legacy deployments.
 const chains = isProductionBuild
-  ? [sepolia] as const
-  : [hardhat, sepolia] as const
+  ? [baseSepolia] as const
+  : [hardhat, baseSepolia, sepolia] as const
 
 export const config = getDefaultConfig({
   appName: 'Bitres',
@@ -36,6 +40,7 @@ export const config = getDefaultConfig({
   chains,
   transports: {
     [hardhat.id]: http(NETWORK_CONFIG_LOCAL.rpcUrl),
+    [baseSepolia.id]: http(NETWORK_CONFIG_BASE_SEPOLIA.rpcUrl),
     [sepolia.id]: http(NETWORK_CONFIG_SEPOLIA.rpcUrl),
   },
   ssr: false,

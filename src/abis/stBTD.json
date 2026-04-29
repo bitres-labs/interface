@@ -309,6 +309,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -408,6 +413,25 @@
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldInterestPool",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newInterestPool",
+        "type": "address"
+      }
+    ],
+    "name": "InterestPoolUpdated",
     "type": "event"
   },
   {
@@ -817,6 +841,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "interestPool",
+    "outputs": [
+      {
+        "internalType": "contract IInterestPool",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1182,6 +1219,32 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newInterestPool",
+        "type": "address"
+      }
+    ],
+    "name": "setInterestPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "assets",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakeIdleAssets",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

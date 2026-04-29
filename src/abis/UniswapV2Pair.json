@@ -350,12 +350,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "_token0",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "_token1",
         "type": "address"
       }
     ],

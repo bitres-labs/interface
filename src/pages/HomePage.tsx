@@ -7,6 +7,7 @@ import StakePage from './StakePage'
 import SwapPage from './SwapPage'
 import { usePortfolio } from '@/hooks/usePortfolio'
 import { formatCompact, formatWithCommas } from '@/utils/format'
+import { BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 
 type MainTab = 'mint' | 'stake' | 'swap'
 
@@ -33,7 +34,7 @@ function HomePage() {
       questions: [
         {
           q: 'What is Bitres?',
-          a: 'BRS is a decentralized stablecoin system that creates BTD (Bitcoin Backed Dollar), a stablecoin pegged to IUSD (Ideal USD, which tracks CPI inflation). The system uses WBTC as collateral and features automatic interest accumulation and governance through BRS tokens.',
+          a: `BRS is a decentralized stablecoin system that creates BTD (Bitcoin Backed Dollar), a stablecoin pegged to IUSD (Ideal USD, which tracks CPI inflation). The system uses ${BTC_COLLATERAL_SYMBOL} as collateral and features automatic interest accumulation and governance through BRS tokens.`,
         },
         {
           q: 'What tokens does BRS have?',
@@ -50,15 +51,15 @@ function HomePage() {
       questions: [
         {
           q: 'How do I mint BTD?',
-          a: 'To mint BTD, deposit WBTC as collateral through the Mint page. The system requires at least 150% collateralization ratio. You will receive BTD stablecoins valued at the current IUSD price.',
+          a: `To mint BTD, deposit ${BTC_COLLATERAL_SYMBOL} as collateral through the Mint page. The system requires at least 150% collateralization ratio. You will receive BTD stablecoins valued at the current IUSD price.`,
         },
         {
           q: 'What happens when I redeem BTD?',
-          a: 'When you redeem BTD, you burn your BTD tokens to receive back WBTC collateral. If the system collateral ratio is above 100%, you receive full WBTC. If below 100%, you receive a mix of WBTC and BTB bonds.',
+          a: `When you redeem BTD, you burn your BTD tokens to receive back ${BTC_COLLATERAL_SYMBOL} collateral. If the system collateral ratio is above 100%, you receive full ${BTC_COLLATERAL_SYMBOL}. If below 100%, you receive a mix of ${BTC_COLLATERAL_SYMBOL} and BTB bonds.`,
         },
         {
           q: 'What are BTB bonds?',
-          a: 'BTB bonds are issued during under-collateralized periods (CR < 100%). They can be redeemed for WBTC once the system recovers to healthy collateralization levels. BTB holders also earn interest while staking.',
+          a: `BTB bonds are issued during under-collateralized periods (CR < 100%). They can be redeemed for ${BTC_COLLATERAL_SYMBOL} once the system recovers to healthy collateralization levels. BTB holders also earn interest while staking.`,
         },
       ],
     },

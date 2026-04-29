@@ -6,7 +6,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { formatUnits, parseUnits } from 'viem'
 import { useDeposit, useWithdraw, useClaim } from '@/hooks/useFarming'
 import { useTokenAllowance, useETHBalance, useBTDBalance, useBTBBalance } from '@/hooks/useBalances'
-import { CONTRACTS, TOKEN_DECIMALS } from '@/config/contracts'
+import { CONTRACTS, TOKEN_DECIMALS, BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 import { useReadContract } from 'wagmi'
 import { ERC20_ABI as ERC20ABI, WETH_ABI } from '@/abis'
 import { blockInvalidNumberInput } from '@/utils/input'
@@ -163,7 +163,7 @@ function FarmPage() {
     },
     {
       id: 5,
-      name: 'WBTC',
+      name: BTC_COLLATERAL_SYMBOL,
       type: 'Single',
       token0: 'WBTC',
       token1: null,

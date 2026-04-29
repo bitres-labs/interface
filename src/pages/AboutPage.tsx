@@ -1,6 +1,7 @@
 'use client'
 
 import { Shield, Coins, TrendingUp, Globe, Lock, Zap } from 'lucide-react'
+import { BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 
 function AboutPage() {
   return (
@@ -116,7 +117,7 @@ function AboutPage() {
                 Collateralized Minting
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Users deposit Bitcoin (WBTC) and mint BTD at the current BTC/IUSD exchange rate. All
+                Users deposit Bitcoin ({BTC_COLLATERAL_SYMBOL}) and mint BTD at the current BTC/IUSD exchange rate. All
                 BTD is 100% backed by Bitcoin collateral held in the protocol treasury.
               </p>
             </div>
@@ -266,7 +267,7 @@ function AboutPage() {
               Collateral Treasury
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Securely holds all WBTC collateral and manages BTD/BRS reserves for system operations
+              Securely holds all {BTC_COLLATERAL_SYMBOL} collateral and manages BTD/BRS reserves for system operations
             </p>
           </div>
           <div className="border-l-4 border-primary-600 dark:border-primary-400 pl-4">

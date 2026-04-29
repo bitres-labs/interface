@@ -15,6 +15,7 @@ import {
   useTokenBalance,
 } from '@/hooks/useUniswapV2'
 import { logger } from '@/utils/logger'
+import { displayTokenSymbol } from '@/config/contracts'
 
 export interface RemoveLiquidityTabProps {
   selectedPool: number
@@ -158,7 +159,7 @@ function RemoveLiquidityTab({
       })
     } else if (removingStep === 2) {
       logger.log(
-        `✅ Removed liquidity from ${pool.name} pool! You should receive ${amount0Out} ${pool.token0.symbol} + ${amount1Out} ${pool.token1.symbol}`
+        `✅ Removed liquidity from ${pool.name} pool! You should receive ${amount0Out} ${displayTokenSymbol(pool.token0.symbol)} + ${amount1Out} ${displayTokenSymbol(pool.token1.symbol)}`
       )
       // TODO: Replace with toast notification
       setRemovingStep(0)
@@ -327,7 +328,7 @@ function RemoveLiquidityTab({
                 <div className="w-5 h-5 bg-gray-400 rounded-full" />
               )}
               <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                {pool.token0.symbol}
+                {displayTokenSymbol(pool.token0.symbol)}
               </span>
             </div>
           </div>
@@ -364,7 +365,7 @@ function RemoveLiquidityTab({
                 <div className="w-5 h-5 bg-gray-400 rounded-full" />
               )}
               <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                {pool.token1.symbol}
+                {displayTokenSymbol(pool.token1.symbol)}
               </span>
             </div>
           </div>

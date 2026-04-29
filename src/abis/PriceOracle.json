@@ -355,32 +355,6 @@
   },
   {
     "inputs": [],
-    "name": "PYTH_MAX_CONF_RATIO",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PYTH_MAX_STALENESS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "STABLECOIN_MAX_DEVIATION_BPS",
     "outputs": [
       {
@@ -441,6 +415,19 @@
   {
     "inputs": [],
     "name": "getBTBPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBTCCollateralPrice",
     "outputs": [
       {
         "internalType": "uint256",
@@ -650,11 +637,6 @@
         "internalType": "address",
         "name": "_twapOracle",
         "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_pythWbtcPriceId",
-        "type": "bytes32"
       }
     ],
     "name": "initialize",
@@ -842,6 +824,13 @@
   {
     "inputs": [],
     "name": "updateTWAPForBTB",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updateTWAPForBTCCollateral",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

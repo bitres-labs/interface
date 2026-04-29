@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { UniswapV2Pair_ABI, ERC20_ABI } from '@/abis'
-import { CONTRACTS, TOKEN_DECIMALS } from '@/config/contracts'
+import { CONTRACTS, TOKEN_DECIMALS, BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 
 // Pool configuration
 export const POOLS = [
@@ -25,7 +25,7 @@ export const POOLS = [
     token1: { symbol: 'BTD', address: CONTRACTS.BTD, decimals: TOKEN_DECIMALS.BTD },
   },
   {
-    name: 'WBTC/USDC',
+    name: `${BTC_COLLATERAL_SYMBOL}/USDC`,
     address: CONTRACTS.WBTCUSDCPair,
     token0: { symbol: 'WBTC', address: CONTRACTS.WBTC, decimals: TOKEN_DECIMALS.WBTC },
     token1: { symbol: 'USDC', address: CONTRACTS.USDC, decimals: TOKEN_DECIMALS.USDC },

@@ -1,7 +1,8 @@
 // Bitres Contract Addresses - Multi-Network Support
-// Supports: Hardhat Local (31337) and Sepolia Testnet (11155111)
+// Supports: Hardhat Local (31337), Sepolia Testnet (11155111), and Base Sepolia (84532)
 
 import { CONTRACTS_SEPOLIA, NETWORK_CONFIG_SEPOLIA } from './contracts-sepolia'
+import { CONTRACTS_BASE_SEPOLIA, NETWORK_CONFIG_BASE_SEPOLIA } from './contracts-base-sepolia'
 
 // ============================================================================
 // Hardhat Local Network (Chain ID: 31337)
@@ -31,6 +32,8 @@ const CONTRACTS_LOCAL = {
   ChainlinkUSDTUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Local: fallback $1
   MockPyth: '0x0165878A594ca255338adfa4d48449f69242Eb8F' as `0x${string}`,
   MockRedstone: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853' as `0x${string}`,
+  CPIOracle: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+  FFROracle: '0x0000000000000000000000000000000000000000' as `0x${string}`,
   IdealUSDManager: '0x7a2088a1bFc9d81c55368AE168C2C02570cB814F' as `0x${string}`,
   PriceOracle: '0x67d269191c92Caf3cD7723F116c85e6E9bf55933' as `0x${string}`,
   TWAPOracle: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0' as `0x${string}`,
@@ -81,18 +84,34 @@ const isLocalhost = typeof window !== 'undefined' && (
   window.location.hostname.includes('127.0.0.1')
 )
 
-// Use Sepolia in production build, or Local in dev/localhost
-const useSepoliaNetwork = isProductionBuild && !isLocalhost
+const productionNetwork = import.meta.env.VITE_BITRES_NETWORK || 'baseSepolia'
+const useProductionNetwork = isProductionBuild && !isLocalhost
+const useSepoliaNetwork = useProductionNetwork && productionNetwork === 'sepolia'
+const useBaseSepoliaNetwork = useProductionNetwork && productionNetwork !== 'sepolia'
 
-// Use Sepolia by default in production
+// Use Base Sepolia + cbBTC by default in production.
 export const CONTRACTS = useSepoliaNetwork
   ? { ...CONTRACTS_SEPOLIA, BTCPriceFeed: CONTRACTS_SEPOLIA.ChainlinkBTCUSD }
+  : useBaseSepoliaNetwork
+    ? { ...CONTRACTS_BASE_SEPOLIA, BTCPriceFeed: CONTRACTS_BASE_SEPOLIA.ChainlinkBTCUSD }
   : CONTRACTS_LOCAL
-export const NETWORK_CONFIG = useSepoliaNetwork ? NETWORK_CONFIG_SEPOLIA : NETWORK_CONFIG_LOCAL
+export const NETWORK_CONFIG = useSepoliaNetwork
+  ? NETWORK_CONFIG_SEPOLIA
+  : useBaseSepoliaNetwork
+    ? NETWORK_CONFIG_BASE_SEPOLIA
+    : NETWORK_CONFIG_LOCAL
 
 // Export both for manual switching
 export { CONTRACTS_LOCAL, NETWORK_CONFIG_LOCAL }
 export { CONTRACTS_SEPOLIA, NETWORK_CONFIG_SEPOLIA }
+export { CONTRACTS_BASE_SEPOLIA, NETWORK_CONFIG_BASE_SEPOLIA }
+
+export const BTC_COLLATERAL_SYMBOL = NETWORK_CONFIG.chainId === 84532 ? 'cbBTC' : 'WBTC'
+export const BTC_COLLATERAL_NAME = NETWORK_CONFIG.chainId === 84532 ? 'Coinbase Wrapped BTC' : 'Wrapped Bitcoin'
+
+export function displayTokenSymbol(symbol: string) {
+  return symbol === 'WBTC' ? BTC_COLLATERAL_SYMBOL : symbol
+}
 
 export const TOKEN_DECIMALS = {
   WBTC: 8,
@@ -111,6 +130,8 @@ export const TOKEN_DECIMALS = {
  */
 export function getContractsForChain(chainId: number) {
   switch (chainId) {
+    case 84532:
+      return { ...CONTRACTS_BASE_SEPOLIA, BTCPriceFeed: CONTRACTS_BASE_SEPOLIA.ChainlinkBTCUSD }
     case 11155111:
       return { ...CONTRACTS_SEPOLIA, BTCPriceFeed: CONTRACTS_SEPOLIA.ChainlinkBTCUSD }
     case 31337:
@@ -124,6 +145,8 @@ export function getContractsForChain(chainId: number) {
  */
 export function getNetworkConfigForChain(chainId: number) {
   switch (chainId) {
+    case 84532:
+      return NETWORK_CONFIG_BASE_SEPOLIA
     case 11155111:
       return NETWORK_CONFIG_SEPOLIA
     case 31337:

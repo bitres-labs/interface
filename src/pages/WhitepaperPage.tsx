@@ -1,6 +1,7 @@
 'use client'
 
 import { FileText, Download, BookOpen, ExternalLink } from 'lucide-react'
+import { BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 
 function WhitepaperPage() {
   const documents = [
@@ -37,7 +38,7 @@ function WhitepaperPage() {
         <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
           Bitres is a Bitcoin-native decentralized stablecoin protocol
           that creates BTD, a stablecoin pegged to Ideal USD (a conceptual unit of account with
-          target 2% annual inflation). The system uses Bitcoin (WBTC) as collateral and employs
+          target 2% annual inflation). The system uses Bitcoin ({BTC_COLLATERAL_SYMBOL}) as collateral and employs
           a three-token structure: BTD (stablecoin), BTB (bond token), and BRS (governance token).
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">

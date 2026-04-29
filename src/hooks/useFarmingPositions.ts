@@ -5,6 +5,7 @@ import { useTokenPrices, usePoolAPY } from './useAPY'
 import { useLocalRewardCalculation } from './useLocalRewardCalculation'
 import { useAllLPTokenPrices } from './useLPTokenPrice'
 import { toNumber } from '@/utils/numbers'
+import { BTC_COLLATERAL_SYMBOL } from '@/config/contracts'
 
 // Pool metadata configuration
 const POOL_META = [
@@ -13,7 +14,7 @@ const POOL_META = [
   { id: 2, name: 'BTB/BTD', type: 'LP' as const },
   { id: 3, name: 'USDC', type: 'Single' as const },
   { id: 4, name: 'USDT', type: 'Single' as const },
-  { id: 5, name: 'WBTC', type: 'Single' as const },
+  { id: 5, name: BTC_COLLATERAL_SYMBOL, type: 'Single' as const },
   { id: 6, name: 'WETH', type: 'Single' as const },
   { id: 7, name: 'stBTD', type: 'Single' as const },
   { id: 8, name: 'stBTB', type: 'Single' as const },

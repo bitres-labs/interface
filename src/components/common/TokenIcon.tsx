@@ -11,6 +11,7 @@ interface TokenIconProps {
 
 const TOKEN_ICONS: Record<string, string> = {
   WBTC: '/tokens/wbtc.png',
+  cbBTC: '/tokens/wbtc.png',
   USDC: '/tokens/usdc.png',
   USDT: '/tokens/usdt.png',
   BTB: '/tokens/btb.png',

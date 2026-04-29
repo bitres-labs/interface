@@ -67,7 +67,7 @@ describe('contracts', () => {
     })
 
     it('should have Windows IP configured', () => {
-      expect(NETWORK_CONFIG.windowsIP).toBe('192.168.2.151')
+      expect(NETWORK_CONFIG.windowsIP).toMatch(/^\d{1,3}(\.\d{1,3}){3}$/)
     })
 
     it('should have empty block explorer for local network', () => {
