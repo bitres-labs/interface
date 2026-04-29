@@ -21,27 +21,6 @@ export default defineConfig({
         }
         warn(warning)
       },
-      output: {
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined
-          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-            return 'react-vendor'
-          }
-          if (id.includes('@reown') || id.includes('@walletconnect') || id.includes('@rainbow-me')) {
-            return 'walletconnect-vendor'
-          }
-          if (id.includes('@coinbase') || id.includes('@base-org')) {
-            return 'coinbase-wallet-vendor'
-          }
-          if (id.includes('wagmi') || id.includes('viem') || id.includes('@tanstack')) {
-            return 'web3-vendor'
-          }
-          if (id.includes('recharts')) {
-            return 'charts-vendor'
-          }
-          return 'vendor'
-        },
-      },
     },
   },
   resolve: {
