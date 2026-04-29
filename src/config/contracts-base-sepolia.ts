@@ -63,7 +63,7 @@ export const CONTRACTS_BASE_SEPOLIA = {
 export const NETWORK_CONFIG_BASE_SEPOLIA = {
   chainId: 84532,
   chainName: 'Base Sepolia',
-  rpcUrl: 'https://sepolia.base.org',
+  rpcUrl: 'https://base-sepolia-rpc.publicnode.com',
   blockExplorer: 'https://sepolia.basescan.org',
 }
 
