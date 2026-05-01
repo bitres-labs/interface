@@ -23,6 +23,7 @@ jobs:
       CI: true
       TEST_SUITE: ${{ inputs.suite || 'smoke' }}
       WALLET_PROVIDER: okx
+      PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -177,6 +178,7 @@ jobs:
       CI: true
       TEST_SUITE: full
       WALLET_PROVIDER: okx
+      PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -310,6 +312,7 @@ jobs:
       CI: true
       TEST_SUITE: full
       WALLET_PROVIDER: okx
+      PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4
@@ -443,6 +446,7 @@ jobs:
       CI: true
       TEST_SUITE: full
       WALLET_PROVIDER: okx
+      PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
         uses: actions/checkout@v4

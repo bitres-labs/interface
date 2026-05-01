@@ -4,6 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const reuseExistingServer = process.env.PLAYWRIGHT_REUSE_SERVER === 'true' || !process.env.CI
 
 // Load environment variables from .env files
 dotenv.config({ path: path.resolve(__dirname, '.env') })
@@ -69,7 +70,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer,
     timeout: 120 * 1000,
   },
 })
