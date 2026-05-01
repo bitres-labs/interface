@@ -1,5 +1,8 @@
 name: E2E (Synpress)
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   workflow_dispatch:
     inputs:
@@ -26,19 +29,19 @@ jobs:
       PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           path: interface
 
       - name: Checkout contracts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           repository: bitres-labs/bitres
           path: bitres
           submodules: recursive
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -148,7 +151,7 @@ jobs:
           tail -200 /tmp/init-full-system-e2e.log || true
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-results
@@ -181,19 +184,19 @@ jobs:
       PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           path: interface
 
       - name: Checkout contracts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           repository: bitres-labs/bitres
           path: bitres
           submodules: recursive
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -284,7 +287,7 @@ jobs:
           tail -200 /tmp/init-full-system.log || true
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-results-core
@@ -315,19 +318,19 @@ jobs:
       PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           path: interface
 
       - name: Checkout contracts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           repository: bitres-labs/bitres
           path: bitres
           submodules: recursive
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -418,7 +421,7 @@ jobs:
           tail -200 /tmp/init-full-system.log || true
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-results-stake-farm
@@ -449,19 +452,19 @@ jobs:
       PLAYWRIGHT_REUSE_SERVER: true
     steps:
       - name: Checkout interface
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           path: interface
 
       - name: Checkout contracts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           repository: bitres-labs/bitres
           path: bitres
           submodules: recursive
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -552,7 +555,7 @@ jobs:
           tail -200 /tmp/init-full-system.log || true
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-results-pool-nav

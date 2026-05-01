@@ -42,6 +42,36 @@ export async function connectWallet(page: Page, metamask: any) {
       await waitForWalletConnection(page, WAIT.LONG * 5)
     }
   }
+  await dismissOpenDialog(page)
+}
+
+async function dismissOpenDialog(page: Page) {
+  if (page.isClosed()) return
+
+  const dialog = page.locator('[role="dialog"]').first()
+  if (!(await dialog.count())) return
+
+  try {
+    if (!(await dialog.isVisible())) return
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(WAIT.SHORT)
+
+    if (await dialog.isVisible().catch(() => false)) {
+      const closeButton = dialog
+        .locator(
+          'button[aria-label*="close" i], button:has-text("Close"), button:has-text("Cancel")'
+        )
+        .first()
+      if (await closeButton.count()) {
+        await closeButton.click({ force: true })
+        await page.waitForTimeout(WAIT.SHORT)
+      }
+    }
+  } catch {
+    // A lingering wallet modal should not turn disabled transaction smoke paths
+    // into pointer-interception failures.
+  }
 }
 
 async function attemptWalletConnect(page: Page, metamask: any, attempts = 2) {
@@ -218,6 +248,7 @@ export async function clickButton(
  */
 export async function clickTab(page: Page, tabText: string) {
   if (page.isClosed()) return
+  await dismissOpenDialog(page)
   const tab = page
     .locator(`button:has-text("${tabText}")`)
     .filter({ hasNot: page.locator('[disabled]') })
