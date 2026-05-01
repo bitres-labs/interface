@@ -32,5 +32,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     open: true,
+    watch: {
+      ignored: [
+        '**/.cache-okx/**',
+        '**/.cache-synpress/**',
+        '**/test-results/**',
+        '**/playwright-report/**',
+      ],
+    },
   },
 })

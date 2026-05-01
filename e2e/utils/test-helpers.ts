@@ -96,23 +96,31 @@ async function attemptWalletConnect(page: Page, metamask: any, attempts = 2) {
 
 export async function waitForWalletConnection(page: Page, timeout = 15000) {
   if (page.isClosed()) return false
-  try {
-    await page.waitForFunction(
-      async () => {
+
+  const deadline = Date.now() + timeout
+  while (Date.now() < deadline) {
+    if (page.isClosed()) return false
+    try {
+      const connected = await page.evaluate(async () => {
         const ethereum = (
           window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }
         ).ethereum
         if (!ethereum?.request) return false
-        const accounts = await ethereum.request({ method: 'eth_accounts' })
+
+        const accounts = await Promise.race([
+          ethereum.request({ method: 'eth_accounts' }),
+          new Promise(resolve => setTimeout(() => resolve([]), 1500)),
+        ])
         return Array.isArray(accounts) && accounts.length > 0
-      },
-      undefined,
-      { timeout }
-    )
-    return true
-  } catch {
-    return false
+      })
+      if (connected) return true
+    } catch {
+      return false
+    }
+    await page.waitForTimeout(500)
   }
+
+  return false
 }
 
 async function ensureHardhatNetwork(page: Page, metamask: any) {

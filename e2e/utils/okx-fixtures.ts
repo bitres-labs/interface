@@ -34,7 +34,14 @@ class OkxWallet {
   ) {}
 
   async connectToDapp() {
-    await this.confirmInPopup(['Connect', 'Approve', 'Confirm'])
+    await this.confirmInPopup([
+      'Connect',
+      'Approve',
+      'Confirm',
+      'Continue',
+      'Allow',
+      'I understand',
+    ])
   }
 
   async confirmTransaction() {
@@ -51,10 +58,13 @@ class OkxWallet {
 
   private async confirmInPopup(labels: string[], timeout = 30_000) {
     const deadline = Date.now() + timeout
+    let clicked = false
     while (Date.now() < deadline) {
       const pages = this.context
         .pages()
         .filter(page => !page.isClosed() && page.url().includes(this.extensionId))
+
+      if (!pages.length && clicked) return
 
       for (const popup of pages) {
         if (popup.isClosed()) continue
@@ -78,6 +88,7 @@ class OkxWallet {
           await sleep(300)
 
           if (await tryClickLabels(popup, labels)) {
+            clicked = true
             await sleep(1000)
             continue
           }
@@ -93,6 +104,7 @@ class OkxWallet {
             await sleep(300)
 
             if (await tryClickLabels(frame, labels)) {
+              clicked = true
               await sleep(1000)
               continue
             }
@@ -108,21 +120,39 @@ class OkxWallet {
 }
 
 async function tryClickLabels(scope: Page | Frame, labels: string[]) {
+  await selectOkxAccountIfPresent(scope)
+
   for (const label of labels) {
     const labelPattern = new RegExp(label, 'i')
-    const roleButton = scope.getByRole('button', { name: labelPattern })
+    const roleButton = scope.getByRole('button', { name: labelPattern }).last()
     if (await roleButton.count()) {
-      await roleButton.first().click()
+      await roleButton.click({ force: true })
       return true
     }
 
-    const textButton = scope.locator('button', { hasText: labelPattern })
+    const textButton = scope.locator('button', { hasText: labelPattern }).last()
     if (await textButton.count()) {
-      await textButton.first().click()
+      await textButton.click({ force: true })
       return true
     }
   }
   return false
+}
+
+async function selectOkxAccountIfPresent(scope: Page | Frame) {
+  const hasConnectAccount = await scope
+    .getByText(/connect account/i)
+    .count()
+    .catch(() => 0)
+  if (!hasConnectAccount) return
+
+  const accountRow = scope
+    .locator('text=/Wallet\\s*\\d+|Account\\s*\\d+|0x[a-fA-F0-9]{8,}/i')
+    .first()
+  if (await accountRow.count()) {
+    await accountRow.click({ force: true }).catch(() => undefined)
+    await sleep(300)
+  }
 }
 
 async function waitForOkxPopup(context: BrowserContext, extensionId: string, timeout = 10_000) {

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const reuseExistingServer = process.env.PLAYWRIGHT_REUSE_SERVER === 'true' || !process.env.CI
+const retries = Number(process.env.PLAYWRIGHT_RETRIES ?? (process.env.CI ? 2 : 1))
 
 // Load environment variables from .env files
 dotenv.config({ path: path.resolve(__dirname, '.env') })
@@ -28,7 +29,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
 
   // Retry on CI only
-  retries: process.env.CI ? 2 : 1,
+  retries,
 
   // Opt out of parallel tests on CI
   workers: process.env.CI ? 1 : undefined,

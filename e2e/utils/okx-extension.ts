@@ -2,10 +2,14 @@ import path from 'node:path'
 import fs from 'node:fs'
 import fsPromises from 'node:fs/promises'
 import https from 'node:https'
+import os from 'node:os'
 import { unzipArchive } from '@synthetixio/synpress-cache'
 
 const OKX_EXTENSION_ID = 'mcohilncbfahbmgdjkbpemcciiolgcge'
-const OKX_CACHE_DIR = path.join(process.cwd(), '.cache-okx')
+const OKX_CACHE_DIR = path.join(
+  process.env.OKX_CACHE_DIR || process.env.RUNNER_TEMP || os.tmpdir(),
+  'bitres-okx-cache'
+)
 
 type PreparedExtension = {
   extensionPath: string

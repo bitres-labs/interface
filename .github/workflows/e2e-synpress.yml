@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: "E2E suite to run"
+        description: 'E2E suite to run'
         type: choice
         options:
           - smoke
@@ -24,6 +24,7 @@ jobs:
       TEST_SUITE: ${{ inputs.suite || 'smoke' }}
       WALLET_PROVIDER: okx
       PLAYWRIGHT_REUSE_SERVER: true
+      PLAYWRIGHT_RETRIES: 0
     steps:
       - name: Checkout interface
         uses: actions/checkout@v6
@@ -129,7 +130,7 @@ jobs:
         working-directory: interface
         if: env.TEST_SUITE == 'smoke'
         run: |
-          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/mint-ui-smoke.spec.ts e2e/mint-tx-smoke.spec.ts e2e/redeem-tx-smoke.spec.ts e2e/stake-tx-smoke.spec.ts e2e/swap-tx-smoke.spec.ts e2e/farm-tx-smoke.spec.ts e2e/pool-tx-smoke.spec.ts --workers=1
+          xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/mint-ui-smoke.spec.ts e2e/mint-tx-smoke.spec.ts e2e/redeem-tx-smoke.spec.ts e2e/stake-tx-smoke.spec.ts e2e/swap-tx-smoke.spec.ts e2e/farm-tx-smoke.spec.ts e2e/pool-tx-smoke.spec.ts --workers=1 --reporter=line --max-failures=2
 
       - name: Dump logs on failure
         if: failure()
