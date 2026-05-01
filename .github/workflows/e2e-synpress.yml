@@ -8,6 +8,7 @@ on:
         type: choice
         options:
           - smoke
+          - wallet
           - full
         default: smoke
   # Temporarily disabled - E2E tests need fixing
@@ -122,13 +123,20 @@ jobs:
 
       - name: Diagnose OKX extension load
         working-directory: interface
+        if: env.TEST_SUITE == 'wallet'
         run: |
           set -e
           xvfb-run -a node e2e/diagnose-okx.cjs
 
-      - name: Run OKX E2E wallet smoke
+      - name: Run browser E2E smoke
         working-directory: interface
         if: env.TEST_SUITE == 'smoke'
+        run: |
+          E2E_BASE_URL=http://127.0.0.1:3000 npx playwright test e2e/bitres-prod.spec.ts e2e/mint-ui-smoke.spec.ts --workers=1 --reporter=line
+
+      - name: Run OKX E2E wallet smoke
+        working-directory: interface
+        if: env.TEST_SUITE == 'wallet'
         run: |
           xvfb-run -a npx playwright test e2e/synpress-wallet.spec.ts e2e/mint-ui-smoke.spec.ts e2e/mint-tx-smoke.spec.ts e2e/redeem-tx-smoke.spec.ts e2e/stake-tx-smoke.spec.ts e2e/swap-tx-smoke.spec.ts e2e/farm-tx-smoke.spec.ts e2e/pool-tx-smoke.spec.ts --workers=1 --reporter=line --max-failures=2
 
