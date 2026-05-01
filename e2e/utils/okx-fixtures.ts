@@ -150,7 +150,33 @@ async function selectOkxAccountIfPresent(scope: Page | Frame) {
     .locator('text=/Wallet\\s*\\d+|Account\\s*\\d+|0x[a-fA-F0-9]{8,}/i')
     .first()
   if (await accountRow.count()) {
-    await accountRow.click({ force: true }).catch(() => undefined)
+    const box = await accountRow.boundingBox().catch(() => undefined)
+    if (box && 'mouse' in scope) {
+      const viewportWidth = scope.viewportSize()?.width ?? 900
+      await scope.mouse
+        .click(Math.min(box.x + 500, viewportWidth - 24), box.y + box.height / 2)
+        .catch(() => undefined)
+    } else {
+      await accountRow
+        .evaluate(element => {
+          let current: Element | null = element
+          for (let i = 0; current && i < 6; i += 1) {
+            if (
+              current instanceof HTMLElement &&
+              (current.getAttribute('role') === 'button' ||
+                current.tagName === 'BUTTON' ||
+                current.onclick ||
+                getComputedStyle(current).cursor === 'pointer')
+            ) {
+              current.click()
+              return
+            }
+            current = current.parentElement
+          }
+          if (element instanceof HTMLElement) element.click()
+        })
+        .catch(() => undefined)
+    }
     await sleep(300)
   }
 }
