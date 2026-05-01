@@ -418,9 +418,21 @@ async function onboardOkx(
   await page.waitForTimeout(1000)
 
   const startButton = page.getByRole('button', { name: /start your web3 journey/i })
-  await startButton.waitFor({ timeout: OKX_ONBOARDING_TIMEOUT })
-  await startButton.click()
-  await page.waitForTimeout(2000)
+  try {
+    await startButton.waitFor({ timeout: 8000 })
+    await startButton.click()
+    await page.waitForTimeout(2000)
+  } catch {
+    const hasWalletHome = await page
+      .locator('text=/Account\\s*\\d+|Wallet\\s*\\d+|Crypto/i')
+      .count()
+      .catch(() => 0)
+    if (!hasWalletHome) {
+      throw new Error('OKX onboarding did not reach wallet home')
+    }
+  }
+
+  await closeOkxInterstitials(page)
 
   // Try to add bitres.org to trusted sites to avoid phishing warning
   try {
@@ -430,6 +442,27 @@ async function onboardOkx(
   }
 
   return page
+}
+
+async function closeOkxInterstitials(page: Page) {
+  await page.keyboard.press('Escape').catch(() => undefined)
+  await sleep(300)
+
+  const assetTransferModal = await page
+    .getByText(/asset transfer pending/i)
+    .count()
+    .catch(() => 0)
+  if (assetTransferModal) {
+    const viewport = page.viewportSize()
+    await page.mouse.click((viewport?.width ?? 900) / 2 + 160, 145).catch(() => undefined)
+    await sleep(500)
+  }
+
+  const closeButton = page.getByRole('button', { name: /close|skip|not now|maybe later/i }).first()
+  if (await closeButton.count()) {
+    await closeButton.click({ force: true }).catch(() => undefined)
+    await sleep(300)
+  }
 }
 
 // Add a domain to OKX trusted sites whitelist
