@@ -58,7 +58,14 @@ module.exports = {
   overrides: [
     {
       // allow any type and console in test files
-      files: ['**/*.test.ts', '**/*.test.tsx', '**/test/**/*.ts', '**/test/**/*.tsx'],
+      files: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/test/**/*.ts',
+        '**/test/**/*.tsx',
+        'e2e/**/*.ts',
+        'e2e/**/*.tsx',
+      ],
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
         'no-console': 'off',
