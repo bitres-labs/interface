@@ -16,7 +16,13 @@ import { Wallet, AlertCircle } from 'lucide-react'
 import { usePortfolio } from '@/hooks/usePortfolio'
 import { useLiquidityPools } from '@/hooks/useLiquidityPools'
 import { useFarmingPositions } from '@/hooks/useFarmingPositions'
-import { formatUSD, formatTokenAmount, formatCompact, getTokenDecimals, formatLPAmount } from '@/utils/format'
+import {
+  formatUSD,
+  formatTokenAmount,
+  formatCompact,
+  getTokenDecimals,
+  formatLPAmount,
+} from '@/utils/format'
 import { toNumber } from '@/utils/numbers'
 import { displayTokenSymbol } from '@/config/contracts'
 
@@ -70,7 +76,9 @@ function StakingPositionCard({ position }: { position: any }) {
         <div className="flex justify-between">
           <span className="text-gray-600 dark:text-gray-400">Balance:</span>
           <span className="font-semibold text-gray-900 dark:text-white">
-            {position.balance.toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(position.token) })}
+            {position.balance.toLocaleString(undefined, {
+              maximumFractionDigits: getTokenDecimals(position.token),
+            })}
           </span>
         </div>
         <div className="flex justify-between">
@@ -217,8 +225,15 @@ function LiquidityPositionCard({
         </div>
       </div>
       <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-primary-100 dark:border-primary-900/30 pt-2 mb-3">
-        Pool: {Number(reserves.reserve0Formatted).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.token0.symbol) })} {displayTokenSymbol(pool.token0.symbol)} +{' '}
-        {Number(reserves.reserve1Formatted).toLocaleString(undefined, { maximumFractionDigits: getTokenDecimals(pool.token1.symbol) })} {displayTokenSymbol(pool.token1.symbol)}
+        Pool:{' '}
+        {Number(reserves.reserve0Formatted).toLocaleString(undefined, {
+          maximumFractionDigits: getTokenDecimals(pool.token0.symbol),
+        })}{' '}
+        {displayTokenSymbol(pool.token0.symbol)} +{' '}
+        {Number(reserves.reserve1Formatted).toLocaleString(undefined, {
+          maximumFractionDigits: getTokenDecimals(pool.token1.symbol),
+        })}{' '}
+        {displayTokenSymbol(pool.token1.symbol)}
       </div>
       <div className="flex gap-2">
         <button

@@ -5,7 +5,9 @@ import contractsData from './contracts-base-sepolia.json'
 
 const ZERO = '0x0000000000000000000000000000000000000000' as `0x${string}`
 const { tokens, contracts, pairs, oracles } = contractsData
-const uniswap = (contractsData as { uniswap?: { UniswapV2Factory?: string; UniswapV2Router?: string } }).uniswap
+const uniswap = (
+  contractsData as { uniswap?: { UniswapV2Factory?: string; UniswapV2Router?: string } }
+).uniswap
 
 const address = (value?: string) => (value || ZERO) as `0x${string}`
 

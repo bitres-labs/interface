@@ -18,8 +18,14 @@ function getExtensionIdFromUrl(url?: string) {
 
 async function getExtensionIdFromContext(context: BrowserContext) {
   console.log('[MetaMask][CDP] Looking for extension ID...')
-  console.log('[MetaMask][CDP] Service workers:', context.serviceWorkers().map(w => w.url()))
-  console.log('[MetaMask][CDP] Pages:', context.pages().map(p => p.url()))
+  console.log(
+    '[MetaMask][CDP] Service workers:',
+    context.serviceWorkers().map(w => w.url())
+  )
+  console.log(
+    '[MetaMask][CDP] Pages:',
+    context.pages().map(p => p.url())
+  )
 
   for (const worker of context.serviceWorkers()) {
     const id = getExtensionIdFromUrl(worker.url())
@@ -62,7 +68,7 @@ async function getExtensionIdFromContext(context: BrowserContext) {
 
 export const metaMaskFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>) => {
   return base.extend<MetaMaskFixtures>({
-    context: async ({}, use) => {
+    context: async (_fixtures, use) => {
       const cdpUrl = process.env.PW_CDP_URL || 'http://127.0.0.1:9222'
       console.log('[MetaMask][CDP] Connecting to:', cdpUrl)
 
@@ -110,6 +116,6 @@ export const metaMaskFixtures = (walletSetup: ReturnType<typeof defineWalletSetu
 
       const metamask = new MetaMask(context, _metamaskPage, walletPassword, extensionId)
       await use(metamask)
-    }
+    },
   })
 }

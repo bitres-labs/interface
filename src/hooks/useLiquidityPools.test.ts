@@ -78,7 +78,7 @@ describe('useLiquidityPools', () => {
   describe('when wallet is connected', () => {
     beforeEach(() => {
       // Mock LP balances for all 4 pools
-      vi.mocked(useUniswapV2.useLPBalance).mockImplementation((address) => {
+      vi.mocked(useUniswapV2.useLPBalance).mockImplementation(address => {
         const balances: Record<string, any> = {
           '0x1111111111111111111111111111111111111111': {
             formatted: '100',
@@ -101,7 +101,7 @@ describe('useLiquidityPools', () => {
       })
 
       // Mock reserves for all 4 pools
-      vi.mocked(useUniswapV2.usePairReserves).mockImplementation((address) => {
+      vi.mocked(useUniswapV2.usePairReserves).mockImplementation(address => {
         const reserves: Record<string, any> = {
           '0x1111111111111111111111111111111111111111': {
             reserve0: parseUnits('10', 8), // 10 WBTC (8 decimals)
@@ -124,7 +124,7 @@ describe('useLiquidityPools', () => {
       })
 
       // Mock total supply for all 4 pools
-      vi.mocked(useUniswapV2.useLPTotalSupply).mockImplementation((address) => {
+      vi.mocked(useUniswapV2.useLPTotalSupply).mockImplementation(address => {
         const supplies: Record<string, any> = {
           '0x1111111111111111111111111111111111111111': {
             formatted: '1000',

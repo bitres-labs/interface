@@ -39,8 +39,16 @@ export function WithdrawConvertModal({
 
   // Conversion hooks
   const { unwrap, isPending: isUnwrapping, isSuccess: unwrapSuccess } = useUnwrapWETH()
-  const { redeem: redeemStBTD, isPending: isRedeemingStBTD, isSuccess: redeemStBTDSuccess } = useRedeemStBTD()
-  const { redeem: redeemStBTB, isPending: isRedeemingStBTB, isSuccess: redeemStBTBSuccess } = useRedeemStBTB()
+  const {
+    redeem: redeemStBTD,
+    isPending: isRedeemingStBTD,
+    isSuccess: redeemStBTDSuccess,
+  } = useRedeemStBTD()
+  const {
+    redeem: redeemStBTB,
+    isPending: isRedeemingStBTB,
+    isSuccess: redeemStBTBSuccess,
+  } = useRedeemStBTB()
 
   // Price hooks for USD value calculation
   const { wethPrice } = useWETHPrice()
@@ -67,11 +75,8 @@ export function WithdrawConvertModal({
   // Reset state when modal opens, and set pre-filled amount if provided
   useEffect(() => {
     if (isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAmount(withdrawAmount || '')
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOutputChoice('wrapped')
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep('withdraw')
     }
   }, [isOpen, withdrawAmount])
@@ -198,17 +203,20 @@ export function WithdrawConvertModal({
                   {/* USD Value Display */}
                   {withdrawUSDValue > 0 && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      ≈ ${withdrawUSDValue.toLocaleString(undefined, {
+                      ≈ $
+                      {withdrawUSDValue.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
+                        maximumFractionDigits: 2,
                       })}
                     </div>
                   )}
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Staked: {stakedAmount.toLocaleString(undefined, {
+                    Staked:{' '}
+                    {stakedAmount.toLocaleString(undefined, {
                       minimumFractionDigits: 0,
-                      maximumFractionDigits: getTokenDecimals(tokenSymbol)
-                    })} {tokenSymbol}
+                      maximumFractionDigits: getTokenDecimals(tokenSymbol),
+                    })}{' '}
+                    {tokenSymbol}
                   </p>
                 </div>
 
@@ -286,9 +294,9 @@ export function WithdrawConvertModal({
 
             {/* Success Message */}
             {(withdrawSuccess && outputChoice === 'wrapped') ||
-              unwrapSuccess ||
-              redeemStBTDSuccess ||
-              redeemStBTBSuccess ? (
+            unwrapSuccess ||
+            redeemStBTDSuccess ||
+            redeemStBTBSuccess ? (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                 <p className="text-sm text-green-800 dark:text-green-200">
                   ✅ Operation successful! Closing window...

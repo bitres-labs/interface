@@ -13,8 +13,22 @@ import { blockInvalidNumberInput } from '@/utils/input'
 import { useApproveAndExecute } from '@/hooks/useApproveAndExecute'
 import { useFarmingPositions } from '@/hooks/useFarmingPositions'
 import { TokenIcon, DualTokenIcon } from '@/components/common/TokenIcon'
-import { formatCurrency, getTokenDecimals, formatLPBalance, formatSmartPercentage, formatSmallAmount } from '@/utils/format'
-import { useBRSMined, useBRSMaxSupply, useWBTCPrice, useBTDPrice, useBTBPrice, useBRSPrice, useWETHPrice } from '@/hooks/useSystemStats'
+import {
+  formatCurrency,
+  getTokenDecimals,
+  formatLPBalance,
+  formatSmartPercentage,
+  formatSmallAmount,
+} from '@/utils/format'
+import {
+  useBRSMined,
+  useBRSMaxSupply,
+  useWBTCPrice,
+  useBTDPrice,
+  useBTBPrice,
+  useBRSPrice,
+  useWETHPrice,
+} from '@/hooks/useSystemStats'
 import { ConvertAndStakeModal } from '@/components/farm/ConvertAndStakeModal'
 import { WithdrawConvertModal } from '@/components/farm/WithdrawConvertModal'
 import { useBTDStakeRate, useBTBStakeRate } from '@/hooks/useStakingRate'
@@ -103,21 +117,9 @@ function FarmPage() {
   const lpTokenPrices = useAllLPTokenPrices()
 
   // Farming operation hooks (share instances for both execution + success tracking)
-  const {
-    deposit,
-    isPending: isDepositing,
-    isSuccess: depositSuccess,
-  } = useDeposit()
-  const {
-    withdraw,
-    isPending: isWithdrawing,
-    isSuccess: withdrawSuccess,
-  } = useWithdraw()
-  const {
-    claim,
-    isPending: isClaiming,
-    isSuccess: claimSuccess,
-  } = useClaim()
+  const { deposit, isPending: isDepositing, isSuccess: depositSuccess } = useDeposit()
+  const { withdraw, isPending: isWithdrawing, isSuccess: withdrawSuccess } = useWithdraw()
+  const { claim, isPending: isClaiming, isSuccess: claimSuccess } = useClaim()
 
   // Pool metadata for token addresses (needed for balance/allowance checks)
   const poolMeta = [
@@ -303,9 +305,10 @@ function FarmPage() {
         tvlDisplay: formatCurrency(pool.tvl),
         allocation: pool.poolInfo.allocation,
         yourStake: pool.userInfo.stakedAmount,
-        yourStakeDisplay: pool.type === 'LP' && index <= 2
-          ? formatLPBalance(pool.userInfo.stakedAmount)
-          : formatSmallAmount(pool.userInfo.stakedAmount, getTokenDecimals(pool.name)),
+        yourStakeDisplay:
+          pool.type === 'LP' && index <= 2
+            ? formatLPBalance(pool.userInfo.stakedAmount)
+            : formatSmallAmount(pool.userInfo.stakedAmount, getTokenDecimals(pool.name)),
         yourRewards: pool.pending.amount,
         yourRewardsDisplay: pool.pending.amount.toLocaleString(undefined, {
           maximumFractionDigits: 2, // BRS rewards always use 2 decimals
@@ -384,35 +387,44 @@ function FarmPage() {
   }
 
   // Check if user has insufficient balance for deposit (amount > balance)
-  const canAutoConvert = useCallback((pool: (typeof pools)[number], desiredAmount: number, currentWrappedBalance: number) => {
-    if (desiredAmount <= 0) return false
+  const canAutoConvert = useCallback(
+    (pool: (typeof pools)[number], desiredAmount: number, currentWrappedBalance: number) => {
+      if (desiredAmount <= 0) return false
 
-    if (pool.id === 6 && pool.name === 'WETH') {
-      const ethBalance = ethBalanceRaw ? Number(formatUnits(ethBalanceRaw, 18)) : 0
-      const shortage = desiredAmount - currentWrappedBalance
-      return shortage > 0 && ethBalance >= shortage
-    }
+      if (pool.id === 6 && pool.name === 'WETH') {
+        const ethBalance = ethBalanceRaw ? Number(formatUnits(ethBalanceRaw, 18)) : 0
+        const shortage = desiredAmount - currentWrappedBalance
+        return shortage > 0 && ethBalance >= shortage
+      }
 
-    if (pool.id === 7 && pool.name === 'stBTD') {
-      const btdBalance = btdBalanceRaw ? Number(formatUnits(btdBalanceRaw, 18)) : 0
-      const shortage = desiredAmount - currentWrappedBalance
-      const inverseRate = btdStakeRate.inverseRate || 0
-      if (shortage <= 0 || inverseRate <= 0) return false
-      const requiredBTD = shortage / inverseRate
-      return btdBalance >= requiredBTD
-    }
+      if (pool.id === 7 && pool.name === 'stBTD') {
+        const btdBalance = btdBalanceRaw ? Number(formatUnits(btdBalanceRaw, 18)) : 0
+        const shortage = desiredAmount - currentWrappedBalance
+        const inverseRate = btdStakeRate.inverseRate || 0
+        if (shortage <= 0 || inverseRate <= 0) return false
+        const requiredBTD = shortage / inverseRate
+        return btdBalance >= requiredBTD
+      }
 
-    if (pool.id === 8 && pool.name === 'stBTB') {
-      const btbBalance = btbBalanceRaw ? Number(formatUnits(btbBalanceRaw, 18)) : 0
-      const shortage = desiredAmount - currentWrappedBalance
-      const inverseRate = btbStakeRate.inverseRate || 0
-      if (shortage <= 0 || inverseRate <= 0) return false
-      const requiredBTB = shortage / inverseRate
-      return btbBalance >= requiredBTB
-    }
+      if (pool.id === 8 && pool.name === 'stBTB') {
+        const btbBalance = btbBalanceRaw ? Number(formatUnits(btbBalanceRaw, 18)) : 0
+        const shortage = desiredAmount - currentWrappedBalance
+        const inverseRate = btbStakeRate.inverseRate || 0
+        if (shortage <= 0 || inverseRate <= 0) return false
+        const requiredBTB = shortage / inverseRate
+        return btbBalance >= requiredBTB
+      }
 
-    return false
-  }, [ethBalanceRaw, btdBalanceRaw, btbBalanceRaw, btdStakeRate.inverseRate, btbStakeRate.inverseRate])
+      return false
+    },
+    [
+      ethBalanceRaw,
+      btdBalanceRaw,
+      btbBalanceRaw,
+      btdStakeRate.inverseRate,
+      btbStakeRate.inverseRate,
+    ]
+  )
 
   const hasInsufficientBalance = (pool: (typeof pools)[number]) => {
     const amount = stakeAmounts[pool.id]
@@ -736,7 +748,8 @@ function FarmPage() {
         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
           {maxSupply > minedAmount ? (
             <>
-              {(maxSupply - minedAmount).toLocaleString(undefined, { maximumFractionDigits: 2 })} BRS remaining to mine
+              {(maxSupply - minedAmount).toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
+              BRS remaining to mine
             </>
           ) : (
             <>All BRS mined</>
@@ -873,26 +886,44 @@ function FarmPage() {
                       {pool.id === 8 && 'stBTB: '}
                       {pool.balance
                         ? pool.type === 'LP' && pool.id <= 2
-                          ? formatLPBalance(Number(formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)))
+                          ? formatLPBalance(
+                              Number(
+                                formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)
+                              )
+                            )
                           : formatSmallAmount(
-                              Number(formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)),
+                              Number(
+                                formatUnits(pool.balance as bigint, pool.poolInfo.decimals ?? 18)
+                              ),
                               getTokenDecimals(pool.name)
                             )
                         : '0'}
                       {/* Show base token balance for WETH/stBTD/stBTB pools */}
                       {pool.id === 6 && ethBalanceRaw && (
                         <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                          (ETH: {Number(formatUnits(ethBalanceRaw, 18)).toLocaleString(undefined, { maximumFractionDigits: 6 })})
+                          (ETH:{' '}
+                          {Number(formatUnits(ethBalanceRaw, 18)).toLocaleString(undefined, {
+                            maximumFractionDigits: 6,
+                          })}
+                          )
                         </span>
                       )}
                       {pool.id === 7 && btdBalanceRaw && (
                         <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                          (BTD: {Number(formatUnits(btdBalanceRaw, 18)).toLocaleString(undefined, { maximumFractionDigits: 2 })})
+                          (BTD:{' '}
+                          {Number(formatUnits(btdBalanceRaw, 18)).toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                          )
                         </span>
                       )}
                       {pool.id === 8 && btbBalanceRaw && (
                         <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                          (BTB: {Number(formatUnits(btbBalanceRaw, 18)).toLocaleString(undefined, { maximumFractionDigits: 2 })})
+                          (BTB:{' '}
+                          {Number(formatUnits(btbBalanceRaw, 18)).toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                          )
                         </span>
                       )}
                     </span>
@@ -913,13 +944,9 @@ function FarmPage() {
               </div>
             )}
 
-
             {/* Connect Wallet Prompt or Action Section */}
             {!isConnected ? (
-              <button
-                onClick={openConnectModal}
-                className="w-full btn-primary text-sm py-3"
-              >
+              <button onClick={openConnectModal} className="w-full btn-primary text-sm py-3">
                 Connect Wallet
               </button>
             ) : (
@@ -947,17 +974,20 @@ function FarmPage() {
                       MAX
                     </button>
                     {/* USD value display (shown for all pools, inside the input box) */}
-                    {stakeAmounts[pool.id] && Number(stakeAmounts[pool.id]) > 0 && (() => {
-                      const usdValue = calculateStakeUSDValue(pool)
-                      return usdValue > 0 ? (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          ≈ ${usdValue.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                          })}
-                        </div>
-                      ) : null
-                    })()}
+                    {stakeAmounts[pool.id] &&
+                      Number(stakeAmounts[pool.id]) > 0 &&
+                      (() => {
+                        const usdValue = calculateStakeUSDValue(pool)
+                        return usdValue > 0 ? (
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            ≈ $
+                            {usdValue.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </div>
+                        ) : null
+                      })()}
                   </div>
                 </div>
 
@@ -1017,8 +1047,8 @@ function FarmPage() {
           <div>
             <h3 className="font-semibold text-primary-900 mb-1">21 Billion BRS Total Supply</h3>
             <p className="text-sm text-primary-700">
-              BRS emissions follow a 4-year halving schedule. 60% goes to Yield Farmers,
-              20% to Treasury, 10% to Foundation, 10% to Team.
+              BRS emissions follow a 4-year halving schedule. 60% goes to Yield Farmers, 20% to
+              Treasury, 10% to Foundation, 10% to Team.
             </p>
           </div>
         </div>

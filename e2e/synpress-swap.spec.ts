@@ -20,7 +20,7 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -46,7 +46,9 @@ test.describe('Swap Interface', () => {
 
   test('should show token selectors', async ({ page }) => {
     // Check for token selector buttons
-    const tokenSelectors = page.locator('[role="combobox"], [data-testid="token-select"], button:has-text("Select"), select')
+    const tokenSelectors = page.locator(
+      '[role="combobox"], [data-testid="token-select"], button:has-text("Select"), select'
+    )
     expect(await tokenSelectors.count()).toBeGreaterThan(0)
 
     await takeScreenshot(page, 'swap-token-selectors')
@@ -54,13 +56,16 @@ test.describe('Swap Interface', () => {
 
   test('should show slippage settings', async ({ page }) => {
     // Look for settings/slippage button
-    const settingsButton = page.locator('button[aria-label*="settings"], button:has-text("Settings"), [class*="settings"]')
-    if (await settingsButton.count() > 0) {
+    const settingsButton = page.locator(
+      'button[aria-label*="settings"], button:has-text("Settings"), [class*="settings"]'
+    )
+    if ((await settingsButton.count()) > 0) {
       await settingsButton.first().click()
       await page.waitForTimeout(WAIT.SHORT)
 
       const content = await page.content()
-      const hasSlippage = content.includes('Slippage') || content.includes('slippage') || content.includes('%')
+      const hasSlippage =
+        content.includes('Slippage') || content.includes('slippage') || content.includes('%')
       expect(hasSlippage).toBe(true)
 
       await takeScreenshot(page, 'swap-slippage-settings')
@@ -78,7 +83,7 @@ test.describe('Swap Token Selection', () => {
 
   test('should select input token', async ({ page }) => {
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
 
@@ -92,7 +97,7 @@ test.describe('Swap Token Selection', () => {
 
   test('should select output token', async ({ page }) => {
     const tokenSelectors = page.locator('[role="combobox"], [data-testid="token-select"]')
-    if (await tokenSelectors.count() > 1) {
+    if ((await tokenSelectors.count()) > 1) {
       await tokenSelectors.nth(1).click()
       await page.waitForTimeout(WAIT.SHORT)
 
@@ -102,8 +107,12 @@ test.describe('Swap Token Selection', () => {
 
   test('should swap token positions with switch button', async ({ page }) => {
     // Look for swap/switch button between input and output
-    const switchButton = page.locator('button:has([class*="rotate"]), button:has([class*="switch"]), button:has([class*="arrow"])').first()
-    if (await switchButton.count() > 0) {
+    const switchButton = page
+      .locator(
+        'button:has([class*="rotate"]), button:has([class*="switch"]), button:has([class*="arrow"])'
+      )
+      .first()
+    if ((await switchButton.count()) > 0) {
       await switchButton.click()
       await page.waitForTimeout(WAIT.SHORT)
 
@@ -126,7 +135,7 @@ test.describe('Swap Execution', () => {
 
     // Check for calculated output
     const outputs = page.locator('input[type="number"], input[inputmode="decimal"]')
-    if (await outputs.count() > 1) {
+    if ((await outputs.count()) > 1) {
       const outputValue = await outputs.nth(1).inputValue()
       console.log('Calculated output:', outputValue)
     }
@@ -139,7 +148,11 @@ test.describe('Swap Execution', () => {
     await page.waitForTimeout(WAIT.MEDIUM)
 
     const content = await page.content()
-    const hasPriceInfo = content.includes('Price') || content.includes('price') || content.includes('Impact') || content.includes('Rate')
+    const hasPriceInfo =
+      content.includes('Price') ||
+      content.includes('price') ||
+      content.includes('Impact') ||
+      content.includes('Rate')
 
     await takeScreenshot(page, 'swap-price-info')
   })
@@ -163,7 +176,7 @@ test.describe('Swap Execution', () => {
     await takeScreenshot(page, 'swap-before-tx')
 
     const swapButton = page.locator('button:has-text("Swap")').last()
-    if (await swapButton.count() > 0 && !(await swapButton.isDisabled())) {
+    if ((await swapButton.count()) > 0 && !(await swapButton.isDisabled())) {
       await swapButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -204,7 +217,10 @@ test.describe('Swap Execution', () => {
     await page.waitForTimeout(WAIT.MEDIUM)
 
     const content = await page.content()
-    const hasError = content.includes('Insufficient') || content.includes('insufficient') || content.includes('balance')
+    const hasError =
+      content.includes('Insufficient') ||
+      content.includes('insufficient') ||
+      content.includes('balance')
 
     await takeScreenshot(page, 'swap-insufficient-balance')
   })
@@ -227,7 +243,7 @@ test.describe('Swap Add Liquidity', () => {
 
   test('should show two token input fields', async ({ page }) => {
     const inputs = page.locator('input[type="number"], input[inputmode="decimal"]')
-    if (await inputs.count() < 2) return
+    if ((await inputs.count()) < 2) return
 
     await takeScreenshot(page, 'swap-add-liquidity-inputs')
   })
@@ -238,7 +254,7 @@ test.describe('Swap Add Liquidity', () => {
 
     // Second input should auto-calculate
     const inputs = page.locator('input[type="number"], input[inputmode="decimal"]')
-    if (await inputs.count() > 1) {
+    if ((await inputs.count()) > 1) {
       const secondValue = await inputs.nth(1).inputValue()
       console.log('Paired amount:', secondValue)
     }
@@ -254,8 +270,10 @@ test.describe('Swap Add Liquidity', () => {
 
     await takeScreenshot(page, 'swap-add-liquidity-before')
 
-    const addButton = page.locator('button:has-text("Add Liquidity"), button:has-text("Add")').last()
-    if (await addButton.count() > 0 && !(await addButton.isDisabled())) {
+    const addButton = page
+      .locator('button:has-text("Add Liquidity"), button:has-text("Add")')
+      .last()
+    if ((await addButton.count()) > 0 && !(await addButton.isDisabled())) {
       await addButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -308,19 +326,21 @@ test.describe('Swap Remove Liquidity', () => {
 
   test('should show LP token input', async ({ page }) => {
     const inputs = page.locator('input[type="number"], input[inputmode="decimal"]')
-    if (await inputs.count() === 0) return
+    if ((await inputs.count()) === 0) return
 
     await takeScreenshot(page, 'swap-remove-liquidity-input')
   })
 
   test('should show percentage slider or buttons', async ({ page }) => {
     // Look for percentage options (25%, 50%, 75%, 100%)
-    const percentButtons = page.locator('button:has-text("25%"), button:has-text("50%"), button:has-text("75%"), button:has-text("100%"), button:has-text("MAX")')
-    const hasPercentOptions = await percentButtons.count() > 0
+    const percentButtons = page.locator(
+      'button:has-text("25%"), button:has-text("50%"), button:has-text("75%"), button:has-text("100%"), button:has-text("MAX")'
+    )
+    const hasPercentOptions = (await percentButtons.count()) > 0
 
     // Or slider
     const slider = page.locator('input[type="range"], [role="slider"]')
-    const hasSlider = await slider.count() > 0
+    const hasSlider = (await slider.count()) > 0
 
     if (!hasPercentOptions && !hasSlider) return
 
@@ -333,7 +353,8 @@ test.describe('Swap Remove Liquidity', () => {
 
     // Should show what tokens user will receive
     const content = await page.content()
-    const hasBreakdown = content.includes('receive') || content.includes('Receive') || content.includes('Output')
+    const hasBreakdown =
+      content.includes('receive') || content.includes('Receive') || content.includes('Output')
 
     await takeScreenshot(page, 'swap-remove-liquidity-breakdown')
   })
@@ -346,8 +367,10 @@ test.describe('Swap Remove Liquidity', () => {
 
     await takeScreenshot(page, 'swap-remove-liquidity-before')
 
-    const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
-    if (await removeButton.count() > 0 && !(await removeButton.isDisabled())) {
+    const removeButton = page
+      .locator('button:has-text("Remove Liquidity"), button:has-text("Remove")')
+      .last()
+    if ((await removeButton.count()) > 0 && !(await removeButton.isDisabled())) {
       await removeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -375,7 +398,10 @@ test.describe('Swap Remove Liquidity', () => {
 })
 
 test.describe('Swap Tab Switching', () => {
-  test('should switch between Swap, Add Liquidity, Remove Liquidity tabs', async ({ page, metamask }) => {
+  test('should switch between Swap, Add Liquidity, Remove Liquidity tabs', async ({
+    page,
+    metamask,
+  }) => {
     await navigateTo(page, '/swap')
     await connectWallet(page, metamask)
 

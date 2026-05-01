@@ -6,7 +6,12 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, readBalance, readBalanceUntilChanged } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  readBalance,
+  readBalanceUntilChanged,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Stake BTD → stBTD', () => {
@@ -96,9 +101,11 @@ test.describe('Stake BTD → stBTD', () => {
     }
 
     // Look for stake/deposit button
-    const depositBtn = page.locator(
-      'button:has-text("Stake BTD"), button:has-text("Deposit"), button:has-text("Approve")'
-    ).last()
+    const depositBtn = page
+      .locator(
+        'button:has-text("Stake BTD"), button:has-text("Deposit"), button:has-text("Approve")'
+      )
+      .last()
 
     if ((await depositBtn.count()) > 0 && !(await depositBtn.isDisabled())) {
       const btnText = await depositBtn.textContent()
@@ -142,7 +149,9 @@ test.describe('Stake BTD → stBTD', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Switch to Unstake tab
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
+    const withdrawTab = page
+      .locator('button:has-text("Withdraw"), button:has-text("Unstake")')
+      .first()
     if ((await withdrawTab.count()) === 0) {
       console.log('[Stake] No Unstake tab found - skipping')
       test.skip()
@@ -174,9 +183,11 @@ test.describe('Stake BTD → stBTD', () => {
     }
 
     // Click unstake button
-    const unstakeBtn = page.locator(
-      'button:has-text("Unstake BTD"), button:has-text("Unstake"), button:has-text("Withdraw")'
-    ).last()
+    const unstakeBtn = page
+      .locator(
+        'button:has-text("Unstake BTD"), button:has-text("Unstake"), button:has-text("Withdraw")'
+      )
+      .last()
 
     if ((await unstakeBtn.count()) > 0 && !(await unstakeBtn.isDisabled())) {
       const btnText = await unstakeBtn.textContent()
@@ -216,7 +227,9 @@ test.describe('Stake BTD → stBTD', () => {
   test('withdraw tab is accessible', async ({ sepoliaPage: page }) => {
     await navigateTo(page, '/stake')
 
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
+    const withdrawTab = page
+      .locator('button:has-text("Withdraw"), button:has-text("Unstake")')
+      .first()
     if ((await withdrawTab.count()) > 0) {
       await withdrawTab.click()
       await page.waitForTimeout(TIMEOUT.SHORT)

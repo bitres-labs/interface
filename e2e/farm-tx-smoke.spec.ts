@@ -5,13 +5,7 @@
 import { expect } from '@playwright/test'
 import { metaMaskFixtures } from './utils/metamask-fixtures-router'
 import BasicSetup from '../test/wallet-setup/okx.setup'
-import {
-  clickTab,
-  connectWallet,
-  handleTransaction,
-  navigateTo,
-  WAIT
-} from './utils/test-helpers'
+import { clickTab, connectWallet, handleTransaction, navigateTo, WAIT } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
 
@@ -24,7 +18,9 @@ test.describe('Farm TX smoke', () => {
     await clickTab(page, 'Farm')
     await page.waitForTimeout(WAIT.MEDIUM)
 
-    const claimButton = page.locator('button:has-text("Claim All"), button:has-text("Claim")').first()
+    const claimButton = page
+      .locator('button:has-text("Claim All"), button:has-text("Claim")')
+      .first()
     if (!(await claimButton.count())) {
       test.skip(true, 'Claim button not found, skipping tx smoke')
     }

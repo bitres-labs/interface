@@ -21,7 +21,7 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -37,7 +37,7 @@ const FARM_POOLS = [
   'BTB',
   'WBTC',
   'BRS',
-  'BRS-WBTC LP'
+  'BRS-WBTC LP',
 ]
 
 test.describe('Farm Interface', () => {
@@ -49,7 +49,8 @@ test.describe('Farm Interface', () => {
 
   test('should display Farm page', async ({ page }) => {
     const content = await page.content()
-    const hasFarmContent = content.includes('Farm') || content.includes('Stake') || content.includes('Yield')
+    const hasFarmContent =
+      content.includes('Farm') || content.includes('Stake') || content.includes('Yield')
     expect(hasFarmContent).toBe(true)
 
     await takeScreenshot(page, 'farm-interface')
@@ -73,15 +74,19 @@ test.describe('Farm Interface', () => {
 
   test('should show TVL information', async ({ page }) => {
     const content = await page.content()
-    const hasTVL = content.includes('TVL') || content.includes('Total Value') || content.includes('Staked')
+    const hasTVL =
+      content.includes('TVL') || content.includes('Total Value') || content.includes('Staked')
 
     await takeScreenshot(page, 'farm-tvl-info')
   })
 
   test('should show rewards earned', async ({ page }) => {
     const content = await page.content()
-    const hasRewards = content.includes('Reward') || content.includes('reward') ||
-                       content.includes('Earned') || content.includes('BRS')
+    const hasRewards =
+      content.includes('Reward') ||
+      content.includes('reward') ||
+      content.includes('Earned') ||
+      content.includes('BRS')
 
     await takeScreenshot(page, 'farm-rewards-display')
   })
@@ -97,13 +102,13 @@ test.describe('Farm Pool Selection', () => {
   test('should expand pool details on click', async ({ page }) => {
     // Click on first pool to expand
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
 
       // Should show deposit/withdraw inputs
       const inputs = page.locator('input[type="number"], input[inputmode="decimal"]')
-      const hasInputs = await inputs.count() > 0
+      const hasInputs = (await inputs.count()) > 0
 
       await takeScreenshot(page, 'farm-pool-expanded')
     }
@@ -112,11 +117,12 @@ test.describe('Farm Pool Selection', () => {
   test('should show pool token info', async ({ page }) => {
     const content = await page.content()
     // Check for common pool tokens
-    const hasPoolTokens = content.includes('LP') ||
-                          content.includes('BTD') ||
-                          content.includes('BTB') ||
-                          content.includes('stBTD') ||
-                          content.includes('stBTB')
+    const hasPoolTokens =
+      content.includes('LP') ||
+      content.includes('BTD') ||
+      content.includes('BTB') ||
+      content.includes('stBTD') ||
+      content.includes('stBTB')
     expect(hasPoolTokens).toBe(true)
 
     await takeScreenshot(page, 'farm-pool-tokens')
@@ -133,7 +139,7 @@ test.describe('Farm Deposit', () => {
   test('should show deposit input field', async ({ page }) => {
     // Expand first pool
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -149,7 +155,7 @@ test.describe('Farm Deposit', () => {
 
   test('should fill MAX deposit amount', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -171,7 +177,7 @@ test.describe('Farm Deposit', () => {
 
     // Expand first pool
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -185,7 +191,7 @@ test.describe('Farm Deposit', () => {
     await takeScreenshot(page, 'farm-deposit-before')
 
     const depositButton = page.locator('button:has-text("Deposit")').last()
-    if (await depositButton.count() > 0 && !(await depositButton.isDisabled())) {
+    if ((await depositButton.count()) > 0 && !(await depositButton.isDisabled())) {
       await depositButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -213,7 +219,7 @@ test.describe('Farm Deposit', () => {
 
   test('should disable deposit when amount is zero', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -238,7 +244,7 @@ test.describe('Farm Withdraw', () => {
 
   test('should show withdraw input field', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -254,7 +260,7 @@ test.describe('Farm Withdraw', () => {
 
   test('should show staked balance for withdraw', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -263,9 +269,8 @@ test.describe('Farm Withdraw', () => {
     await page.waitForTimeout(WAIT.SHORT)
 
     const content = await page.content()
-    const hasStakedInfo = content.includes('Staked') ||
-                          content.includes('Balance') ||
-                          content.includes('Deposited')
+    const hasStakedInfo =
+      content.includes('Staked') || content.includes('Balance') || content.includes('Deposited')
 
     await takeScreenshot(page, 'farm-withdraw-staked')
   })
@@ -274,7 +279,7 @@ test.describe('Farm Withdraw', () => {
     test.setTimeout(120000)
 
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -288,7 +293,7 @@ test.describe('Farm Withdraw', () => {
     await takeScreenshot(page, 'farm-withdraw-before')
 
     const withdrawButton = page.locator('button:has-text("Withdraw")').last()
-    if (await withdrawButton.count() > 0 && !(await withdrawButton.isDisabled())) {
+    if ((await withdrawButton.count()) > 0 && !(await withdrawButton.isDisabled())) {
       await withdrawButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -307,7 +312,7 @@ test.describe('Farm Withdraw', () => {
 
   test('should disable withdraw when amount is zero', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -332,17 +337,18 @@ test.describe('Farm Claim Rewards', () => {
 
   test('should show pending rewards', async ({ page }) => {
     const content = await page.content()
-    const hasRewards = content.includes('Reward') ||
-                       content.includes('BRS') ||
-                       content.includes('Earned') ||
-                       content.includes('Pending')
+    const hasRewards =
+      content.includes('Reward') ||
+      content.includes('BRS') ||
+      content.includes('Earned') ||
+      content.includes('Pending')
 
     await takeScreenshot(page, 'farm-pending-rewards')
   })
 
   test('should show claim button', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -357,7 +363,7 @@ test.describe('Farm Claim Rewards', () => {
     test.setTimeout(120000)
 
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -365,7 +371,7 @@ test.describe('Farm Claim Rewards', () => {
     await takeScreenshot(page, 'farm-claim-before')
 
     const claimButton = page.locator('button:has-text("Claim"), button:has-text("Harvest")').last()
-    if (await claimButton.count() > 0 && !(await claimButton.isDisabled())) {
+    if ((await claimButton.count()) > 0 && !(await claimButton.isDisabled())) {
       await claimButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -412,9 +418,8 @@ test.describe('Farm Multiple Pools', () => {
 
   test('should show total rewards across pools', async ({ page }) => {
     const content = await page.content()
-    const hasTotal = content.includes('Total') ||
-                     content.includes('total') ||
-                     content.includes('All')
+    const hasTotal =
+      content.includes('Total') || content.includes('total') || content.includes('All')
 
     await takeScreenshot(page, 'farm-total-rewards')
   })
@@ -423,8 +428,10 @@ test.describe('Farm Multiple Pools', () => {
     test.setTimeout(120000)
 
     // Look for "Claim All" button
-    const claimAllButton = page.locator('button:has-text("Claim All"), button:has-text("Harvest All")')
-    if (await claimAllButton.count() > 0 && !(await claimAllButton.isDisabled())) {
+    const claimAllButton = page.locator(
+      'button:has-text("Claim All"), button:has-text("Harvest All")'
+    )
+    if ((await claimAllButton.count()) > 0 && !(await claimAllButton.isDisabled())) {
       await claimAllButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -466,15 +473,14 @@ test.describe('Farm LP Token Pools', () => {
 
   test('should show LP token balance in pool', async ({ page }) => {
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
 
     const content = await page.content()
-    const hasBalance = content.includes('Balance') ||
-                       content.includes('LP') ||
-                       content.includes('Available')
+    const hasBalance =
+      content.includes('Balance') || content.includes('LP') || content.includes('Available')
 
     await takeScreenshot(page, 'farm-lp-balance')
   })
@@ -508,7 +514,7 @@ test.describe('Farm Single Token Pools', () => {
 
     // Find a single token pool (e.g., BTD)
     const btdPool = page.locator('text=/BTD(?!-)/').first()
-    if (await btdPool.count() > 0) {
+    if ((await btdPool.count()) > 0) {
       await btdPool.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -522,7 +528,7 @@ test.describe('Farm Single Token Pools', () => {
     await takeScreenshot(page, 'farm-single-deposit-before')
 
     const depositButton = page.locator('button:has-text("Deposit")').last()
-    if (await depositButton.count() > 0 && !(await depositButton.isDisabled())) {
+    if ((await depositButton.count()) > 0 && !(await depositButton.isDisabled())) {
       await depositButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -555,7 +561,7 @@ test.describe('Farm Tab Switching', () => {
 
     // Expand first pool
     const poolCard = page.locator('[class*="card"], [class*="pool"]').first()
-    if (await poolCard.count() > 0) {
+    if ((await poolCard.count()) > 0) {
       await poolCard.click()
       await page.waitForTimeout(WAIT.SHORT)
     }

@@ -16,7 +16,13 @@ import {
   Vault,
   Pickaxe,
 } from 'lucide-react'
-import { CONTRACTS, TOKEN_DECIMALS, NETWORK_CONFIG, BTC_COLLATERAL_SYMBOL, BTC_COLLATERAL_NAME } from '@/config/contracts'
+import {
+  CONTRACTS,
+  TOKEN_DECIMALS,
+  NETWORK_CONFIG,
+  BTC_COLLATERAL_SYMBOL,
+  BTC_COLLATERAL_NAME,
+} from '@/config/contracts'
 import {
   useSystemMetrics,
   useBTCPrice,
@@ -61,7 +67,12 @@ function ExplorerPage() {
 
   // Get distributed amount and theoretical allocations (60/20/10/10 split)
   const brsDistributed = brsDistributionData.distributed
-  const { miners: minersAllocation, treasury: treasuryAllocation, foundation: foundationAllocation, team: teamAllocation } = brsDistributionData.allocation
+  const {
+    miners: minersAllocation,
+    treasury: treasuryAllocation,
+    foundation: foundationAllocation,
+    team: teamAllocation,
+  } = brsDistributionData.allocation
 
   // Get actual Treasury BRS balance for TVL calculation
   const treasuryBRSBalance = brsDistributionData.treasury
@@ -70,7 +81,8 @@ function ExplorerPage() {
   const TEAM_ADDRESS = '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'
 
   // Calculate percentage of 2.1B max supply for each allocation
-  const calcPercentOfMax = (amount: number) => (brsMaxSupply > 0 ? (amount / brsMaxSupply) * 100 : 0)
+  const calcPercentOfMax = (amount: number) =>
+    brsMaxSupply > 0 ? (amount / brsMaxSupply) * 100 : 0
 
   // Distribution data based on theoretical allocation (60/20/10/10 of distributed amount)
   // Progress bar shows percentage of total 2.1B supply
@@ -135,7 +147,8 @@ function ExplorerPage() {
   }
 
   // Calculate treasury TVL (using real-time computed BRS balance)
-  const treasuryTVL = wbtcBalance * wbtcPrice + treasuryBRSBalance * brsPrice + btdBalance * btdPrice
+  const treasuryTVL =
+    wbtcBalance * wbtcPrice + treasuryBRSBalance * brsPrice + btdBalance * btdPrice
 
   // Format large numbers - display full numbers with thousand separators
   const formatNumber = (num: number) => {
@@ -275,7 +288,9 @@ function ExplorerPage() {
           <div className="grid md:grid-cols-3 gap-4">
             {/* BTC Collateral Holdings */}
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{BTC_COLLATERAL_SYMBOL} Holdings</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                {BTC_COLLATERAL_SYMBOL} Holdings
+              </div>
               <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                 {wbtcBalance.toFixed(4)} {BTC_COLLATERAL_SYMBOL}
               </div>
@@ -317,7 +332,9 @@ function ExplorerPage() {
           <div className="card">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{BTC_COLLATERAL_SYMBOL}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {BTC_COLLATERAL_SYMBOL}
+                </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{BTC_COLLATERAL_NAME}</p>
               </div>
               <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center">
@@ -332,7 +349,11 @@ function ExplorerPage() {
                   className="flex items-center gap-1 text-sm font-mono text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   {CONTRACTS.WBTC.slice(0, 6)}...{CONTRACTS.WBTC.slice(-4)}
-                  {copied === BTC_COLLATERAL_SYMBOL ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied === BTC_COLLATERAL_SYMBOL ? (
+                    <Check className="w-3 h-3" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
                 </button>
               </div>
               <div className="flex justify-between">
@@ -507,9 +528,13 @@ function ExplorerPage() {
               <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">From FarmingPool</div>
             </div>
             <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Distribution Progress</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                Distribution Progress
+              </div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {brsMaxSupply > 0 ? formatSmartPercentage((brsDistributed / brsMaxSupply) * 100) : '0%'}
+                {brsMaxSupply > 0
+                  ? formatSmartPercentage((brsDistributed / brsMaxSupply) * 100)
+                  : '0%'}
               </div>
             </div>
           </div>
@@ -522,9 +547,8 @@ function ExplorerPage() {
             <div className="space-y-3">
               {distributionData.map(allocation => {
                 // Ensure minimum visible width for very small percentages
-                const displayWidth = allocation.percentage > 0
-                  ? Math.max(allocation.percentage, 0.5)
-                  : 0
+                const displayWidth =
+                  allocation.percentage > 0 ? Math.max(allocation.percentage, 0.5) : 0
                 return (
                   <div key={allocation.key}>
                     <div className="flex justify-between mb-1">
@@ -555,7 +579,11 @@ function ExplorerPage() {
                     className="flex items-center gap-1 font-mono text-primary-600 dark:text-primary-400 hover:underline"
                   >
                     {item.address.slice(0, 6)}...{item.address.slice(-4)}
-                    {copied === item.copyKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    {copied === item.copyKey ? (
+                      <Check className="w-3 h-3" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
                   </button>
                 </div>
               ))}

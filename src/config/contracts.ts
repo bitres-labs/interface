@@ -27,7 +27,7 @@ const CONTRACTS_LOCAL = {
   BTCPriceFeed: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9' as `0x${string}`,
   ChainlinkBTCUSD: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9' as `0x${string}`,
   ChainlinkWBTCBTC: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9' as `0x${string}`,
-  ChainlinkETHUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`,  // Local: fallback $3000
+  ChainlinkETHUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Local: fallback $3000
   ChainlinkUSDCUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Local: fallback $1
   ChainlinkUSDTUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Local: fallback $1
   MockPyth: '0x0165878A594ca255338adfa4d48449f69242Eb8F' as `0x${string}`,
@@ -79,10 +79,9 @@ const NETWORK_CONFIG_LOCAL = {
 const isProductionBuild = import.meta.env.PROD
 
 // Runtime check for localhost (only matters in dev mode)
-const isLocalhost = typeof window !== 'undefined' && (
-  window.location.hostname.includes('localhost') ||
-  window.location.hostname.includes('127.0.0.1')
-)
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))
 
 const productionNetwork = import.meta.env.VITE_BITRES_NETWORK || 'baseSepolia'
 const useProductionNetwork = isProductionBuild && !isLocalhost
@@ -94,7 +93,7 @@ export const CONTRACTS = useSepoliaNetwork
   ? { ...CONTRACTS_SEPOLIA, BTCPriceFeed: CONTRACTS_SEPOLIA.ChainlinkBTCUSD }
   : useBaseSepoliaNetwork
     ? { ...CONTRACTS_BASE_SEPOLIA, BTCPriceFeed: CONTRACTS_BASE_SEPOLIA.ChainlinkBTCUSD }
-  : CONTRACTS_LOCAL
+    : CONTRACTS_LOCAL
 export const NETWORK_CONFIG = useSepoliaNetwork
   ? NETWORK_CONFIG_SEPOLIA
   : useBaseSepoliaNetwork
@@ -107,7 +106,8 @@ export { CONTRACTS_SEPOLIA, NETWORK_CONFIG_SEPOLIA }
 export { CONTRACTS_BASE_SEPOLIA, NETWORK_CONFIG_BASE_SEPOLIA }
 
 export const BTC_COLLATERAL_SYMBOL = NETWORK_CONFIG.chainId === 84532 ? 'cbBTC' : 'WBTC'
-export const BTC_COLLATERAL_NAME = NETWORK_CONFIG.chainId === 84532 ? 'Coinbase Wrapped BTC' : 'Wrapped Bitcoin'
+export const BTC_COLLATERAL_NAME =
+  NETWORK_CONFIG.chainId === 84532 ? 'Coinbase Wrapped BTC' : 'Wrapped Bitcoin'
 
 export function displayTokenSymbol(symbol: string) {
   return symbol === 'WBTC' ? BTC_COLLATERAL_SYMBOL : symbol

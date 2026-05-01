@@ -239,7 +239,9 @@ function AddLiquidityTab({
         {/* Token 0 Input */}
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-1 min-h-[100px]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">{displayTokenSymbol(pool.token0.symbol)}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {displayTokenSymbol(pool.token0.symbol)}
+            </span>
             <span className="text-sm text-gray-600 dark:text-gray-400">Balance: {balance0}</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -291,7 +293,9 @@ function AddLiquidityTab({
         {/* Token 1 Input */}
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mt-1 min-h-[100px]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">{displayTokenSymbol(pool.token1.symbol)}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {displayTokenSymbol(pool.token1.symbol)}
+            </span>
             <span className="text-sm text-gray-600 dark:text-gray-400">Balance: {balance1}</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3">

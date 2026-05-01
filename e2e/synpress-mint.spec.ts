@@ -20,7 +20,7 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -64,7 +64,7 @@ test.describe('Mint BTD', () => {
 
     // Check that output shows calculated BTD amount
     const outputContainer = page.locator('[class*="output"], [class*="receive"]')
-    if (await outputContainer.count() > 0) {
+    if ((await outputContainer.count()) > 0) {
       const text = await outputContainer.textContent()
       expect(text).toBeTruthy()
     }
@@ -91,7 +91,7 @@ test.describe('Mint BTD', () => {
 
     // Click Mint button
     const mintButton = page.locator('button:has-text("Mint BTD"), button:has-text("Mint")').last()
-    if (await mintButton.count() > 0 && !(await mintButton.isDisabled())) {
+    if ((await mintButton.count()) > 0 && !(await mintButton.isDisabled())) {
       await mintButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -164,7 +164,7 @@ test.describe('Redeem BTD', () => {
     await takeScreenshot(page, 'redeem-btd-before')
 
     const redeemButton = page.locator('button:has-text("Redeem BTD")').last()
-    if (await redeemButton.count() > 0 && !(await redeemButton.isDisabled())) {
+    if ((await redeemButton.count()) > 0 && !(await redeemButton.isDisabled())) {
       await redeemButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -193,7 +193,7 @@ test.describe('Redeem BTD', () => {
   test('should show cooldown warning if applicable', async ({ page }) => {
     // Check for cooldown message
     const cooldownText = page.locator('text=/cooldown|Cooldown|wait/')
-    const hasCooldown = await cooldownText.count() > 0
+    const hasCooldown = (await cooldownText.count()) > 0
 
     if (hasCooldown) {
       console.log('Cooldown is active')
@@ -226,7 +226,7 @@ test.describe('Redeem BTB', () => {
     await takeScreenshot(page, 'redeem-btb-before')
 
     const redeemButton = page.locator('button:has-text("Redeem BTB")').last()
-    if (await redeemButton.count() > 0 && !(await redeemButton.isDisabled())) {
+    if ((await redeemButton.count()) > 0 && !(await redeemButton.isDisabled())) {
       await redeemButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -255,7 +255,8 @@ test.describe('Redeem BTB', () => {
   test('should show CR requirement for BTB redemption', async ({ page }) => {
     // BTB can only be redeemed when CR >= 100%
     const content = await page.content()
-    const hasInfo = content.includes('CR') || content.includes('collateral') || content.includes('ratio')
+    const hasInfo =
+      content.includes('CR') || content.includes('collateral') || content.includes('ratio')
 
     await takeScreenshot(page, 'redeem-btb-cr-info')
   })

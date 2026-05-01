@@ -20,11 +20,11 @@ import { formatUnits } from 'viem'
 const FAST_RESYNC_INTERVAL = 2000 // Trigger again within 2 seconds after first sync to quickly get mining speed
 
 interface RewardCalculation {
-  displayReward: number      // Displayed reward value (locally calculated)
-  serverReward: number       // Server actual value
-  rewardPerSecond: number    // Reward speed per second
-  lastSyncTime: number       // Last sync time
-  isCalculating: boolean     // Whether local calculation is in progress
+  displayReward: number // Displayed reward value (locally calculated)
+  serverReward: number // Server actual value
+  rewardPerSecond: number // Reward speed per second
+  lastSyncTime: number // Last sync time
+  isCalculating: boolean // Whether local calculation is in progress
 }
 
 /**
@@ -96,8 +96,8 @@ export function useLocalRewardCalculation(poolId: number, syncInterval = 10000) 
           typeof data === 'bigint'
             ? formatUnits(data, 18)
             : data != null
-                ? data.toString()
-                : serverRewardStr ?? '0'
+              ? data.toString()
+              : (serverRewardStr ?? '0')
 
         const parsedReward = parseFloat(latestRewardStr)
         const currentServerReward = Number.isFinite(parsedReward) ? parsedReward : 0
@@ -114,9 +114,10 @@ export function useLocalRewardCalculation(poolId: number, syncInterval = 10000) 
               if (rewardDiff >= 0) {
                 // Update mining speed (using exponential moving average, smooth fluctuations)
                 const calculatedSpeed = rewardDiff / timeDiff
-                newRewardPerSecond = prev.rewardPerSecond === 0
-                  ? calculatedSpeed
-                  : prev.rewardPerSecond * 0.7 + calculatedSpeed * 0.3
+                newRewardPerSecond =
+                  prev.rewardPerSecond === 0
+                    ? calculatedSpeed
+                    : prev.rewardPerSecond * 0.7 + calculatedSpeed * 0.3
               } else {
                 // When rewards are claimed or address switch causes pending to decrease, immediately pause local accumulation
                 newRewardPerSecond = 0
@@ -271,13 +272,8 @@ export function useLocalRewardCalculation(poolId: number, syncInterval = 10000) 
  * @param poolIds Array of pool IDs
  * @param syncInterval Sync interval (milliseconds), default 10 seconds
  */
-export function useBatchLocalRewardCalculation(
-  poolIds: number[],
-  syncInterval = 10000
-) {
-  const rewards = poolIds.map(poolId =>
-    useLocalRewardCalculation(poolId, syncInterval)
-  )
+export function useBatchLocalRewardCalculation(poolIds: number[], syncInterval = 10000) {
+  const rewards = poolIds.map(poolId => useLocalRewardCalculation(poolId, syncInterval))
 
   // Calculate total rewards
   const totalReward = rewards.reduce((sum, r) => sum + r.reward, 0)

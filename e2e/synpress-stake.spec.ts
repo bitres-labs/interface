@@ -21,7 +21,7 @@ import {
   handleTransaction,
   takeScreenshot,
   selectToken,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -56,13 +56,15 @@ test.describe('Stake BTD', () => {
 
   test('should select BTD token for staking', async ({ page }) => {
     // Look for token selector or ensure BTD is selected
-    const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"], button:has-text("BTD")')
-    if (await tokenSelector.count() > 0) {
+    const tokenSelector = page.locator(
+      '[role="combobox"], [data-testid="token-select"], button:has-text("BTD")'
+    )
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.first().click()
       await page.waitForTimeout(WAIT.SHORT)
 
       const btdOption = page.locator('text=BTD').first()
-      if (await btdOption.count() > 0) {
+      if ((await btdOption.count()) > 0) {
         await btdOption.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -104,7 +106,7 @@ test.describe('Stake BTD', () => {
     await takeScreenshot(page, 'stake-btd-before')
 
     const stakeButton = page.locator('button:has-text("Stake")').last()
-    if (await stakeButton.count() > 0 && !(await stakeButton.isDisabled())) {
+    if ((await stakeButton.count()) > 0 && !(await stakeButton.isDisabled())) {
       await stakeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -150,12 +152,12 @@ test.describe('Stake BTB', () => {
   test('should select BTB token for staking', async ({ page }) => {
     // Select BTB from token dropdown
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
 
       const btbOption = page.locator('text=BTB').first()
-      if (await btbOption.count() > 0) {
+      if ((await btbOption.count()) > 0) {
         await btbOption.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -167,11 +169,11 @@ test.describe('Stake BTB', () => {
   test('should show stBTB output when staking BTB', async ({ page }) => {
     // Select BTB first
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
       const btbOption = page.locator('text=BTB').first()
-      if (await btbOption.count() > 0) {
+      if ((await btbOption.count()) > 0) {
         await btbOption.click()
       }
     }
@@ -191,11 +193,11 @@ test.describe('Stake BTB', () => {
 
     // Select BTB
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
       const btbOption = page.locator('text=BTB').first()
-      if (await btbOption.count() > 0) {
+      if ((await btbOption.count()) > 0) {
         await btbOption.click()
       }
     }
@@ -206,7 +208,7 @@ test.describe('Stake BTB', () => {
     await takeScreenshot(page, 'stake-btb-before')
 
     const stakeButton = page.locator('button:has-text("Stake")').last()
-    if (await stakeButton.count() > 0 && !(await stakeButton.isDisabled())) {
+    if ((await stakeButton.count()) > 0 && !(await stakeButton.isDisabled())) {
       await stakeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -250,12 +252,12 @@ test.describe('Unstake stBTD', () => {
 
   test('should select stBTD for unstaking', async ({ page }) => {
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
 
       const stBTDOption = page.locator('text=stBTD').first()
-      if (await stBTDOption.count() > 0) {
+      if ((await stBTDOption.count()) > 0) {
         await stBTDOption.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -267,11 +269,11 @@ test.describe('Unstake stBTD', () => {
   test('should show BTD output when unstaking stBTD', async ({ page }) => {
     // Select stBTD
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
       const stBTDOption = page.locator('text=stBTD').first()
-      if (await stBTDOption.count() > 0) {
+      if ((await stBTDOption.count()) > 0) {
         await stBTDOption.click()
       }
     }
@@ -291,11 +293,11 @@ test.describe('Unstake stBTD', () => {
 
     // Select stBTD
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
       const stBTDOption = page.locator('text=stBTD').first()
-      if (await stBTDOption.count() > 0) {
+      if ((await stBTDOption.count()) > 0) {
         await stBTDOption.click()
       }
     }
@@ -306,7 +308,7 @@ test.describe('Unstake stBTD', () => {
     await takeScreenshot(page, 'unstake-stbtd-before')
 
     const unstakeButton = page.locator('button:has-text("Unstake")').last()
-    if (await unstakeButton.count() > 0 && !(await unstakeButton.isDisabled())) {
+    if ((await unstakeButton.count()) > 0 && !(await unstakeButton.isDisabled())) {
       await unstakeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -343,12 +345,12 @@ test.describe('Unstake stBTB', () => {
 
   test('should select stBTB for unstaking', async ({ page }) => {
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
 
       const stBTBOption = page.locator('text=stBTB').first()
-      if (await stBTBOption.count() > 0) {
+      if ((await stBTBOption.count()) > 0) {
         await stBTBOption.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -362,11 +364,11 @@ test.describe('Unstake stBTB', () => {
 
     // Select stBTB
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
       const stBTBOption = page.locator('text=stBTB').first()
-      if (await stBTBOption.count() > 0) {
+      if ((await stBTBOption.count()) > 0) {
         await stBTBOption.click()
       }
     }
@@ -377,7 +379,7 @@ test.describe('Unstake stBTB', () => {
     await takeScreenshot(page, 'unstake-stbtb-before')
 
     const unstakeButton = page.locator('button:has-text("Unstake")').last()
-    if (await unstakeButton.count() > 0 && !(await unstakeButton.isDisabled())) {
+    if ((await unstakeButton.count()) > 0 && !(await unstakeButton.isDisabled())) {
       await unstakeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -427,7 +429,7 @@ test.describe('Stake Tab Switching', () => {
     await page.waitForTimeout(WAIT.MEDIUM)
 
     const tokenSelector = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-    if (await tokenSelector.count() > 0) {
+    if ((await tokenSelector.count()) > 0) {
       await tokenSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
 

@@ -13,7 +13,7 @@ import {
   navigateTo,
   isWalletConnected,
   takeScreenshot,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -29,7 +29,7 @@ const PAGES = [
   { path: '/explorer', name: 'Explorer' },
   { path: '/about', name: 'About' },
   { path: '/whitepaper', name: 'Whitepaper' },
-  { path: '/faq', name: 'FAQ' }
+  { path: '/faq', name: 'FAQ' },
 ]
 
 test.describe('Page Navigation', () => {
@@ -76,12 +76,13 @@ test.describe('Header Navigation', () => {
 
   test('should navigate via Mint link', async ({ page }) => {
     const mintLink = page.locator('a:has-text("Mint"), button:has-text("Mint")').first()
-    if (await mintLink.count() > 0) {
+    if ((await mintLink.count()) > 0) {
       await mintLink.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
       const content = await page.content()
-      const hasMintContent = content.includes('Mint') || content.includes('WBTC') || content.includes('BTD')
+      const hasMintContent =
+        content.includes('Mint') || content.includes('WBTC') || content.includes('BTD')
       expect(hasMintContent).toBe(true)
     }
 
@@ -90,7 +91,7 @@ test.describe('Header Navigation', () => {
 
   test('should navigate via Stake link', async ({ page }) => {
     const stakeLink = page.locator('a:has-text("Stake")').first()
-    if (await stakeLink.count() > 0) {
+    if ((await stakeLink.count()) > 0) {
       await stakeLink.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -103,7 +104,7 @@ test.describe('Header Navigation', () => {
 
   test('should navigate via Swap link', async ({ page }) => {
     const swapLink = page.locator('a:has-text("Swap")').first()
-    if (await swapLink.count() > 0) {
+    if ((await swapLink.count()) > 0) {
       await swapLink.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -116,7 +117,7 @@ test.describe('Header Navigation', () => {
 
   test('should navigate via Pool link', async ({ page }) => {
     const poolLink = page.locator('a:has-text("Pool")').first()
-    if (await poolLink.count() > 0) {
+    if ((await poolLink.count()) > 0) {
       await poolLink.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -129,7 +130,7 @@ test.describe('Header Navigation', () => {
 
   test('should navigate via Farm link', async ({ page }) => {
     const farmLink = page.locator('a:has-text("Farm")').first()
-    if (await farmLink.count() > 0) {
+    if ((await farmLink.count()) > 0) {
       await farmLink.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -142,7 +143,7 @@ test.describe('Header Navigation', () => {
 
   test('should navigate via Asset link', async ({ page }) => {
     const assetLink = page.locator('a:has-text("Asset"), a:has-text("Assets")').first()
-    if (await assetLink.count() > 0) {
+    if ((await assetLink.count()) > 0) {
       await assetLink.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -159,7 +160,7 @@ test.describe('Logo Navigation', () => {
     await navigateTo(page, '/stake')
 
     const logo = page.locator('[class*="logo"], a[href="/"], img[alt*="logo"]').first()
-    if (await logo.count() > 0) {
+    if ((await logo.count()) > 0) {
       await logo.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -186,7 +187,7 @@ test.describe('Footer Navigation', () => {
 
   test('should have About link in footer or menu', async ({ page }) => {
     const aboutLink = page.locator('a:has-text("About")')
-    if (await aboutLink.count() > 0) {
+    if ((await aboutLink.count()) > 0) {
       await aboutLink.first().click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -199,7 +200,7 @@ test.describe('Footer Navigation', () => {
 
   test('should have Whitepaper link', async ({ page }) => {
     const wpLink = page.locator('a:has-text("Whitepaper"), a:has-text("White Paper")')
-    if (await wpLink.count() > 0) {
+    if ((await wpLink.count()) > 0) {
       await wpLink.first().click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -212,7 +213,7 @@ test.describe('Footer Navigation', () => {
 
   test('should have FAQ link', async ({ page }) => {
     const faqLink = page.locator('a:has-text("FAQ")')
-    if (await faqLink.count() > 0) {
+    if ((await faqLink.count()) > 0) {
       await faqLink.first().click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -225,7 +226,7 @@ test.describe('Footer Navigation', () => {
 
   test('should have Explorer link', async ({ page }) => {
     const explorerLink = page.locator('a:has-text("Explorer")')
-    if (await explorerLink.count() > 0) {
+    if ((await explorerLink.count()) > 0) {
       await explorerLink.first().click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -242,9 +243,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/')
 
     const content = await page.content()
-    const hasMintContent = content.includes('Mint') ||
-                           content.includes('WBTC') ||
-                           content.includes('BTD')
+    const hasMintContent =
+      content.includes('Mint') || content.includes('WBTC') || content.includes('BTD')
     expect(hasMintContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-mint')
@@ -254,9 +254,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/stake')
 
     const content = await page.content()
-    const hasStakeContent = content.includes('Stake') ||
-                            content.includes('stBTD') ||
-                            content.includes('stBTB')
+    const hasStakeContent =
+      content.includes('Stake') || content.includes('stBTD') || content.includes('stBTB')
     expect(hasStakeContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-stake')
@@ -266,8 +265,7 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/swap')
 
     const content = await page.content()
-    const hasSwapContent = content.includes('Swap') ||
-                           content.includes('Liquidity')
+    const hasSwapContent = content.includes('Swap') || content.includes('Liquidity')
     expect(hasSwapContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-swap')
@@ -277,9 +275,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/pool')
 
     const content = await page.content()
-    const hasPoolContent = content.includes('Pool') ||
-                           content.includes('Liquidity') ||
-                           content.includes('LP')
+    const hasPoolContent =
+      content.includes('Pool') || content.includes('Liquidity') || content.includes('LP')
     expect(hasPoolContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-pool')
@@ -289,9 +286,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/farm')
 
     const content = await page.content()
-    const hasFarmContent = content.includes('Farm') ||
-                           content.includes('Yield') ||
-                           content.includes('BRS')
+    const hasFarmContent =
+      content.includes('Farm') || content.includes('Yield') || content.includes('BRS')
     expect(hasFarmContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-farm')
@@ -302,9 +298,8 @@ test.describe('Page Content Verification', () => {
     await connectWallet(page, metamask)
 
     const content = await page.content()
-    const hasAssetContent = content.includes('Asset') ||
-                            content.includes('Balance') ||
-                            content.includes('Position')
+    const hasAssetContent =
+      content.includes('Asset') || content.includes('Balance') || content.includes('Position')
     expect(hasAssetContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-asset')
@@ -314,9 +309,10 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/explorer')
 
     const content = await page.content()
-    const hasExplorerContent = content.includes('Explorer') ||
-                               content.includes('Contract') ||
-                               content.includes('Transaction')
+    const hasExplorerContent =
+      content.includes('Explorer') ||
+      content.includes('Contract') ||
+      content.includes('Transaction')
     expect(hasExplorerContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-explorer')
@@ -326,9 +322,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/about')
 
     const content = await page.content()
-    const hasAboutContent = content.includes('About') ||
-                            content.includes('Bitres') ||
-                            content.includes('Protocol')
+    const hasAboutContent =
+      content.includes('About') || content.includes('Bitres') || content.includes('Protocol')
     expect(hasAboutContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-about')
@@ -338,9 +333,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/whitepaper')
 
     const content = await page.content()
-    const hasWPContent = content.includes('Whitepaper') ||
-                         content.includes('White Paper') ||
-                         content.includes('PDF')
+    const hasWPContent =
+      content.includes('Whitepaper') || content.includes('White Paper') || content.includes('PDF')
     expect(hasWPContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-whitepaper')
@@ -350,9 +344,8 @@ test.describe('Page Content Verification', () => {
     await navigateTo(page, '/faq')
 
     const content = await page.content()
-    const hasFAQContent = content.includes('FAQ') ||
-                          content.includes('Question') ||
-                          content.includes('Answer')
+    const hasFAQContent =
+      content.includes('FAQ') || content.includes('Question') || content.includes('Answer')
     expect(hasFAQContent).toBe(true)
 
     await takeScreenshot(page, 'nav-content-faq')
@@ -366,8 +359,10 @@ test.describe('Mobile Navigation', () => {
     await navigateTo(page, '/')
 
     // Look for hamburger menu or mobile nav trigger
-    const mobileMenu = page.locator('[class*="hamburger"], [class*="mobile"], button[aria-label*="menu"]')
-    const hasMobileMenu = await mobileMenu.count() > 0
+    const mobileMenu = page.locator(
+      '[class*="hamburger"], [class*="mobile"], button[aria-label*="menu"]'
+    )
+    const hasMobileMenu = (await mobileMenu.count()) > 0
 
     if (hasMobileMenu) {
       await mobileMenu.first().click()
@@ -382,13 +377,15 @@ test.describe('Mobile Navigation', () => {
     await page.setViewportSize({ width: 375, height: 667 })
     await navigateTo(page, '/')
 
-    const mobileMenu = page.locator('[class*="hamburger"], [class*="mobile"], button[aria-label*="menu"]')
-    if (await mobileMenu.count() > 0) {
+    const mobileMenu = page.locator(
+      '[class*="hamburger"], [class*="mobile"], button[aria-label*="menu"]'
+    )
+    if ((await mobileMenu.count()) > 0) {
       await mobileMenu.first().click()
       await page.waitForTimeout(WAIT.SHORT)
 
       const stakeLink = page.locator('a:has-text("Stake")').first()
-      if (await stakeLink.count() > 0) {
+      if ((await stakeLink.count()) > 0) {
         await stakeLink.click()
         await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -408,7 +405,9 @@ test.describe('External Links', () => {
   })
 
   test('should have social media links', async ({ page }) => {
-    const socialLinks = page.locator('a[href*="twitter"], a[href*="discord"], a[href*="telegram"], a[href*="github"]')
+    const socialLinks = page.locator(
+      'a[href*="twitter"], a[href*="discord"], a[href*="telegram"], a[href*="github"]'
+    )
     const count = await socialLinks.count()
     console.log(`Found ${count} social media links`)
 
@@ -418,7 +417,9 @@ test.describe('External Links', () => {
   test('should have contract explorer links', async ({ page }) => {
     await navigateTo(page, '/explorer')
 
-    const explorerLinks = page.locator('a[href*="etherscan"], a[href*="basescan"], a[href*="blockscout"]')
+    const explorerLinks = page.locator(
+      'a[href*="etherscan"], a[href*="basescan"], a[href*="blockscout"]'
+    )
     const count = await explorerLinks.count()
     console.log(`Found ${count} block explorer links`)
 
@@ -438,7 +439,9 @@ test.describe('Browser Navigation', () => {
 
     await page.goBack()
     await page.waitForTimeout(WAIT.SHORT)
-    expect(page.url().endsWith('/') || page.url().endsWith(':3000') || page.url().includes('localhost')).toBe(true)
+    expect(
+      page.url().endsWith('/') || page.url().endsWith(':3000') || page.url().includes('localhost')
+    ).toBe(true)
 
     await takeScreenshot(page, 'nav-back-button')
   })

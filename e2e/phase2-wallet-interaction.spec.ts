@@ -42,17 +42,63 @@ const walletClient = createWalletClient({
 
 // ABIs
 const erc20Abi = [
-  { inputs: [], name: 'totalSupply', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'decimals', outputs: [{ type: 'uint8' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'symbol', outputs: [{ type: 'string' }], stateMutability: 'view', type: 'function' },
-  { inputs: [{ name: 'account', type: 'address' }], name: 'balanceOf', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [{ name: 'spender', type: 'address' }, { name: 'amount', type: 'uint256' }], name: 'approve', outputs: [{ type: 'bool' }], stateMutability: 'nonpayable', type: 'function' },
-  { inputs: [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }], name: 'allowance', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  {
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ name: 'account', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const
 
 // ============ Helper Functions ============
 
-async function getBalance(tokenAddress: `0x${string}`, userAddress: `0x${string}`, decimals: number): Promise<number> {
+async function getBalance(
+  tokenAddress: `0x${string}`,
+  userAddress: `0x${string}`,
+  decimals: number
+): Promise<number> {
   const balance = await publicClient.readContract({
     address: tokenAddress,
     abi: erc20Abi,
@@ -62,7 +108,11 @@ async function getBalance(tokenAddress: `0x${string}`, userAddress: `0x${string}
   return Number(formatUnits(balance, decimals))
 }
 
-async function approveToken(tokenAddress: `0x${string}`, spenderAddress: `0x${string}`, amount: bigint): Promise<void> {
+async function approveToken(
+  tokenAddress: `0x${string}`,
+  spenderAddress: `0x${string}`,
+  amount: bigint
+): Promise<void> {
   const hash = await walletClient.writeContract({
     address: tokenAddress,
     abi: erc20Abi,
@@ -107,7 +157,7 @@ async function injectMockWallet(page: Page): Promise<void> {
             // Return 10000 ETH in wei
             return '0x21E19E0C9BAB2400000'
 
-          case 'eth_call':
+          case 'eth_call': {
             // Forward to actual RPC
             const response = await fetch('http://localhost:8545', {
               method: 'POST',
@@ -121,6 +171,7 @@ async function injectMockWallet(page: Page): Promise<void> {
             })
             const data = await response.json()
             return data.result
+          }
 
           case 'eth_sendTransaction':
             // For testing, we'll just log the transaction
@@ -168,7 +219,9 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.waitForTimeout(2000)
 
       // Look for connect wallet button
-      const connectButton = page.locator('button:has-text("Connect"), button:has-text("Wallet"), [class*="connect"]')
+      const connectButton = page.locator(
+        'button:has-text("Connect"), button:has-text("Wallet"), [class*="connect"]'
+      )
       const count = await connectButton.count()
 
       console.log(`Found ${count} connect wallet buttons`)
@@ -187,7 +240,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
 
         // Check for wallet modal
         const modal = page.locator('[role="dialog"], [class*="modal"], [class*="Modal"]')
-        const isModalVisible = await modal.count() > 0
+        const isModalVisible = (await modal.count()) > 0
 
         console.log('Wallet modal visible:', isModalVisible)
         // Modal might or might not appear depending on implementation
@@ -201,7 +254,9 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.waitForTimeout(3000)
 
       // Find input fields
-      const inputFields = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      const inputFields = page.locator(
+        'input[type="text"], input[type="number"], input[inputmode="decimal"]'
+      )
       const count = await inputFields.count()
 
       console.log(`Swap page: Found ${count} input fields`)
@@ -221,7 +276,9 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.goto('/swap')
       await page.waitForTimeout(3000)
 
-      const inputFields = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      const inputFields = page.locator(
+        'input[type="text"], input[type="number"], input[inputmode="decimal"]'
+      )
       const count = await inputFields.count()
 
       if (count >= 2) {
@@ -246,7 +303,9 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.goto('/pool')
       await page.waitForTimeout(3000)
 
-      const inputFields = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      const inputFields = page.locator(
+        'input[type="text"], input[type="number"], input[inputmode="decimal"]'
+      )
       const count = await inputFields.count()
 
       console.log(`Pool page: Found ${count} input fields`)
@@ -264,13 +323,17 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.goto('/farm')
       await page.waitForTimeout(3000)
 
-      const inputFields = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      const inputFields = page.locator(
+        'input[type="text"], input[type="number"], input[inputmode="decimal"]'
+      )
       const count = await inputFields.count()
 
       console.log(`Farm page: Found ${count} input fields`)
 
       // Farm page might show inputs only after expanding a pool
-      const expandButtons = page.locator('button:has-text("Stake"), button:has-text("Details"), [class*="expand"]')
+      const expandButtons = page.locator(
+        'button:has-text("Stake"), button:has-text("Details"), [class*="expand"]'
+      )
       const expandCount = await expandButtons.count()
 
       console.log(`Farm page: Found ${expandCount} expandable elements`)
@@ -280,7 +343,9 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.goto('/stake')
       await page.waitForTimeout(3000)
 
-      const inputFields = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      const inputFields = page.locator(
+        'input[type="text"], input[type="number"], input[inputmode="decimal"]'
+      )
       const count = await inputFields.count()
 
       console.log(`Stake page: Found ${count} input fields`)
@@ -323,7 +388,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
       // Find swap button
       const swapButton = page.locator('button:has-text("Swap")').first()
 
-      if (await swapButton.count() > 0) {
+      if ((await swapButton.count()) > 0) {
         const isDisabled = await swapButton.isDisabled()
         console.log(`Swap button disabled (no input): ${isDisabled}`)
 
@@ -332,13 +397,15 @@ test.describe('Phase 2: Wallet Interaction', () => {
 
       // Enter an amount
       const input = page.locator('input').first()
-      if (await input.count() > 0) {
+      if ((await input.count()) > 0) {
         await input.fill('0.1')
         await page.waitForTimeout(500)
 
         // Check button state after input
-        const swapButtonAfter = page.locator('button:has-text("Swap"), button:has-text("Connect")').first()
-        if (await swapButtonAfter.count() > 0) {
+        const swapButtonAfter = page
+          .locator('button:has-text("Swap"), button:has-text("Connect")')
+          .first()
+        if ((await swapButtonAfter.count()) > 0) {
           const text = await swapButtonAfter.textContent()
           console.log(`Swap/Connect button text after input: ${text}`)
         }
@@ -352,7 +419,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
       // Look for MAX button
       const maxButton = page.locator('button:has-text("MAX"), button:has-text("Max")')
 
-      if (await maxButton.count() > 0) {
+      if ((await maxButton.count()) > 0) {
         const input = page.locator('input').first()
         const initialValue = await input.inputValue()
 
@@ -371,7 +438,9 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.waitForTimeout(3000)
 
       // Look for token selector buttons
-      const tokenSelectors = page.locator('button:has-text("Select"), [class*="token-select"], button:has(img)')
+      const tokenSelectors = page.locator(
+        'button:has-text("Select"), [class*="token-select"], button:has(img)'
+      )
       const count = await tokenSelectors.count()
 
       console.log(`Found ${count} token selectors`)
@@ -383,7 +452,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
 
         // Check for token list
         const tokenList = page.locator('[class*="token-list"], [role="listbox"], [class*="modal"]')
-        const listVisible = await tokenList.count() > 0
+        const listVisible = (await tokenList.count()) > 0
 
         console.log(`Token list visible: ${listVisible}`)
       }
@@ -405,7 +474,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.waitForTimeout(3000)
 
       const input = page.locator('input').first()
-      if (await input.count() > 0) {
+      if ((await input.count()) > 0) {
         // Try entering invalid value
         await input.fill('-100')
         await page.waitForTimeout(500)
@@ -422,7 +491,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.waitForTimeout(3000)
 
       const input = page.locator('input').first()
-      if (await input.count() > 0) {
+      if ((await input.count()) > 0) {
         // Try entering very large value
         await input.fill('999999999999')
         await page.waitForTimeout(1000)
@@ -430,7 +499,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
         // Look for error message
         const errorByClass = page.locator('[class*="error"], [class*="warning"]')
         const errorByText = page.locator('text=/insufficient|exceed/i')
-        const hasError = (await errorByClass.count() > 0) || (await errorByText.count() > 0)
+        const hasError = (await errorByClass.count()) > 0 || (await errorByText.count()) > 0
 
         console.log(`Error shown for large amount: ${hasError}`)
       }
@@ -522,7 +591,7 @@ test.describe('Phase 2: Wallet Interaction', () => {
       await page.waitForTimeout(3000)
 
       const input = page.locator('input').first()
-      if (await input.count() > 0) {
+      if ((await input.count()) > 0) {
         // Get input type
         const inputType = await input.getAttribute('type')
         console.log(`Input type: ${inputType}`)

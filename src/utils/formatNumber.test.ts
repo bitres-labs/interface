@@ -18,8 +18,8 @@ describe('formatNumber utilities', () => {
 
       it('should remove trailing zeros for normal numbers', () => {
         expect(formatSmartNumber(1.0)).toBe('1')
-        expect(formatSmartNumber(1.10)).toBe('1.1')
-        expect(formatSmartNumber(100.00)).toBe('100')
+        expect(formatSmartNumber(1.1)).toBe('1.1')
+        expect(formatSmartNumber(100.0)).toBe('100')
       })
 
       it('should handle boundary value 0.01', () => {
@@ -48,8 +48,8 @@ describe('formatNumber utilities', () => {
       })
 
       it('should remove trailing zeros for small numbers', () => {
-        expect(formatSmartNumber(0.00100)).toBe('0.001')
-        expect(formatSmartNumber(0.001000)).toBe('0.001')
+        expect(formatSmartNumber(0.001)).toBe('0.001')
+        expect(formatSmartNumber(0.001)).toBe('0.001')
       })
     })
 

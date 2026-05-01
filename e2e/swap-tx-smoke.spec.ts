@@ -12,7 +12,7 @@ import {
   handleApprove,
   handleTransaction,
   navigateTo,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)

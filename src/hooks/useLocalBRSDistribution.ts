@@ -107,10 +107,10 @@ export function useLocalBRSDistribution(syncInterval = 30000) {
 
       // Calculate growth rates (based on currentRewardPerSecond)
       // Treasury: 20%, Foundation: 10%, Team: 10%, Farming Pools: 60%
-      const treasuryGrowth = rewardPerSecond * 0.20
-      const foundationGrowth = rewardPerSecond * 0.10
-      const teamGrowth = rewardPerSecond * 0.10
-      const farmingGrowth = rewardPerSecond * 0.60
+      const treasuryGrowth = rewardPerSecond * 0.2
+      const foundationGrowth = rewardPerSecond * 0.1
+      const teamGrowth = rewardPerSecond * 0.1
+      const farmingGrowth = rewardPerSecond * 0.6
 
       setCalculation({
         treasury: {
@@ -151,13 +151,7 @@ export function useLocalBRSDistribution(syncInterval = 30000) {
         clearInterval(syncTimerRef.current)
       }
     }
-  }, [
-    rewardPerSecond,
-    rewardPerSecData,
-    totalSupplyNum,
-    totalSupplyRaw,
-    syncInterval,
-  ])
+  }, [rewardPerSecond, rewardPerSecData, totalSupplyNum, totalSupplyRaw, syncInterval])
 
   // Local calculation of growth every 1 second (consistent with contract mining frequency)
   useEffect(() => {

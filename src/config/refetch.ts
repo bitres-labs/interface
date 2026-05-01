@@ -16,8 +16,8 @@
 // Local development: Hardhat = 2 seconds/block
 // Ethereum mainnet: ~12 seconds/block
 // To maintain consistency with mainnet, refresh intervals are designed based on 12-second block time
-export const BLOCK_TIME = 2000  // Hardhat local testing: 2 seconds/block
-export const MAINNET_BLOCK_TIME = 12000  // Ethereum mainnet: 12 seconds/block
+export const BLOCK_TIME = 2000 // Hardhat local testing: 2 seconds/block
+export const MAINNET_BLOCK_TIME = 12000 // Ethereum mainnet: 12 seconds/block
 
 // Auto-refresh interval configuration (milliseconds)
 export const REFETCH_INTERVAL = {
@@ -80,10 +80,10 @@ export const DEFAULT_QUERY_CONFIG = {
   // Static data - disable timed refresh, only refresh on page switch
   // Used for: IUSD price, BTD/BTB rates, etc. that update only once every 1-2 months
   static: {
-    refetchInterval: false,           // Disable timed refresh
-    refetchOnWindowFocus: false,      // Disable window focus refresh
-    refetchOnMount: true,             // Keep page switch refresh
-    staleTime: Infinity,              // Never expires
+    refetchInterval: false, // Disable timed refresh
+    refetchOnWindowFocus: false, // Disable window focus refresh
+    refetchOnMount: true, // Keep page switch refresh
+    staleTime: Infinity, // Never expires
   },
 } as const
 

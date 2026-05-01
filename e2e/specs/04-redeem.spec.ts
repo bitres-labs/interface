@@ -6,7 +6,14 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, readBalance, readBalanceUntilChanged, expectBalanceIncrease, expectBalanceDecrease } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  readBalance,
+  readBalanceUntilChanged,
+  expectBalanceIncrease,
+  expectBalanceDecrease,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Redeem BTD', () => {
@@ -30,7 +37,9 @@ test.describe('Redeem BTD', () => {
     await page.locator('button:has-text("Redeem BTD")').first().click()
     await page.waitForTimeout(TIMEOUT.SHORT)
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.001')
       const val = await input.inputValue()
@@ -60,7 +69,9 @@ test.describe('Redeem BTD', () => {
       return
     }
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('1')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -102,7 +113,9 @@ test.describe('Redeem BTD', () => {
       return
     }
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('1')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -146,7 +159,9 @@ test.describe('Redeem BTD', () => {
     const btdBefore = await readBalance(page, ADDRESSES.BTD)
     console.log(`[Redeem] BTD before: ${btdBefore}`)
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('1')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -172,7 +187,10 @@ test.describe('Redeem BTD', () => {
       }
       page.off('dialog', dialogHandler)
 
-      if (!dialogMsg || (!dialogMsg.includes('✅') && !dialogMsg.toLowerCase().includes('success'))) {
+      if (
+        !dialogMsg ||
+        (!dialogMsg.includes('✅') && !dialogMsg.toLowerCase().includes('success'))
+      ) {
         console.log(`[Redeem] No success dialog: ${dialogMsg?.substring(0, 100) || 'none'}`)
         test.skip()
         return
@@ -214,7 +232,9 @@ test.describe('Redeem BTD', () => {
     const wbtcBefore = await readBalance(page, ADDRESSES.WBTC)
     console.log(`[Redeem] WBTC before: ${wbtcBefore}`)
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('1')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -277,7 +297,9 @@ test.describe('Redeem BTD', () => {
     }
 
     // Input an amount to trigger output display
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.01')
       await page.waitForTimeout(TIMEOUT.MEDIUM)

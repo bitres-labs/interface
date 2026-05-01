@@ -287,9 +287,10 @@ function SwapTab() {
             {/* USD value display */}
             {amountIn && Number(amountIn) > 0 && (
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                ≈ ${calculateTokenUSDValue(amountIn, tokenInSymbol).toLocaleString(undefined, {
+                ≈ $
+                {calculateTokenUSDValue(amountIn, tokenInSymbol).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
+                  maximumFractionDigits: 2,
                 })}
               </div>
             )}
@@ -340,9 +341,10 @@ function SwapTab() {
             {/* USD value display */}
             {amountOut && Number(amountOut) > 0 && (
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                ≈ ${calculateTokenUSDValue(amountOut, tokenOutSymbol).toLocaleString(undefined, {
+                ≈ $
+                {calculateTokenUSDValue(amountOut, tokenOutSymbol).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
+                  maximumFractionDigits: 2,
                 })}
               </div>
             )}

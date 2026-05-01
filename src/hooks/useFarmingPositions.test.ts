@@ -40,6 +40,9 @@ vi.mock('@/utils/numbers', () => ({
 describe('useFarmingPositions', () => {
   const mockPrices = {
     WBTC: 100000,
+    WETH: 3000,
+    USDC: 1,
+    USDT: 1,
     BRS: 10,
     BTD: 1.01,
     BTB: 1.0,
@@ -121,13 +124,13 @@ describe('useFarmingPositions', () => {
         const stakes: Record<number, string> = {
           0: '100', // BRS/BTD LP
           1: '200', // BTD/USDC LP
-          2: '0',   // BTB/BTD LP (no stake)
+          2: '0', // BTB/BTD LP (no stake)
           3: '1000', // USDC
-          4: '0',   // USDT (no stake)
+          4: '0', // USDT (no stake)
           5: '0.5', // WBTC
           6: '500', // WETH single token
           7: '500', // stBTD
-          8: '0',   // stBTB (no stake)
+          8: '0', // stBTB (no stake)
           9: '1000', // BRS
         }
         return {
@@ -188,11 +191,9 @@ describe('useFarmingPositions', () => {
         }
       })
 
-      vi.mocked(useLocalReward.useLocalRewardCalculation).mockImplementation(
-        (poolId: number) => ({
-          reward: Number(rewards[poolId] || '0'),
-        })
-      )
+      vi.mocked(useLocalReward.useLocalRewardCalculation).mockImplementation((poolId: number) => ({
+        reward: Number(rewards[poolId] || '0'),
+      }))
 
       // Mock usePoolAPY for all 9 pools
       vi.mocked(useAPY.usePoolAPY).mockImplementation(() => {

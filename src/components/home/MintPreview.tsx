@@ -18,7 +18,12 @@ import {
 } from '@/hooks/useMinter'
 import { useWBTCBalance, useBTDBalance, useBTBBalance } from '@/hooks/useBalances'
 import { useBTBPrice, useBRSPrice, useBTDPrice } from '@/hooks/useSystemStats'
-import { CONTRACTS, TOKEN_DECIMALS, BTC_COLLATERAL_SYMBOL, BTC_COLLATERAL_NAME } from '@/config/contracts'
+import {
+  CONTRACTS,
+  TOKEN_DECIMALS,
+  BTC_COLLATERAL_SYMBOL,
+  BTC_COLLATERAL_NAME,
+} from '@/config/contracts'
 import { blockInvalidNumberInput } from '@/utils/input'
 import { useApproveAndExecute, useNeedsApproval } from '@/hooks/useApproveAndExecute'
 import { formatTokenAmount } from '@/utils/format'
@@ -204,8 +209,10 @@ function MintPreview({ embedded = false }: MintPreviewProps = {}) {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
   const isMetaMaskBrowser =
     typeof window !== 'undefined' &&
-    (window as unknown as { ethereum?: { isMetaMask?: boolean; isBraveWallet?: boolean } }).ethereum?.isMetaMask &&
-    !(window as unknown as { ethereum?: { isMetaMask?: boolean; isBraveWallet?: boolean } }).ethereum?.isBraveWallet
+    (window as unknown as { ethereum?: { isMetaMask?: boolean; isBraveWallet?: boolean } }).ethereum
+      ?.isMetaMask &&
+    !(window as unknown as { ethereum?: { isMetaMask?: boolean; isBraveWallet?: boolean } })
+      .ethereum?.isBraveWallet
 
   // Show success message
   /* eslint-disable no-alert */
@@ -218,7 +225,6 @@ function MintPreview({ embedded = false }: MintPreviewProps = {}) {
 This is a known MetaMask bug with Hardhat local network.
 Your transaction actually succeeded - check your balance!`)
       setInputAmount('')
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPendingResult(null)
       refetchWBTCBalance()
       refetchBTDBalance()
@@ -235,7 +241,6 @@ Your transaction actually succeeded - check your balance!`)
 ⚠️ Note: Ignore MetaMask "0 GO" or "failed" errors.
 Your transaction succeeded - check your balance!`)
       setInputAmount('')
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPendingResult(null)
       refetchWBTCBalance()
       refetchBTDBalance()
@@ -266,11 +271,7 @@ Your transaction succeeded - check your balance!`)
   // Monitor for stuck pending state (MetaMask not opening)
   useEffect(() => {
     const isPending =
-      isMinting ||
-      isRedeemingBTD ||
-      isRedeemingBTB ||
-      isProcessing ||
-      isSigningRedeemBTD
+      isMinting || isRedeemingBTD || isRedeemingBTB || isProcessing || isSigningRedeemBTD
     const hasHash = mintHash || redeemBTDHash || redeemBTBHash
 
     if (isPending && !hasHash) {
@@ -628,7 +629,11 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <span className="text-sm text-gray-600 dark:text-gray-400">From</span>
             <span className="text-sm text-gray-600 dark:text-gray-400">
               Balance:{' '}
-              {mode === 'mint' ? formatTokenAmount(Number(wbtcBalance), 'WBTC') : mode === 'redeemBTD' ? formatTokenAmount(Number(btdBalance), 'BTD') : formatTokenAmount(Number(btbBalance), 'BTB')}
+              {mode === 'mint'
+                ? formatTokenAmount(Number(wbtcBalance), 'WBTC')
+                : mode === 'redeemBTD'
+                  ? formatTokenAmount(Number(btdBalance), 'BTD')
+                  : formatTokenAmount(Number(btbBalance), 'BTB')}
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -658,7 +663,11 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
               {/* USD value display */}
               {inputAmount && Number(inputAmount) > 0 && (
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  ≈ ${inputUSDValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ≈ $
+                  {inputUSDValue.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               )}
               {/* Minimum value hint */}
@@ -677,7 +686,11 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0 min-h-[2.25rem] sm:min-h-0">
               {mode === 'mint' ? (
                 <>
-                  <img src="/tokens/wbtc.png" alt={btcCollateralSymbol} className="w-5 h-5 rounded-full" />
+                  <img
+                    src="/tokens/wbtc.png"
+                    alt={btcCollateralSymbol}
+                    className="w-5 h-5 rounded-full"
+                  />
                   <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
                     {btcCollateralSymbol}
                   </span>
@@ -714,7 +727,11 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <span className="text-sm text-gray-600 dark:text-gray-400">To (estimated)</span>
             <span className="text-sm text-gray-600 dark:text-gray-400">
               Balance:{' '}
-              {mode === 'mint' ? formatTokenAmount(Number(btdBalance), 'BTD') : mode === 'redeemBTD' ? formatTokenAmount(Number(wbtcBalance), 'WBTC') : formatTokenAmount(Number(btdBalance), 'BTD')}
+              {mode === 'mint'
+                ? formatTokenAmount(Number(btdBalance), 'BTD')
+                : mode === 'redeemBTD'
+                  ? formatTokenAmount(Number(wbtcBalance), 'WBTC')
+                  : formatTokenAmount(Number(btdBalance), 'BTD')}
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -723,25 +740,28 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
                 {outputAmount || '0.0'}
               </div>
               {/* Output USD value display */}
-              {outputAmount && Number(outputAmount) > 0 && (() => {
-                const amount = Number(outputAmount)
-                let usdValue = 0
-                if (mode === 'mint') {
-                  usdValue = amount * btdPrice
-                } else if (mode === 'redeemBTD') {
-                  usdValue = amount * btcPrice
-                } else if (mode === 'redeemBTB') {
-                  usdValue = amount * btdPrice
-                }
-                return usdValue > 0 ? (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    ≈ ${usdValue.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                    })}
-                  </div>
-                ) : null
-              })()}
+              {outputAmount &&
+                Number(outputAmount) > 0 &&
+                (() => {
+                  const amount = Number(outputAmount)
+                  let usdValue = 0
+                  if (mode === 'mint') {
+                    usdValue = amount * btdPrice
+                  } else if (mode === 'redeemBTD') {
+                    usdValue = amount * btcPrice
+                  } else if (mode === 'redeemBTB') {
+                    usdValue = amount * btdPrice
+                  }
+                  return usdValue > 0 ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      ≈ $
+                      {usdValue.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </div>
+                  ) : null
+                })()}
             </div>
             <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0 min-h-[2.25rem] sm:min-h-0">
               {mode === 'mint' ? (
@@ -753,7 +773,11 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
                 </>
               ) : mode === 'redeemBTD' ? (
                 <>
-                  <img src="/tokens/wbtc.png" alt={btcCollateralSymbol} className="w-5 h-5 rounded-full" />
+                  <img
+                    src="/tokens/wbtc.png"
+                    alt={btcCollateralSymbol}
+                    className="w-5 h-5 rounded-full"
+                  />
                   <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
                     {btcCollateralSymbol}
                   </span>
@@ -786,9 +810,10 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
                     const btbUsdValue = btbAmount * btbPrice
                     return btbUsdValue > 0 ? (
                       <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        ≈ ${btbUsdValue.toLocaleString(undefined, {
+                        ≈ $
+                        {btbUsdValue.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2
+                          maximumFractionDigits: 2,
                         })}
                       </div>
                     ) : null
@@ -821,9 +846,10 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
                     const brsUsdValue = brsAmount * brsPrice
                     return brsUsdValue > 0 ? (
                       <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        ≈ ${brsUsdValue.toLocaleString(undefined, {
+                        ≈ $
+                        {brsUsdValue.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2
+                          maximumFractionDigits: 2,
                         })}
                       </div>
                     ) : null
@@ -925,7 +951,9 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
         <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
           <Info className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
           <div className="text-sm flex-1">
-            <p className="font-medium text-yellow-900 dark:text-yellow-100">First-time approval required</p>
+            <p className="font-medium text-yellow-900 dark:text-yellow-100">
+              First-time approval required
+            </p>
             <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
               You'll approve {btcCollateralSymbol} spending once. Future mints won't need approval.
             </p>
@@ -952,13 +980,15 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
         <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
           <div className="text-sm flex-1">
-            <p className="font-medium text-blue-900 dark:text-blue-100">Operation Cooldown Active</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">
+              Operation Cooldown Active
+            </p>
             <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
               {mode === 'mint' && 'Minting'}
               {mode === 'redeemBTD' && 'Redeeming BTD'}
-              {mode === 'redeemBTB' && 'Redeeming BTB'}
-              {' '}has a {currentCooldown.interval} second cooldown to prevent rapid operations.
-              Next operation available in <strong>{formatCooldownTime(currentCooldown.remainingSeconds)}</strong>.
+              {mode === 'redeemBTB' && 'Redeeming BTB'} has a {currentCooldown.interval} second
+              cooldown to prevent rapid operations. Next operation available in{' '}
+              <strong>{formatCooldownTime(currentCooldown.remainingSeconds)}</strong>.
             </p>
           </div>
         </div>
@@ -989,9 +1019,10 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <div className="text-primary-900 dark:text-blue-100">
               <p className="font-semibold mb-1">About Minting BTD</p>
               <p className="text-primary-800 dark:text-blue-200 text-xs">
-                Convert {btcCollateralSymbol} ({BTC_COLLATERAL_NAME}) into BTD stablecoin at current market rate. This is a
-                conversion, not collateralization - your BTC value becomes BTD value based on BTC/IUSD
-                exchange rate. BTD maintains parity with IUSD (CPI-adjusted purchasing power).
+                Convert {btcCollateralSymbol} ({BTC_COLLATERAL_NAME}) into BTD stablecoin at current
+                market rate. This is a conversion, not collateralization - your BTC value becomes
+                BTD value based on BTC/IUSD exchange rate. BTD maintains parity with IUSD
+                (CPI-adjusted purchasing power).
               </p>
             </div>
           </div>
@@ -1006,9 +1037,10 @@ Technical details: Chainlink price and Uniswap pool price difference >1%`
             <div className="text-primary-900 dark:text-blue-100">
               <p className="font-semibold mb-1">About Redeeming BTD</p>
               <p className="text-primary-800 dark:text-blue-200 text-xs">
-                Redeem your BTD stablecoin for {btcCollateralSymbol}. When CR ≥ 100%, you receive full {btcCollateralSymbol} value.
-                When CR &lt; 100%, you receive partial {btcCollateralSymbol} plus BTB bond compensation (and BRS if
-                BTB price is low). This ensures fair value distribution during market stress.
+                Redeem your BTD stablecoin for {btcCollateralSymbol}. When CR ≥ 100%, you receive
+                full {btcCollateralSymbol} value. When CR &lt; 100%, you receive partial{' '}
+                {btcCollateralSymbol} plus BTB bond compensation (and BRS if BTB price is low). This
+                ensures fair value distribution during market stress.
               </p>
             </div>
           </div>

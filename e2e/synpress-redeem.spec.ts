@@ -40,14 +40,14 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
 
     // Switch to Redeem BTD tab
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       await redeemTab.click()
       await page.waitForTimeout(1000)
     }
 
     // Enter amount
     const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       await input.fill('10')
       await page.waitForTimeout(1000)
     }
@@ -55,7 +55,7 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
 
     // Click redeem button
     const redeemButton = page.locator('button:has-text("Redeem BTD")').last()
-    if (await redeemButton.count() > 0 && !(await redeemButton.isDisabled())) {
+    if ((await redeemButton.count()) > 0 && !(await redeemButton.isDisabled())) {
       await redeemButton.click()
       await page.waitForTimeout(2000)
 
@@ -94,7 +94,7 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
 
     // Enter WBTC amount
     const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       await input.fill('0.001')
       await page.waitForTimeout(1000)
     }
@@ -102,7 +102,7 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
 
     // Click mint button (might say Approve first)
     const actionButton = page.locator('button:has-text("Mint"), button:has-text("Approve")').last()
-    if (await actionButton.count() > 0 && !(await actionButton.isDisabled())) {
+    if ((await actionButton.count()) > 0 && !(await actionButton.isDisabled())) {
       const buttonText = await actionButton.textContent()
       console.log('Action button:', buttonText)
 
@@ -118,7 +118,7 @@ test.describe('Synpress: Redeem BTD with OKX Wallet', () => {
 
           // Now click Mint button
           const mintButton = page.locator('button:has-text("Mint")').last()
-          if (await mintButton.count() > 0) {
+          if ((await mintButton.count()) > 0) {
             await mintButton.click()
             await page.waitForTimeout(2000)
             await metamask.confirmTransaction()

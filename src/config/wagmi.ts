@@ -4,7 +4,7 @@ import { baseSepolia, sepolia } from 'wagmi/chains'
 import {
   NETWORK_CONFIG_LOCAL,
   NETWORK_CONFIG_SEPOLIA,
-  NETWORK_CONFIG_BASE_SEPOLIA
+  NETWORK_CONFIG_BASE_SEPOLIA,
 } from './contracts'
 
 const WALLETCONNECT_PROJECT_ID =
@@ -31,8 +31,8 @@ const isProductionBuild = import.meta.env.PROD
 
 // Use Base Sepolia first in production; keep Sepolia available in dev for legacy deployments.
 const chains = isProductionBuild
-  ? [baseSepolia] as const
-  : [hardhat, baseSepolia, sepolia] as const
+  ? ([baseSepolia] as const)
+  : ([hardhat, baseSepolia, sepolia] as const)
 
 export const config = getDefaultConfig({
   appName: 'Bitres',

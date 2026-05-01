@@ -29,13 +29,37 @@ const walletClient = createWalletClient({
 
 // ABIs
 const ERC20_ABI = [
-  { name: 'balanceOf', type: 'function', inputs: [{ type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { name: 'approve', type: 'function', inputs: [{ type: 'address' }, { type: 'uint256' }], outputs: [{ type: 'bool' }], stateMutability: 'nonpayable' },
-  { name: 'allowance', type: 'function', inputs: [{ type: 'address' }, { type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  {
+    name: 'balanceOf',
+    type: 'function',
+    inputs: [{ type: 'address' }],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'approve',
+    type: 'function',
+    inputs: [{ type: 'address' }, { type: 'uint256' }],
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'allowance',
+    type: 'function',
+    inputs: [{ type: 'address' }, { type: 'address' }],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
 ] as const
 
 const MINTER_ABI = [
-  { name: 'redeemBTD', type: 'function', inputs: [{ type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  {
+    name: 'redeemBTD',
+    type: 'function',
+    inputs: [{ type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
 ] as const
 
 test.describe('Execute Redeem BTD Contract', () => {
@@ -155,7 +179,6 @@ test.describe('Execute Redeem BTD Contract', () => {
 
       console.log('\n✅ Redeem BTD executed successfully!')
       console.log('=== Test Complete ===')
-
     } catch (error) {
       console.error('\n❌ Redeem failed:', error)
       throw error

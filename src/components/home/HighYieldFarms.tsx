@@ -63,7 +63,9 @@ function HighYieldFarms() {
               </div>
               <div>
                 <span className="text-gray-500 dark:text-gray-400">Weight:</span>
-                <span className="font-medium ml-1 text-gray-900 dark:text-white">{pool.allocation}%</span>
+                <span className="font-medium ml-1 text-gray-900 dark:text-white">
+                  {pool.allocation}%
+                </span>
               </div>
             </div>
             <TrendingUp className="w-4 h-4 text-brs-DEFAULT" />
@@ -72,7 +74,9 @@ function HighYieldFarms() {
       ))}
 
       <div className="text-center pt-2">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Earn BRS rewards by providing liquidity</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Earn BRS rewards by providing liquidity
+        </p>
       </div>
     </div>
   )

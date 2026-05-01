@@ -54,9 +54,7 @@ test.describe('Faucet', () => {
     }
 
     // Look for enabled claim button
-    const claimBtn = page.locator(
-      'button:has-text("Claim"), button:has-text("Get Tokens")'
-    ).first()
+    const claimBtn = page.locator('button:has-text("Claim"), button:has-text("Get Tokens")').first()
 
     if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
       await claimBtn.click()
@@ -112,9 +110,7 @@ test.describe('Faucet', () => {
     console.log(`[Faucet] Before - WBTC: ${wbtcBefore}, USDC: ${usdcBefore}, USDT: ${usdtBefore}`)
 
     // Click claim — button text is "Claim Tokens"
-    const claimBtn = page.locator(
-      'button:has-text("Claim")'
-    ).first()
+    const claimBtn = page.locator('button:has-text("Claim")').first()
 
     if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
       await claimBtn.click()
@@ -149,8 +145,7 @@ test.describe('Faucet', () => {
         const wbtcAfter = await readBalance(page, ADDRESSES.WBTC)
         const usdcAfter = await readBalance(page, ADDRESSES.USDC)
         const usdtAfter = await readBalance(page, ADDRESSES.USDT)
-        anyIncreased =
-          wbtcAfter > wbtcBefore || usdcAfter > usdcBefore || usdtAfter > usdtBefore
+        anyIncreased = wbtcAfter > wbtcBefore || usdcAfter > usdcBefore || usdtAfter > usdtBefore
         if (anyIncreased) {
           console.log(`[Faucet] After - WBTC: ${wbtcAfter}, USDC: ${usdcAfter}, USDT: ${usdtAfter}`)
           break

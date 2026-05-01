@@ -113,20 +113,12 @@ describe('useSwap', () => {
     })
 
     it('should return 0 when reserveIn is 0', () => {
-      const amountOut = calculateAmountOut(
-        parseUnits('100', 18),
-        BigInt(0),
-        parseUnits('2000', 18)
-      )
+      const amountOut = calculateAmountOut(parseUnits('100', 18), BigInt(0), parseUnits('2000', 18))
       expect(amountOut).toBe(BigInt(0))
     })
 
     it('should return 0 when reserveOut is 0', () => {
-      const amountOut = calculateAmountOut(
-        parseUnits('100', 18),
-        parseUnits('1000', 18),
-        BigInt(0)
-      )
+      const amountOut = calculateAmountOut(parseUnits('100', 18), parseUnits('1000', 18), BigInt(0))
       expect(amountOut).toBe(BigInt(0))
     })
 
@@ -366,9 +358,9 @@ describe('useSwap', () => {
 
       const { result } = renderHook(() => useSwap())
 
-      await expect(
-        result.current.swap('BRS', 'BTD', '100', '95')
-      ).rejects.toThrow('Direct pair swap not fully implemented')
+      await expect(result.current.swap('BRS', 'BTD', '100', '95')).rejects.toThrow(
+        'Direct pair swap not fully implemented'
+      )
     })
 
     it('should throw error when wallet is not connected', async () => {
@@ -378,9 +370,9 @@ describe('useSwap', () => {
 
       const { result } = renderHook(() => useSwap())
 
-      await expect(
-        result.current.swap('BRS', 'BTD', '100', '95')
-      ).rejects.toThrow('Wallet not connected')
+      await expect(result.current.swap('BRS', 'BTD', '100', '95')).rejects.toThrow(
+        'Wallet not connected'
+      )
     })
 
     it('should return transaction states', () => {

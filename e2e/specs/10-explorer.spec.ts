@@ -56,9 +56,7 @@ test.describe('Data / Explorer', () => {
     expect(hasTreasury).toBeTruthy()
 
     const hasValues =
-      body?.includes('$') ||
-      body?.match(/[\d,]+\.\d+/) ||
-      body?.toLowerCase().includes('value')
+      body?.includes('$') || body?.match(/[\d,]+\.\d+/) || body?.toLowerCase().includes('value')
     expect(hasValues).toBeTruthy()
   })
 

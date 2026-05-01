@@ -17,8 +17,11 @@ export const HARDHAT_ACCOUNT_0 = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
  * Inject a mock wallet that can execute real transactions
  * Enhanced to work with RainbowKit
  */
-export async function injectMockWallet(page: Page, rpcUrl = 'http://localhost:8545'): Promise<void> {
-  await page.addInitScript((rpcUrl) => {
+export async function injectMockWallet(
+  page: Page,
+  rpcUrl = 'http://localhost:8545'
+): Promise<void> {
+  await page.addInitScript(rpcUrl => {
     const TEST_ADDRESS = '0x8F78bE5c6b41C2d7634d25C7db22b26409671ca9'
     let requestId = 1
     let isConnected = false
@@ -73,7 +76,11 @@ export async function injectMockWallet(page: Page, rpcUrl = 'http://localhost:85
 
       // Main request handler
       request: async ({ method, params }: { method: string; params?: unknown[] }) => {
-        console.log('[MockWallet] Request:', method, params ? JSON.stringify(params).slice(0, 100) : '')
+        console.log(
+          '[MockWallet] Request:',
+          method,
+          params ? JSON.stringify(params).slice(0, 100) : ''
+        )
 
         switch (method) {
           case 'eth_accounts':
@@ -100,7 +107,7 @@ export async function injectMockWallet(page: Page, rpcUrl = 'http://localhost:85
             return '31337'
 
           case 'wallet_switchEthereumChain': {
-            const targetChainId = (params as [{chainId: string}])?.[0]?.chainId
+            const targetChainId = (params as [{ chainId: string }])?.[0]?.chainId
             if (targetChainId === '0x7a69') {
               return null // Success
             }
@@ -270,13 +277,20 @@ export async function injectMockWallet(page: Page, rpcUrl = 'http://localhost:85
         return mockProvider.request({ method: 'eth_requestAccounts' })
       },
 
-      send: (methodOrPayload: string | { method: string; params?: unknown[] }, paramsOrCallback?: unknown[] | ((error: Error | null, response?: unknown) => void)) => {
+      send: (
+        methodOrPayload: string | { method: string; params?: unknown[] },
+        paramsOrCallback?: unknown[] | ((error: Error | null, response?: unknown) => void)
+      ) => {
         if (typeof methodOrPayload === 'string') {
-          return mockProvider.request({ method: methodOrPayload, params: paramsOrCallback as unknown[] })
+          return mockProvider.request({
+            method: methodOrPayload,
+            params: paramsOrCallback as unknown[],
+          })
         }
         // Legacy send with callback
         const callback = paramsOrCallback as (error: Error | null, response?: unknown) => void
-        mockProvider.request(methodOrPayload)
+        mockProvider
+          .request(methodOrPayload)
           .then(result => callback?.(null, { jsonrpc: '2.0', id: requestId, result }))
           .catch(error => callback?.(error))
       },
@@ -285,7 +299,8 @@ export async function injectMockWallet(page: Page, rpcUrl = 'http://localhost:85
         request: { method: string; params?: unknown[] },
         callback: (error: Error | null, response?: { result: unknown }) => void
       ) => {
-        mockProvider.request(request)
+        mockProvider
+          .request(request)
           .then(result => callback(null, { result }))
           .catch(error => callback(error))
       },
@@ -334,21 +349,29 @@ export async function waitForWalletConnection(page: Page, timeout = 10000): Prom
  */
 export async function connectWallet(page: Page): Promise<void> {
   // Find and click connect button
-  const connectButton = page.locator('button:has-text("Connect Wallet"), button:has-text("Connect")')
+  const connectButton = page.locator(
+    'button:has-text("Connect Wallet"), button:has-text("Connect")'
+  )
 
-  if (await connectButton.count() > 0) {
+  if ((await connectButton.count()) > 0) {
     await connectButton.first().click()
     await page.waitForTimeout(1000)
 
     // If RainbowKit modal appears, click OKX option
     const okxOption = page.locator('button:has-text("OKX")')
-    if (await okxOption.count() > 0) {
+    if ((await okxOption.count()) > 0) {
       await okxOption.first().click()
       await page.waitForTimeout(2000)
     }
 
     // Wait for modal to close or close it manually
-    const closeButton = page.locator('[data-rk] button[aria-label="Close"]').or(page.locator('[data-rk] svg').filter({ hasText: '' }).locator('..').filter({ has: page.locator('path') }))
+    const closeButton = page.locator('[data-rk] button[aria-label="Close"]').or(
+      page
+        .locator('[data-rk] svg')
+        .filter({ hasText: '' })
+        .locator('..')
+        .filter({ has: page.locator('path') })
+    )
 
     // Try clicking outside the modal to close it
     const modalBackdrop = page.locator('[data-rk]').locator('..').locator('div').first()
@@ -358,7 +381,7 @@ export async function connectWallet(page: Page): Promise<void> {
 
     // If modal is still open, try pressing Escape
     const modal = page.locator('[data-rk][role="dialog"]')
-    if (await modal.count() > 0) {
+    if ((await modal.count()) > 0) {
       await page.keyboard.press('Escape')
       await page.waitForTimeout(500)
     }
@@ -370,15 +393,15 @@ export async function connectWallet(page: Page): Promise<void> {
  */
 export async function closeRainbowKitModal(page: Page): Promise<void> {
   const modal = page.locator('[data-rk][role="dialog"]')
-  if (await modal.count() > 0) {
+  if ((await modal.count()) > 0) {
     // Try Escape key first
     await page.keyboard.press('Escape')
     await page.waitForTimeout(500)
 
     // If still open, try clicking the X button
-    if (await modal.count() > 0) {
+    if ((await modal.count()) > 0) {
       const closeBtn = modal.locator('button').first()
-      if (await closeBtn.count() > 0) {
+      if ((await closeBtn.count()) > 0) {
         await closeBtn.click({ force: true })
         await page.waitForTimeout(500)
       }

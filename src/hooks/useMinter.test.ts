@@ -44,9 +44,7 @@ vi.mock('wagmi', () => ({
     },
   })),
   useSignTypedData: vi.fn(() => ({
-    signTypedDataAsync: vi.fn().mockResolvedValue(
-      '0x' + '0'.repeat(128) + '1b'
-    ),
+    signTypedDataAsync: vi.fn().mockResolvedValue('0x' + '0'.repeat(128) + '1b'),
   })),
 }))
 

@@ -140,15 +140,7 @@ export function usePoolAPR(
         rewardPriceMissing: false,
       }
     }
-  }, [
-    poolId,
-    rewardPerSecond,
-    totalAllocPoint,
-    allocPoint,
-    totalStaked,
-    lpTokenPrice,
-    prices.BRS,
-  ])
+  }, [poolId, rewardPerSecond, totalAllocPoint, allocPoint, totalStaked, lpTokenPrice, prices.BRS])
 
   return aprResult
 }

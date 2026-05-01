@@ -22,20 +22,68 @@ const contractsData = require('../../src/config/contracts.json')
 const PRICE_ORACLE = contractsData.contracts.PriceOracle as `0x${string}`
 
 const oracleAbi = [
-  { name: 'getWBTCPrice', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
-  { name: 'getChainlinkBTCUSD', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
-  { name: 'updateTWAPAll', type: 'function', stateMutability: 'nonpayable', inputs: [], outputs: [] },
-  { name: 'maxDeviationBps', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  {
+    name: 'getWBTCPrice',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    name: 'getChainlinkBTCUSD',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    name: 'updateTWAPAll',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [],
+    outputs: [],
+  },
+  {
+    name: 'maxDeviationBps',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
 ] as const
 
 const pairAbi = [
-  { name: 'getReserves', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint112' }, { type: 'uint112' }, { type: 'uint32' }] },
-  { name: 'token0', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'address' }] },
-  { name: 'swap', type: 'function', stateMutability: 'nonpayable', inputs: [{ type: 'uint256' }, { type: 'uint256' }, { type: 'address' }, { type: 'bytes' }], outputs: [] },
+  {
+    name: 'getReserves',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint112' }, { type: 'uint112' }, { type: 'uint32' }],
+  },
+  {
+    name: 'token0',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    name: 'swap',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ type: 'uint256' }, { type: 'uint256' }, { type: 'address' }, { type: 'bytes' }],
+    outputs: [],
+  },
 ] as const
 
 const erc20Abi = [
-  { name: 'transfer', type: 'function', stateMutability: 'nonpayable', inputs: [{ type: 'address' }, { type: 'uint256' }], outputs: [{ type: 'bool' }] },
+  {
+    name: 'transfer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ type: 'address' }, { type: 'uint256' }],
+    outputs: [{ type: 'bool' }],
+  },
 ] as const
 
 export async function syncOraclePrice(): Promise<void> {
@@ -50,7 +98,11 @@ export async function syncOraclePrice(): Promise<void> {
 
   // Check if oracle already works
   try {
-    const price = await pub.readContract({ address: PRICE_ORACLE, abi: oracleAbi, functionName: 'getWBTCPrice' })
+    const price = await pub.readContract({
+      address: PRICE_ORACLE,
+      abi: oracleAbi,
+      functionName: 'getWBTCPrice',
+    })
     console.log(`[OracleSync] Oracle OK — WBTC = $${(Number(price) / 1e18).toFixed(2)}`)
     return
   } catch {
@@ -58,13 +110,21 @@ export async function syncOraclePrice(): Promise<void> {
   }
 
   // Get Chainlink target price
-  const chainlinkPrice = await pub.readContract({ address: PRICE_ORACLE, abi: oracleAbi, functionName: 'getChainlinkBTCUSD' })
+  const chainlinkPrice = await pub.readContract({
+    address: PRICE_ORACLE,
+    abi: oracleAbi,
+    functionName: 'getChainlinkBTCUSD',
+  })
   const targetUSD = Number(chainlinkPrice) / 1e18
   console.log(`[OracleSync] Chainlink BTC/USD = $${targetUSD.toFixed(2)}`)
 
   // Get current Uniswap reserves
   const pool = ADDRESSES.WBTC_USDC
-  const [r0, r1] = await pub.readContract({ address: pool, abi: pairAbi, functionName: 'getReserves' })
+  const [r0, r1] = await pub.readContract({
+    address: pool,
+    abi: pairAbi,
+    functionName: 'getReserves',
+  })
   const token0 = await pub.readContract({ address: pool, abi: pairAbi, functionName: 'token0' })
   const wbtcIsToken0 = token0.toLowerCase() === ADDRESSES.WBTC.toLowerCase()
 
@@ -74,7 +134,7 @@ export async function syncOraclePrice(): Promise<void> {
   const currentPrice = (usdcReserve / wbtcReserve) * 100
   console.log(`[OracleSync] Uniswap WBTC = $${currentPrice.toFixed(2)}`)
 
-  const deviationBps = Math.abs(currentPrice - targetUSD) / targetUSD * 10000
+  const deviationBps = (Math.abs(currentPrice - targetUSD) / targetUSD) * 10000
   console.log(`[OracleSync] Deviation = ${deviationBps.toFixed(0)} bps`)
 
   if (deviationBps < 50) {
@@ -86,7 +146,7 @@ export async function syncOraclePrice(): Promise<void> {
     const k = wbtcReserve * usdcReserve
     // Target: newUsdc / newWbtc * 100 = targetUSD
     // newWbtc^2 = k * 100 / targetUSD
-    const newWbtc = Math.sqrt(k * 100 / targetUSD)
+    const newWbtc = Math.sqrt((k * 100) / targetUSD)
     const newUsdc = k / newWbtc
 
     if (currentPrice < targetUSD) {
@@ -100,14 +160,24 @@ export async function syncOraclePrice(): Promise<void> {
       console.log(`[OracleSync] Selling ${usdcIn} USDC for ${wbtcOut} WBTC`)
 
       // Transfer USDC to pool
-      const h1 = await wallet.writeContract({ address: ADDRESSES.USDC, abi: erc20Abi, functionName: 'transfer', args: [pool, usdcIn] })
+      const h1 = await wallet.writeContract({
+        address: ADDRESSES.USDC,
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [pool, usdcIn],
+      })
       await pub.waitForTransactionReceipt({ hash: h1 })
 
       // Swap: get WBTC out
       const args: [bigint, bigint, `0x${string}`, `0x${string}`] = wbtcIsToken0
         ? [wbtcOut, 0n, account.address, '0x']
         : [0n, wbtcOut, account.address, '0x']
-      const h2 = await wallet.writeContract({ address: pool, abi: pairAbi, functionName: 'swap', args })
+      const h2 = await wallet.writeContract({
+        address: pool,
+        abi: pairAbi,
+        functionName: 'swap',
+        args,
+      })
       await pub.waitForTransactionReceipt({ hash: h2 })
     } else {
       // Need to push price DOWN: sell WBTC, buy USDC
@@ -120,25 +190,43 @@ export async function syncOraclePrice(): Promise<void> {
       console.log(`[OracleSync] Selling ${wbtcIn} WBTC for ${usdcOut} USDC`)
 
       // Transfer WBTC to pool
-      const h1 = await wallet.writeContract({ address: ADDRESSES.WBTC, abi: erc20Abi, functionName: 'transfer', args: [pool, wbtcIn] })
+      const h1 = await wallet.writeContract({
+        address: ADDRESSES.WBTC,
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [pool, wbtcIn],
+      })
       await pub.waitForTransactionReceipt({ hash: h1 })
 
       // Swap: get USDC out
       const args: [bigint, bigint, `0x${string}`, `0x${string}`] = wbtcIsToken0
         ? [0n, usdcOut, account.address, '0x']
         : [usdcOut, 0n, account.address, '0x']
-      const h2 = await wallet.writeContract({ address: pool, abi: pairAbi, functionName: 'swap', args })
+      const h2 = await wallet.writeContract({
+        address: pool,
+        abi: pairAbi,
+        functionName: 'swap',
+        args,
+      })
       await pub.waitForTransactionReceipt({ hash: h2 })
     }
   }
 
   // Update TWAP after price alignment
-  const h3 = await wallet.writeContract({ address: PRICE_ORACLE, abi: oracleAbi, functionName: 'updateTWAPAll' })
+  const h3 = await wallet.writeContract({
+    address: PRICE_ORACLE,
+    abi: oracleAbi,
+    functionName: 'updateTWAPAll',
+  })
   await pub.waitForTransactionReceipt({ hash: h3 })
 
   // Verify
   try {
-    const price = await pub.readContract({ address: PRICE_ORACLE, abi: oracleAbi, functionName: 'getWBTCPrice' })
+    const price = await pub.readContract({
+      address: PRICE_ORACLE,
+      abi: oracleAbi,
+      functionName: 'getWBTCPrice',
+    })
     console.log(`[OracleSync] Oracle fixed — WBTC = $${(Number(price) / 1e18).toFixed(2)}`)
   } catch (e: any) {
     console.log(`[OracleSync] Oracle still failing after sync: ${e.message?.split('\n')[0]}`)

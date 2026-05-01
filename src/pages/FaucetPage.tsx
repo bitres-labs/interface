@@ -74,7 +74,7 @@ function FaucetPage() {
     if (countdown <= 0) return
 
     const timer = setInterval(() => {
-      setCountdown((prev) => {
+      setCountdown(prev => {
         if (prev <= 1) {
           refetchCanClaim()
           refetchCooldown()
@@ -98,7 +98,16 @@ function FaucetPage() {
       queryClient.invalidateQueries()
       reset()
     }
-  }, [isSuccess, refetchWBTC, refetchUSDC, refetchUSDT, refetchCanClaim, refetchCooldown, queryClient, reset])
+  }, [
+    isSuccess,
+    refetchWBTC,
+    refetchUSDC,
+    refetchUSDT,
+    refetchCanClaim,
+    refetchCooldown,
+    queryClient,
+    reset,
+  ])
 
   const handleClaim = useCallback(async () => {
     if (!isConnected && openConnectModal) {
@@ -126,8 +135,8 @@ function FaucetPage() {
   }
 
   // Check if faucet is configured (not zero address)
-  const isFaucetConfigured = !!CONTRACTS.Faucet &&
-    CONTRACTS.Faucet !== '0x0000000000000000000000000000000000000000'
+  const isFaucetConfigured =
+    !!CONTRACTS.Faucet && CONTRACTS.Faucet !== '0x0000000000000000000000000000000000000000'
 
   // Faucet balances display
   const faucetWBTC = faucetBalances ? Number(faucetBalances[0]) / 1e8 : 0
@@ -194,16 +203,16 @@ function FaucetPage() {
 
         {/* Token List */}
         <div className="space-y-3 mb-6">
-          {tokens.map((token) => (
+          {tokens.map(token => (
             <div
               key={token.symbol}
               className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/60 rounded-lg"
             >
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 ${token.color} rounded-full flex items-center justify-center`}>
-                  <span className="text-white font-bold text-sm">
-                    {token.symbol.charAt(0)}
-                  </span>
+                <div
+                  className={`w-10 h-10 ${token.color} rounded-full flex items-center justify-center`}
+                >
+                  <span className="text-white font-bold text-sm">{token.symbol.charAt(0)}</span>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">

@@ -8,7 +8,7 @@ import {
   removeTempContextDir,
   ensureCacheDirExists,
   downloadFile,
-  unzipArchive
+  unzipArchive,
 } from '@synthetixio/synpress-cache'
 import { MetaMask, unlockForFixture } from '@synthetixio/synpress-metamask/playwright'
 
@@ -27,7 +27,7 @@ async function resolveMetaMaskExtensionPath(unzipPath: string): Promise<Prepared
     const manifest = await fs.readJson(rootManifestPath)
     return {
       extensionPath: unzipPath,
-      manifestName: typeof manifest?.name === 'string' ? manifest.name : 'MetaMask'
+      manifestName: typeof manifest?.name === 'string' ? manifest.name : 'MetaMask',
     }
   }
 
@@ -64,10 +64,10 @@ async function prepareExtension(forceCache = true): Promise<PreparedExtension> {
   const downloadResult = await downloadFile({
     url: EXTENSION_DOWNLOAD_URL,
     outputDir,
-    fileName: `metamask-chrome-${DEFAULT_METAMASK_VERSION}.zip`
+    fileName: `metamask-chrome-${DEFAULT_METAMASK_VERSION}.zip`,
   })
   const unzipResult = await unzipArchive({
-    archivePath: downloadResult.filePath
+    archivePath: downloadResult.filePath,
   })
   return resolveMetaMaskExtensionPath(unzipResult.outputPath)
 }
@@ -81,7 +81,7 @@ async function persistLocalStorage(
   for (const { origin, localStorage } of origins) {
     const frame = newPage.mainFrame()
     await frame.goto(origin)
-    await frame.evaluate((data) => {
+    await frame.evaluate(data => {
       data.forEach(({ name, value }) => window.localStorage.setItem(name, value))
     }, localStorage)
   }
@@ -149,7 +149,9 @@ async function getExtensionIdFromContext(context: BrowserContext) {
 
   // Wait for service worker event
   try {
-    const worker = await context.waitForEvent('serviceworker', { timeout: EXTENSION_EVENT_TIMEOUT_MS })
+    const worker = await context.waitForEvent('serviceworker', {
+      timeout: EXTENSION_EVENT_TIMEOUT_MS,
+    })
     const id = getExtensionIdFromUrl(worker.url())
     if (id && !KNOWN_BLOCKED_EXTENSION_IDS.has(id)) return id
   } catch {
@@ -192,16 +194,26 @@ async function getExtensionIdFromPreferences(
             if (!entry || typeof entry !== 'object') {
               continue
             }
-            const entryPath = typeof (entry as { path?: string }).path === 'string'
-              ? path.resolve((entry as { path: string }).path)
-              : ''
-            const entryManifestName = typeof (entry as { manifest?: { name?: string } }).manifest?.name === 'string'
-              ? (entry as { manifest: { name: string } }).manifest.name.toLowerCase()
-              : ''
-            if (entryPath && entryPath === normalizedExtensionPath && !KNOWN_BLOCKED_EXTENSION_IDS.has(extensionId)) {
+            const entryPath =
+              typeof (entry as { path?: string }).path === 'string'
+                ? path.resolve((entry as { path: string }).path)
+                : ''
+            const entryManifestName =
+              typeof (entry as { manifest?: { name?: string } }).manifest?.name === 'string'
+                ? (entry as { manifest: { name: string } }).manifest.name.toLowerCase()
+                : ''
+            if (
+              entryPath &&
+              entryPath === normalizedExtensionPath &&
+              !KNOWN_BLOCKED_EXTENSION_IDS.has(extensionId)
+            ) {
               return extensionId
             }
-            if (entryManifestName && entryManifestName.includes(expectedName) && !KNOWN_BLOCKED_EXTENSION_IDS.has(extensionId)) {
+            if (
+              entryManifestName &&
+              entryManifestName.includes(expectedName) &&
+              !KNOWN_BLOCKED_EXTENSION_IDS.has(extensionId)
+            ) {
               return extensionId
             }
           }
@@ -293,7 +305,7 @@ export const metaMaskFixtures = (walletSetup: ReturnType<typeof defineWalletSetu
       const browserArgs = [
         `--disable-extensions-except=${metamaskPath}`,
         `--load-extension=${metamaskPath}`,
-        '--no-sandbox'
+        '--no-sandbox',
       ]
 
       if (process.env.HEADLESS) {
@@ -308,16 +320,23 @@ export const metaMaskFixtures = (walletSetup: ReturnType<typeof defineWalletSetu
           '--disable-extensions',
           '--disable-component-extensions-with-background-pages',
           '--disable-extensions-except',
-          '--enable-automation'
+          '--enable-automation',
         ],
-        slowMo: process.env.HEADLESS ? 0 : slowMo
+        slowMo: process.env.HEADLESS ? 0 : slowMo,
       })
 
       // Give extension time to initialize
       await new Promise(r => setTimeout(r, 3000))
 
-      const extensionIdFromDisk = await getExtensionIdFromInstalledExtensions(_contextPath, manifestName)
-      const extensionIdFromPrefs = await getExtensionIdFromPreferences(_contextPath, metamaskPath, manifestName)
+      const extensionIdFromDisk = await getExtensionIdFromInstalledExtensions(
+        _contextPath,
+        manifestName
+      )
+      const extensionIdFromPrefs = await getExtensionIdFromPreferences(
+        _contextPath,
+        metamaskPath,
+        manifestName
+      )
       const { cookies, origins } = await currentContext.storageState()
 
       if (cookies) {
@@ -327,7 +346,8 @@ export const metaMaskFixtures = (walletSetup: ReturnType<typeof defineWalletSetu
         await persistLocalStorage(origins, context)
       }
 
-      const extensionId = extensionIdFromDisk ?? extensionIdFromPrefs ?? await getExtensionIdFromContext(context)
+      const extensionId =
+        extensionIdFromDisk ?? extensionIdFromPrefs ?? (await getExtensionIdFromContext(context))
       console.log(`[metamask] resolved extension id: ${extensionId}`)
 
       _metamaskPage = await loadExtensionHomePage(context, extensionId)
@@ -350,6 +370,6 @@ export const metaMaskFixtures = (walletSetup: ReturnType<typeof defineWalletSetu
       const metamask = new MetaMask(context, _metamaskPage, walletPassword, extensionId)
 
       await use(metamask)
-    }
+    },
   })
 }

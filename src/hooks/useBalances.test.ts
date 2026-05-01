@@ -317,14 +317,15 @@ describe('useBalances', () => {
         callCount++
         // Different balances for different tokens
         const balances = [
-          parseUnits('0.5', 8),    // WBTC (8 decimals)
-          parseUnits('1000', 6),    // USDC (6 decimals)
-          parseUnits('500', 6),     // USDT (6 decimals)
-          parseUnits('10000', 18),  // BTD (18 decimals)
-          parseUnits('5000', 18),   // BTB (18 decimals)
-          parseUnits('25000', 18),  // BRS (18 decimals)
-          parseUnits('8000', 18),   // stBTD (18 decimals)
-          parseUnits('3000', 18),   // stBTB (18 decimals)
+          parseUnits('0.5', 8), // WBTC (8 decimals)
+          parseUnits('2', 18), // WETH (18 decimals)
+          parseUnits('1000', 6), // USDC (6 decimals)
+          parseUnits('500', 6), // USDT (6 decimals)
+          parseUnits('10000', 18), // BTD (18 decimals)
+          parseUnits('5000', 18), // BTB (18 decimals)
+          parseUnits('25000', 18), // BRS (18 decimals)
+          parseUnits('8000', 18), // stBTD (18 decimals)
+          parseUnits('3000', 18), // stBTB (18 decimals)
         ]
 
         return {
@@ -354,6 +355,7 @@ describe('useBalances', () => {
       expect(result.current.balances).toEqual({
         ETH: '1.5',
         WBTC: '0.5',
+        WETH: '2',
         USDC: '1000',
         USDT: '500',
         BTD: '10000',
@@ -411,9 +413,7 @@ describe('useBalances', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.allowance).toBe(allowanceValue)
       expect(result.current.isLoading).toBe(false)
@@ -450,9 +450,7 @@ describe('useBalances', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.allowance).toBeUndefined()
     })
@@ -466,9 +464,7 @@ describe('useBalances', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.allowance).toBe(smallAllowance)
     })
@@ -482,9 +478,7 @@ describe('useBalances', () => {
         refetch: mockRefetch,
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.refetch).toBe(mockRefetch)
     })
@@ -497,9 +491,7 @@ describe('useBalances', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.isLoading).toBe(true)
       expect(result.current.allowance).toBeUndefined()
@@ -514,9 +506,7 @@ describe('useBalances', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.error).toBe(mockError)
       expect(result.current.allowance).toBeUndefined()
@@ -530,9 +520,7 @@ describe('useBalances', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useTokenAllowance(tokenAddress, spenderAddress)
-      )
+      const { result } = renderHook(() => useTokenAllowance(tokenAddress, spenderAddress))
 
       expect(result.current.allowance).toBe(0n)
     })

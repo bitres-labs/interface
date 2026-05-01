@@ -15,6 +15,7 @@ vi.mock('wagmi', () => ({
 
 vi.mock('./useBalances', () => ({
   useWBTCBalance: vi.fn(),
+  useWETHBalance: vi.fn(),
   useBTDBalance: vi.fn(),
   useBTBBalance: vi.fn(),
   useBRSBalance: vi.fn(),
@@ -39,6 +40,10 @@ vi.mock('./useAPY', () => ({
 describe('usePortfolio', () => {
   const mockPrices = {
     WBTC: 100000,
+    WETH: 3000,
+    ETH: 3000,
+    USDC: 1,
+    USDT: 1,
     BRS: 10,
     BTD: 1.01,
     BTB: 1.0,
@@ -72,6 +77,7 @@ describe('usePortfolio', () => {
       } as never)
 
       vi.mocked(useBalances.useWBTCBalance).mockReturnValue({ balance: '0' } as never)
+      vi.mocked(useBalances.useWETHBalance).mockReturnValue({ balance: '0' } as never)
       vi.mocked(useBalances.useBTDBalance).mockReturnValue({ balance: '0' } as never)
       vi.mocked(useBalances.useBTBBalance).mockReturnValue({ balance: '0' } as never)
       vi.mocked(useBalances.useBRSBalance).mockReturnValue({ balance: '0' } as never)
@@ -112,6 +118,7 @@ describe('usePortfolio', () => {
 
       // Mock token balances
       vi.mocked(useBalances.useWBTCBalance).mockReturnValue({ balance: '0.5' } as never) // 0.5 WBTC
+      vi.mocked(useBalances.useWETHBalance).mockReturnValue({ balance: '0' } as never)
       vi.mocked(useBalances.useBTDBalance).mockReturnValue({ balance: '1000' } as never)
       vi.mocked(useBalances.useBTBBalance).mockReturnValue({ balance: '500' } as never)
       vi.mocked(useBalances.useBRSBalance).mockReturnValue({ balance: '2000' } as never)
@@ -127,13 +134,13 @@ describe('usePortfolio', () => {
         const stakes: Record<number, string> = {
           0: '100', // BRS/BTD LP
           1: '200', // BTD/USDC LP
-          2: '50',  // BTB/BTD LP
+          2: '50', // BTB/BTD LP
           3: '1000', // USDC
-          4: '500',  // USDT
-          5: '0.1',  // WBTC
-          6: '300',  // stBTD
-          7: '200',  // stBTB
-          8: '500',  // BRS
+          4: '500', // USDT
+          5: '0.1', // WBTC
+          6: '300', // stBTD
+          7: '200', // stBTB
+          8: '500', // BRS
         }
         return { stakedAmount: stakes[poolId] || '0' }
       })
@@ -215,12 +222,13 @@ describe('usePortfolio', () => {
     it('should include tokens array', () => {
       const { result } = renderHook(() => usePortfolio())
 
-      expect(result.current.tokens).toHaveLength(7)
+      expect(result.current.tokens).toHaveLength(8)
       expect(result.current.tokens.map(t => t.symbol)).toEqual([
         'BTD',
         'BTB',
         'BRS',
         'WBTC',
+        'WETH',
         'ETH',
         'USDC',
         'USDT',

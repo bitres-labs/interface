@@ -12,7 +12,7 @@ export const WAIT = {
   MEDIUM: 2000,
   LONG: 3000,
   TX: 5000,
-  PAGE_LOAD: 3000
+  PAGE_LOAD: 3000,
 }
 
 /**
@@ -21,13 +21,13 @@ export const WAIT = {
 export async function connectWallet(page: Page, metamask: any) {
   if (page.isClosed()) return
   const connectButton = page.locator('button:has-text("Connect Wallet")')
-  if (await connectButton.count() > 0) {
+  if ((await connectButton.count()) > 0) {
     await connectButton.first().click()
     await page.waitForTimeout(WAIT.SHORT)
 
     const okxOption = page.locator('button:has-text("OKX")')
     const metaMaskOption = page.locator('button:has-text("MetaMask")')
-    if (await okxOption.count() > 0) {
+    if ((await okxOption.count()) > 0) {
       await okxOption.first().click()
       await page.waitForTimeout(WAIT.SHORT)
       await attemptWalletConnect(page, metamask)
@@ -35,7 +35,7 @@ export async function connectWallet(page: Page, metamask: any) {
       if (connected) {
         await ensureHardhatNetwork(page, metamask)
       }
-    } else if (await metaMaskOption.count() > 0) {
+    } else if ((await metaMaskOption.count()) > 0) {
       await metaMaskOption.first().click()
       await page.waitForTimeout(WAIT.SHORT)
       await attemptWalletConnect(page, metamask)
@@ -67,12 +67,18 @@ async function attemptWalletConnect(page: Page, metamask: any, attempts = 2) {
 export async function waitForWalletConnection(page: Page, timeout = 15000) {
   if (page.isClosed()) return false
   try {
-    await page.waitForFunction(async () => {
-      const ethereum = (window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }).ethereum
-      if (!ethereum?.request) return false
-      const accounts = await ethereum.request({ method: 'eth_accounts' })
-      return Array.isArray(accounts) && accounts.length > 0
-    }, undefined, { timeout })
+    await page.waitForFunction(
+      async () => {
+        const ethereum = (
+          window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }
+        ).ethereum
+        if (!ethereum?.request) return false
+        const accounts = await ethereum.request({ method: 'eth_accounts' })
+        return Array.isArray(accounts) && accounts.length > 0
+      },
+      undefined,
+      { timeout }
+    )
     return true
   } catch {
     return false
@@ -83,7 +89,13 @@ async function ensureHardhatNetwork(page: Page, metamask: any) {
   let requested = false
   try {
     requested = await page.evaluate(async () => {
-      const ethereum = (window as { ethereum?: { request?: (args: { method: string; params?: unknown[] }) => Promise<unknown> } }).ethereum
+      const ethereum = (
+        window as {
+          ethereum?: {
+            request?: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+          }
+        }
+      ).ethereum
       if (!ethereum?.request) return false
       const chainId = await ethereum.request({ method: 'eth_chainId' })
       if (chainId === '0x7a69') return false
@@ -95,16 +107,16 @@ async function ensureHardhatNetwork(page: Page, metamask: any) {
               chainId: '0x7a69',
               chainName: 'Hardhat',
               rpcUrls: ['http://localhost:8545'],
-              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }
-            }
-          ]
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            },
+          ],
         })
         return true
       } catch {
         try {
           await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x7a69' }]
+            params: [{ chainId: '0x7a69' }],
           })
           return true
         } catch {
@@ -129,7 +141,9 @@ export async function isWalletConnected(page: Page): Promise<boolean> {
   if (page.isClosed()) return false
   try {
     const accounts = await page.evaluate(async () => {
-      const ethereum = (window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }).ethereum
+      const ethereum = (
+        window as { ethereum?: { request?: (args: { method: string }) => Promise<unknown> } }
+      ).ethereum
       if (!ethereum?.request) return []
       return ethereum.request({ method: 'eth_accounts' })
     })
@@ -160,7 +174,7 @@ export async function navigateTo(page: Page, path: string) {
  */
 export async function fillAmount(page: Page, amount: string, index = 0) {
   const input = page.locator('input[type="number"], input[inputmode="decimal"]').nth(index)
-  if (await input.count() > 0) {
+  if ((await input.count()) > 0) {
     await input.clear()
     await input.fill(amount)
     await page.waitForTimeout(WAIT.SHORT)
@@ -172,7 +186,7 @@ export async function fillAmount(page: Page, amount: string, index = 0) {
  */
 export async function clickMaxButton(page: Page, index = 0) {
   const maxButton = page.locator('button:has-text("MAX")').nth(index)
-  if (await maxButton.count() > 0) {
+  if ((await maxButton.count()) > 0) {
     await maxButton.click()
     await page.waitForTimeout(WAIT.SHORT)
   }
@@ -181,9 +195,13 @@ export async function clickMaxButton(page: Page, index = 0) {
 /**
  * Click a button by text
  */
-export async function clickButton(page: Page, text: string, options?: { last?: boolean; first?: boolean }) {
+export async function clickButton(
+  page: Page,
+  text: string,
+  options?: { last?: boolean; first?: boolean }
+) {
   const button = page.locator(`button:has-text("${text}")`)
-  if (await button.count() > 0) {
+  if ((await button.count()) > 0) {
     if (options?.last) {
       await button.last().click()
     } else if (options?.first) {
@@ -200,8 +218,11 @@ export async function clickButton(page: Page, text: string, options?: { last?: b
  */
 export async function clickTab(page: Page, tabText: string) {
   if (page.isClosed()) return
-  const tab = page.locator(`button:has-text("${tabText}")`).filter({ hasNot: page.locator('[disabled]') }).first()
-  if (await tab.count() > 0) {
+  const tab = page
+    .locator(`button:has-text("${tabText}")`)
+    .filter({ hasNot: page.locator('[disabled]') })
+    .first()
+  if ((await tab.count()) > 0) {
     await tab.click()
     await page.waitForTimeout(WAIT.SHORT)
   }
@@ -212,7 +233,7 @@ export async function clickTab(page: Page, tabText: string) {
  */
 export async function isButtonDisabled(page: Page, text: string): Promise<boolean> {
   const button = page.locator(`button:has-text("${text}")`).first()
-  if (await button.count() > 0) {
+  if ((await button.count()) > 0) {
     return await button.isDisabled()
   }
   return true
@@ -223,7 +244,7 @@ export async function isButtonDisabled(page: Page, text: string): Promise<boolea
  */
 export async function getInputValue(page: Page, index = 0): Promise<string> {
   const input = page.locator('input[type="number"], input[inputmode="decimal"]').nth(index)
-  if (await input.count() > 0) {
+  if ((await input.count()) > 0) {
     return await input.inputValue()
   }
   return ''
@@ -293,13 +314,13 @@ export async function waitForElement(page: Page, selector: string, timeout = 100
 export async function selectToken(page: Page, tokenSymbol: string) {
   // Click dropdown trigger
   const dropdown = page.locator('[role="combobox"], [data-testid="token-select"]').first()
-  if (await dropdown.count() > 0) {
+  if ((await dropdown.count()) > 0) {
     await dropdown.click()
     await page.waitForTimeout(WAIT.SHORT)
 
     // Select token option
     const option = page.locator(`text=${tokenSymbol}`).first()
-    if (await option.count() > 0) {
+    if ((await option.count()) > 0) {
       await option.click()
       await page.waitForTimeout(WAIT.SHORT)
     }

@@ -254,9 +254,7 @@ describe('useStaking', () => {
 
       const { result } = renderHook(() => useStakeBTD())
 
-      await expect(result.current.stakeBTD('100')).rejects.toThrow(
-        'Wallet not connected'
-      )
+      await expect(result.current.stakeBTD('100')).rejects.toThrow('Wallet not connected')
     })
 
     it('should return transaction states', () => {
@@ -359,9 +357,7 @@ describe('useStaking', () => {
       const { result } = renderHook(() => useStakeBTB())
 
       await act(async () => {
-        await expect(result.current.stakeBTB('200')).rejects.toThrow(
-          'Wallet not connected'
-        )
+        await expect(result.current.stakeBTB('200')).rejects.toThrow('Wallet not connected')
       })
     })
 
@@ -416,9 +412,7 @@ describe('useStaking', () => {
 
       const { result } = renderHook(() => useUnstakeBTD())
 
-      await expect(result.current.unstakeBTD('50')).rejects.toThrow(
-        'Wallet not connected'
-      )
+      await expect(result.current.unstakeBTD('50')).rejects.toThrow('Wallet not connected')
     })
 
     it('should return transaction states', () => {
@@ -513,9 +507,7 @@ describe('useStaking', () => {
 
       const { result } = renderHook(() => useUnstakeBTB())
 
-      await expect(result.current.unstakeBTB('100')).rejects.toThrow(
-        'Wallet not connected'
-      )
+      await expect(result.current.unstakeBTB('100')).rejects.toThrow('Wallet not connected')
     })
 
     it('should return transaction hash', () => {

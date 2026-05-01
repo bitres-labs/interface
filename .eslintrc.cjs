@@ -47,6 +47,8 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'warn', // downgraded to warn, allow commits, fix later
     'react-hooks/exhaustive-deps': 'warn',
     'react-hooks/set-state-in-effect': 'warn', // warn on setState calls directly in useEffect
+    'react-hooks/preserve-manual-memoization': 'warn',
+    'react-hooks/purity': 'warn',
   },
   settings: {
     react: {

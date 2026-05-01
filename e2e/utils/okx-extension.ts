@@ -14,7 +14,7 @@ type PreparedExtension = {
 
 function download(url: string, destPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const request = https.get(url, (res) => {
+    const request = https.get(url, res => {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume()
         return resolve(download(res.headers.location, destPath))
@@ -52,7 +52,7 @@ async function resolveExtensionRoot(unzipPath: string): Promise<PreparedExtensio
     const manifest = await readJson(rootManifestPath)
     return {
       extensionPath: unzipPath,
-      manifestName: typeof manifest?.name === 'string' ? manifest.name : 'OKX Wallet'
+      manifestName: typeof manifest?.name === 'string' ? manifest.name : 'OKX Wallet',
     }
   }
 
@@ -65,7 +65,7 @@ async function resolveExtensionRoot(unzipPath: string): Promise<PreparedExtensio
       const manifest = await readJson(manifestPath)
       return {
         extensionPath: candidatePath,
-        manifestName: typeof manifest?.name === 'string' ? manifest.name : 'OKX Wallet'
+        manifestName: typeof manifest?.name === 'string' ? manifest.name : 'OKX Wallet',
       }
     }
   }

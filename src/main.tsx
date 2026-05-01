@@ -11,10 +11,7 @@ import './index.css'
 import '@rainbow-me/rainbowkit/styles.css'
 
 // Expose wagmi APIs for E2E testing (Sepolia testnet — no security concern)
-Promise.all([
-  import('@wagmi/core'),
-  import('wagmi'),
-]).then(([core, wagmi]) => {
+Promise.all([import('@wagmi/core'), import('wagmi')]).then(([core, wagmi]) => {
   ;(window as any).__e2e = {
     config,
     connect: core.connect,
@@ -45,10 +42,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider
-            locale="en-US"
-            theme={customLightTheme}
-          >
+          <RainbowKitProvider locale="en-US" theme={customLightTheme}>
             <BrowserRouter>
               <App />
             </BrowserRouter>

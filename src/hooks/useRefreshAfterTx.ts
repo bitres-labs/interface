@@ -25,10 +25,7 @@ interface RefreshCallbacks {
  * @param hash Transaction hash
  * @param callbacks Refresh callback functions
  */
-export function useRefreshAfterTx(
-  hash: `0x${string}` | undefined,
-  callbacks?: RefreshCallbacks
-) {
+export function useRefreshAfterTx(hash: `0x${string}` | undefined, callbacks?: RefreshCallbacks) {
   const { isSuccess, isError, error } = useWaitForTransactionReceipt({
     hash,
   })

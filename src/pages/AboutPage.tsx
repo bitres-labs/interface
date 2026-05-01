@@ -19,10 +19,10 @@ function AboutPage() {
       <div className="card">
         <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Our Vision</h2>
         <p className="text-gray-600 dark:text-gray-300 mb-4">
-          Bitres is designed to complete Satoshi Nakamoto's vision of
-          peer-to-peer electronic cash. While Bitcoin serves as "digital gold" with its fixed supply
-          and store of value properties, it lacks the flexible monetary characteristics needed for
-          daily transactions and commerce.
+          Bitres is designed to complete Satoshi Nakamoto's vision of peer-to-peer electronic cash.
+          While Bitcoin serves as "digital gold" with its fixed supply and store of value
+          properties, it lacks the flexible monetary characteristics needed for daily transactions
+          and commerce.
         </p>
         <p className="text-gray-600 dark:text-gray-300">
           BRS bridges this gap by creating a bitcoin-collateralized stablecoin that inherits
@@ -117,8 +117,9 @@ function AboutPage() {
                 Collateralized Minting
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Users deposit Bitcoin ({BTC_COLLATERAL_SYMBOL}) and mint BTD at the current BTC/IUSD exchange rate. All
-                BTD is 100% backed by Bitcoin collateral held in the protocol treasury.
+                Users deposit Bitcoin ({BTC_COLLATERAL_SYMBOL}) and mint BTD at the current BTC/IUSD
+                exchange rate. All BTD is 100% backed by Bitcoin collateral held in the protocol
+                treasury.
               </p>
             </div>
           </div>
@@ -267,7 +268,8 @@ function AboutPage() {
               Collateral Treasury
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Securely holds all {BTC_COLLATERAL_SYMBOL} collateral and manages BTD/BRS reserves for system operations
+              Securely holds all {BTC_COLLATERAL_SYMBOL} collateral and manages BTD/BRS reserves for
+              system operations
             </p>
           </div>
           <div className="border-l-4 border-primary-600 dark:border-primary-400 pl-4">

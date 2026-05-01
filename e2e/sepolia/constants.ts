@@ -54,8 +54,8 @@ export const ADDRESSES = {
 
 // Timeouts
 export const TIMEOUT = {
-  TX: 120_000,       // 120s for Sepolia tx confirmation
-  READ: 30_000,      // 30s for read operations
+  TX: 120_000, // 120s for Sepolia tx confirmation
+  READ: 30_000, // 30s for read operations
   PAGE_LOAD: 30_000, // 30s for page load (remote site may be slower)
   SHORT: 2_000,
   MEDIUM: 5_000,

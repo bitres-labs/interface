@@ -358,9 +358,10 @@ export function ConvertAndStakeModal({
                 {/* USD Value Display */}
                 {inputUSDValue > 0 && (
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    ≈ ${inputUSDValue.toLocaleString(undefined, {
+                    ≈ $
+                    {inputUSDValue.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
+                      maximumFractionDigits: 2,
                     })}
                   </div>
                 )}
@@ -403,9 +404,10 @@ export function ConvertAndStakeModal({
                     </div>
                     {estimatedStakeUSDValue > 0 && (
                       <div className="text-xs mt-1 text-primary-600 dark:text-primary-300">
-                        ≈ ${estimatedStakeUSDValue.toLocaleString(undefined, {
+                        ≈ $
+                        {estimatedStakeUSDValue.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2
+                          maximumFractionDigits: 2,
                         })}
                       </div>
                     )}
@@ -418,9 +420,10 @@ export function ConvertAndStakeModal({
                     </div>
                     {totalStakeUSDValue > 0 && (
                       <div className="text-xs mt-1 text-green-600 dark:text-green-300">
-                        ≈ ${totalStakeUSDValue.toLocaleString(undefined, {
+                        ≈ $
+                        {totalStakeUSDValue.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2
+                          maximumFractionDigits: 2,
                         })}
                       </div>
                     )}

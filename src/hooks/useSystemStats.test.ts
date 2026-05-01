@@ -453,11 +453,17 @@ describe('useSystemStats', () => {
       })
 
       it('should parse mined amount correctly', () => {
-        vi.mocked(wagmi.useReadContract).mockReturnValue({
-          data: parseUnits('50000', 18),
-          isLoading: false,
-          error: null,
-        } as never)
+        vi.mocked(wagmi.useReadContract)
+          .mockReturnValueOnce({
+            data: parseUnits('100000', 18),
+            isLoading: false,
+            error: null,
+          } as never)
+          .mockReturnValueOnce({
+            data: parseUnits('50000', 18),
+            isLoading: false,
+            error: null,
+          } as never)
 
         const { result } = renderHook(() => useBRSMined())
 

@@ -54,14 +54,20 @@ const test = base.extend<{
   extensionPage: Page
   appPage: Page
 }>({
-  extensionContext: async ({ }, use, testInfo) => {
+  extensionContext: async (_fixtures, use, testInfo) => {
     // Verify MetaMask extension exists
-    if (!await fs.exists(METAMASK_PATH)) {
-      throw new Error(`MetaMask extension not found at ${METAMASK_PATH}. Run 'npx synpress test/wallet-setup' first.`)
+    if (!(await fs.exists(METAMASK_PATH))) {
+      throw new Error(
+        `MetaMask extension not found at ${METAMASK_PATH}. Run 'npx synpress test/wallet-setup' first.`
+      )
     }
 
     // Create a unique temporary user data directory for this test
-    const userDataDir = path.join(process.cwd(), '.cache-synpress', `test-profile-${testInfo.testId}`)
+    const userDataDir = path.join(
+      process.cwd(),
+      '.cache-synpress',
+      `test-profile-${testInfo.testId}`
+    )
     await fs.remove(userDataDir) // Remove if exists
     await fs.ensureDir(userDataDir)
 
@@ -94,7 +100,10 @@ const test = base.extend<{
 
     const extensionId = await getExtensionIdFromContext(extensionContext)
     const pages = extensionContext.pages()
-    console.log('Open pages:', pages.map(p => p.url()))
+    console.log(
+      'Open pages:',
+      pages.map(p => p.url())
+    )
 
     let metamaskPage = pages.find(p => p.url().includes(extensionId))
     if (!metamaskPage) {
@@ -110,7 +119,7 @@ const test = base.extend<{
   appPage: async ({ extensionContext }, use) => {
     const page = await extensionContext.newPage()
     await use(page)
-  }
+  },
 })
 
 test.describe('Custom Synpress: MetaMask Tests', () => {
@@ -120,7 +129,10 @@ test.describe('Custom Synpress: MetaMask Tests', () => {
     await new Promise(resolve => setTimeout(resolve, 5000))
 
     const pages = extensionContext.pages()
-    console.log('All pages:', pages.map(p => p.url()))
+    console.log(
+      'All pages:',
+      pages.map(p => p.url())
+    )
 
     // Check for extension page
     const hasExtension = pages.some(p => p.url().includes('chrome-extension://'))

@@ -5,7 +5,12 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, readBalance, readBalanceUntilChanged } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  readBalance,
+  readBalanceUntilChanged,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 // Pool/Liquidity functions are tabs on the /swap page
@@ -60,9 +65,9 @@ test.describe('Pool / Liquidity', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Look for Add Liquidity button or link
-    const addBtn = page.locator(
-      'button:has-text("Add"), a:has-text("Add"), button:has-text("Liquidity")'
-    ).first()
+    const addBtn = page
+      .locator('button:has-text("Add"), a:has-text("Add"), button:has-text("Liquidity")')
+      .first()
 
     if ((await addBtn.count()) > 0) {
       await addBtn.click()
@@ -84,9 +89,7 @@ test.describe('Pool / Liquidity', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Navigate to add liquidity
-    const addBtn = page.locator(
-      'button:has-text("Add"), a:has-text("Add")'
-    ).first()
+    const addBtn = page.locator('button:has-text("Add"), a:has-text("Add")').first()
     if ((await addBtn.count()) > 0) {
       await addBtn.click()
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -111,9 +114,7 @@ test.describe('Pool / Liquidity', () => {
     await navigateTo(page, '/pool')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
-    const addBtn = page.locator(
-      'button:has-text("Add"), a:has-text("Add")'
-    ).first()
+    const addBtn = page.locator('button:has-text("Add"), a:has-text("Add")').first()
     if ((await addBtn.count()) > 0) {
       await addBtn.click()
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -126,9 +127,11 @@ test.describe('Pool / Liquidity', () => {
     }
 
     // Look for supply/add button
-    const supplyBtn = page.locator(
-      'button:has-text("Supply"), button:has-text("Add Liquidity"), button:has-text("Approve"), button:has-text("Add")'
-    ).last()
+    const supplyBtn = page
+      .locator(
+        'button:has-text("Supply"), button:has-text("Add Liquidity"), button:has-text("Approve"), button:has-text("Add")'
+      )
+      .last()
 
     if ((await supplyBtn.count()) > 0 && !(await supplyBtn.isDisabled())) {
       const btnText = await supplyBtn.textContent()
@@ -140,9 +143,7 @@ test.describe('Pool / Liquidity', () => {
       // If was Approve, follow up with Supply
       if (btnText?.includes('Approve')) {
         await page.waitForTimeout(TIMEOUT.MEDIUM)
-        const actualBtn = page.locator(
-          'button:has-text("Supply"), button:has-text("Add")'
-        ).last()
+        const actualBtn = page.locator('button:has-text("Supply"), button:has-text("Add")').last()
         if ((await actualBtn.count()) > 0 && !(await actualBtn.isDisabled())) {
           await actualBtn.click()
           await waitForTxComplete(page, 'Supply', TIMEOUT.TX)
@@ -180,7 +181,9 @@ test.describe('Pool / Liquidity', () => {
     }
 
     // Now look for "Add Liquidity" mode toggle
-    const addToggle = page.locator('button:has-text("Add Liquidity"), button:has-text("Add")').first()
+    const addToggle = page
+      .locator('button:has-text("Add Liquidity"), button:has-text("Add")')
+      .first()
     if ((await addToggle.count()) > 0) {
       await addToggle.click()
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -272,9 +275,7 @@ test.describe('Pool / Liquidity', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Look for Remove Liquidity section
-    const removeBtn = page.locator(
-      'button:has-text("Remove"), a:has-text("Remove")'
-    ).first()
+    const removeBtn = page.locator('button:has-text("Remove"), a:has-text("Remove")').first()
 
     if ((await removeBtn.count()) > 0) {
       await removeBtn.click()
@@ -306,9 +307,7 @@ test.describe('Pool / Liquidity', () => {
       return
     }
 
-    const removeBtn = page.locator(
-      'button:has-text("Remove"), a:has-text("Remove")'
-    ).first()
+    const removeBtn = page.locator('button:has-text("Remove"), a:has-text("Remove")').first()
 
     if ((await removeBtn.count()) > 0) {
       await removeBtn.click()
@@ -322,9 +321,11 @@ test.describe('Pool / Liquidity', () => {
       }
 
       // Look for confirm remove button
-      const confirmBtn = page.locator(
-        'button:has-text("Remove"), button:has-text("Confirm"), button:has-text("Approve")'
-      ).last()
+      const confirmBtn = page
+        .locator(
+          'button:has-text("Remove"), button:has-text("Confirm"), button:has-text("Approve")'
+        )
+        .last()
 
       if ((await confirmBtn.count()) > 0 && !(await confirmBtn.isDisabled())) {
         const btnText = await confirmBtn.textContent()

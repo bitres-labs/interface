@@ -219,15 +219,15 @@ function StakePage({ embedded = false }: StakePageProps = {}) {
       ? `Insufficient ${fromToken} Balance`
       : fromToken === 'BTB' && isSigningStakeBTB
         ? 'Signing Permit...'
-      : isProcessing
-        ? 'Processing...'
-        : isExecuting
-          ? isDeposit
-            ? 'Staking...'
-            : 'Unstaking...'
-          : isDeposit
-            ? `Stake ${baseToken}`
-            : `Unstake ${baseToken}`
+        : isProcessing
+          ? 'Processing...'
+          : isExecuting
+            ? isDeposit
+              ? 'Staking...'
+              : 'Unstaking...'
+            : isDeposit
+              ? `Stake ${baseToken}`
+              : `Unstake ${baseToken}`
 
   const content = (
     <>
@@ -286,7 +286,9 @@ function StakePage({ embedded = false }: StakePageProps = {}) {
       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-1 min-h-[100px]">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600 dark:text-gray-400">From</span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Balance: {formatTokenAmount(Number(fromBalance), fromToken)}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            Balance: {formatTokenAmount(Number(fromBalance), fromToken)}
+          </span>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-3">
           <div className="flex-1 min-w-0">
@@ -306,7 +308,11 @@ function StakePage({ embedded = false }: StakePageProps = {}) {
             {/* USD value display */}
             {fromAmount && Number(fromAmount) > 0 && (
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                ≈ ${inputUSDValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ≈ $
+                {inputUSDValue.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             )}
           </div>
@@ -360,7 +366,9 @@ function StakePage({ embedded = false }: StakePageProps = {}) {
       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mt-1 min-h-[100px]">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600 dark:text-gray-400">To</span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Balance: {formatTokenAmount(Number(toBalance), toToken)}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            Balance: {formatTokenAmount(Number(toBalance), toToken)}
+          </span>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-3">
           <div className="flex-1">
@@ -368,24 +376,27 @@ function StakePage({ embedded = false }: StakePageProps = {}) {
               {outputAmount || '0.0'}
             </div>
             {/* Output USD value display */}
-            {outputAmount && Number(outputAmount) > 0 && (() => {
-              const amount = Number(outputAmount)
-              let usdValue = 0
-              // stBTD and BTD use BTD price, stBTB and BTB use BTB price
-              if (toToken === 'BTD' || toToken === 'stBTD') {
-                usdValue = amount * btdPrice
-              } else if (toToken === 'BTB' || toToken === 'stBTB') {
-                usdValue = amount * btbPrice
-              }
-              return usdValue > 0 ? (
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  ≈ ${usdValue.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
-                </div>
-              ) : null
-            })()}
+            {outputAmount &&
+              Number(outputAmount) > 0 &&
+              (() => {
+                const amount = Number(outputAmount)
+                let usdValue = 0
+                // stBTD and BTD use BTD price, stBTB and BTB use BTB price
+                if (toToken === 'BTD' || toToken === 'stBTD') {
+                  usdValue = amount * btdPrice
+                } else if (toToken === 'BTB' || toToken === 'stBTB') {
+                  usdValue = amount * btbPrice
+                }
+                return usdValue > 0 ? (
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    ≈ $
+                    {usdValue.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </div>
+                ) : null
+              })()}
           </div>
           <div className="px-2 py-1.5 sm:px-3 sm:py-2 bg-white dark:bg-gray-800 rounded-lg text-sm sm:text-base font-medium text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 flex-shrink-0">
             {toToken}

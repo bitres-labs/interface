@@ -6,7 +6,13 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, waitForTxSuccess, readBalance, readBalanceUntilChanged } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  waitForTxSuccess,
+  readBalance,
+  readBalanceUntilChanged,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Farm', () => {
@@ -107,9 +113,9 @@ test.describe('Farm', () => {
     }
 
     // Check for Approve or Deposit button
-    const actionBtn = page.locator(
-      'button:has-text("Approve"), button:has-text("Deposit"), button:has-text("Stake")'
-    ).last()
+    const actionBtn = page
+      .locator('button:has-text("Approve"), button:has-text("Deposit"), button:has-text("Stake")')
+      .last()
 
     if ((await actionBtn.count()) > 0 && !(await actionBtn.isDisabled())) {
       const btnText = await actionBtn.textContent()
@@ -122,7 +128,9 @@ test.describe('Farm', () => {
       // If was Approve, now try Deposit
       if (btnText?.includes('Approve')) {
         await page.waitForTimeout(TIMEOUT.MEDIUM)
-        const depositBtn = page.locator('button:has-text("Deposit"), button:has-text("Stake")').last()
+        const depositBtn = page
+          .locator('button:has-text("Deposit"), button:has-text("Stake")')
+          .last()
         if ((await depositBtn.count()) > 0 && !(await depositBtn.isDisabled())) {
           await depositBtn.click()
           await waitForTxComplete(page, 'Deposit', TIMEOUT.TX)
@@ -140,8 +148,12 @@ test.describe('Farm', () => {
 
     // Log visible pool names to help debugging
     const body = await page.textContent('body')
-    const poolNames = body?.match(/(?:BRS|BTD|BTB|USDC|USDT|WBTC|WETH|stBTD|stBTB)(?:\/(?:BRS|BTD|BTB|USDC|USDT|WBTC|WETH|stBTD|stBTB))?(?:\s*(?:LP|Pool|Single))?/g)
-    console.log(`[Farm] Pool names on page: ${JSON.stringify([...new Set(poolNames || [])].slice(0, 10))}`)
+    const poolNames = body?.match(
+      /(?:BRS|BTD|BTB|USDC|USDT|WBTC|WETH|stBTD|stBTB)(?:\/(?:BRS|BTD|BTB|USDC|USDT|WBTC|WETH|stBTD|stBTB))?(?:\s*(?:LP|Pool|Single))?/g
+    )
+    console.log(
+      `[Farm] Pool names on page: ${JSON.stringify([...new Set(poolNames || [])].slice(0, 10))}`
+    )
 
     // Find a pool where the Deposit button is NOT disabled after filling amount
     const allInputs = page.locator('input[type="number"], input[inputmode="decimal"]')
@@ -308,9 +320,7 @@ test.describe('Farm', () => {
 
     // Try "Claim All" link/button
     const claimAll = page.locator('text=Claim All').first()
-    const claimBtn = page.locator(
-      'button:has-text("Claim"), button:has-text("Harvest")'
-    ).first()
+    const claimBtn = page.locator('button:has-text("Claim"), button:has-text("Harvest")').first()
 
     if ((await claimAll.count()) > 0) {
       await claimAll.click()
@@ -318,7 +328,9 @@ test.describe('Farm', () => {
 
       // Claim All may trigger multiple txs — wait longer and don't fail on timeout
       const completed = await waitForTxSuccess(page, TIMEOUT.TX)
-      console.log(completed ? '[Farm] Claim completed' : '[Farm] Claim still pending — Sepolia may be slow')
+      console.log(
+        completed ? '[Farm] Claim completed' : '[Farm] Claim still pending — Sepolia may be slow'
+      )
     } else if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
       await claimBtn.click()
       console.log('[Farm] Clicked Claim, waiting for confirmation...')

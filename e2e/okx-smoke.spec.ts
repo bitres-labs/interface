@@ -10,14 +10,14 @@ test('okx extension loads', async () => {
     args: [
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`,
-      '--no-sandbox'
+      '--no-sandbox',
     ],
     ignoreDefaultArgs: [
       '--disable-extensions',
       '--disable-component-extensions-with-background-pages',
       '--disable-extensions-except',
-      '--enable-automation'
-    ]
+      '--enable-automation',
+    ],
   })
 
   try {
@@ -26,7 +26,7 @@ test('okx extension loads', async () => {
     const pageUrls = context.pages().map(page => page.url())
     const extensionIds = [
       ...workerUrls.map(getExtensionIdFromUrl),
-      ...pageUrls.map(getExtensionIdFromUrl)
+      ...pageUrls.map(getExtensionIdFromUrl),
     ].filter(Boolean)
     const uniqueIds = [...new Set(extensionIds)]
 

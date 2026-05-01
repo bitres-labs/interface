@@ -5,7 +5,12 @@
  */
 
 import { test, expect, Page } from '@playwright/test'
-import { injectMockWallet, connectWallet, closeRainbowKitModal, TEST_ADDRESS } from './utils/mock-wallet'
+import {
+  injectMockWallet,
+  connectWallet,
+  closeRainbowKitModal,
+  TEST_ADDRESS,
+} from './utils/mock-wallet'
 
 test.describe('Redeem BTD UI', () => {
   test.beforeEach(async ({ page }) => {
@@ -37,15 +42,17 @@ test.describe('Redeem BTD UI', () => {
   test('should enter amount in Redeem BTD mode', async ({ page }) => {
     // Switch to Redeem BTD mode
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       await redeemTab.click()
       await page.waitForTimeout(1000)
     }
 
     // Find input field
-    const input = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]').first()
+    const input = page
+      .locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      .first()
 
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       // Enter an amount
       await input.fill('100')
       await page.waitForTimeout(500)
@@ -60,14 +67,16 @@ test.describe('Redeem BTD UI', () => {
   test('should show output preview when entering redeem amount', async ({ page }) => {
     // Switch to Redeem BTD mode
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       await redeemTab.click()
       await page.waitForTimeout(1000)
     }
 
     // Enter amount
-    const input = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    const input = page
+      .locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      .first()
+    if ((await input.count()) > 0) {
       await input.fill('100')
       await page.waitForTimeout(1000)
 
@@ -84,13 +93,15 @@ test.describe('Redeem BTD UI', () => {
   test('should show Redeem button', async ({ page }) => {
     // Switch to Redeem BTD mode
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       await redeemTab.click()
       await page.waitForTimeout(1000)
     }
 
     // Look for Redeem button
-    const redeemButton = page.locator('button:has-text("Redeem"), button:has-text("Connect Wallet")')
+    const redeemButton = page.locator(
+      'button:has-text("Redeem"), button:has-text("Connect Wallet")'
+    )
     const count = await redeemButton.count()
     console.log(`Found ${count} Redeem/Connect buttons`)
 
@@ -126,7 +137,7 @@ test.describe('Redeem BTD UI', () => {
 
     // Step 2: Find and click Redeem BTD tab
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       console.log('Step 2: Clicking Redeem BTD tab')
       await redeemTab.click()
       await page.waitForTimeout(1000)
@@ -138,8 +149,10 @@ test.describe('Redeem BTD UI', () => {
     }
 
     // Step 3: Enter amount
-    const input = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    const input = page
+      .locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      .first()
+    if ((await input.count()) > 0) {
       console.log('Step 3: Entering amount 50')
       await input.fill('50')
       await page.waitForTimeout(1000)
@@ -147,8 +160,10 @@ test.describe('Redeem BTD UI', () => {
     }
 
     // Step 4: Check action button
-    const actionButton = page.locator('button:has-text("Redeem"), button:has-text("Connect"), button:has-text("Approve")')
-    if (await actionButton.count() > 0) {
+    const actionButton = page.locator(
+      'button:has-text("Redeem"), button:has-text("Connect"), button:has-text("Approve")'
+    )
+    if ((await actionButton.count()) > 0) {
       const buttonText = await actionButton.first().textContent()
       const isDisabled = await actionButton.first().isDisabled()
       console.log(`Step 4: Action button = "${buttonText}", disabled = ${isDisabled}`)
@@ -251,7 +266,7 @@ test.describe('Redeem BTD with Wallet', () => {
     // Step 2: Switch to Redeem BTD mode
     console.log('Step 2: Switching to Redeem BTD mode...')
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       // Use force click to bypass any overlay issues
       await redeemTab.click({ force: true })
       await page.waitForTimeout(1000)
@@ -260,8 +275,10 @@ test.describe('Redeem BTD with Wallet', () => {
 
     // Step 3: Enter redeem amount
     console.log('Step 3: Entering amount...')
-    const input = page.locator('input[type="text"], input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    const input = page
+      .locator('input[type="text"], input[type="number"], input[inputmode="decimal"]')
+      .first()
+    if ((await input.count()) > 0) {
       await input.fill('10')
       await page.waitForTimeout(1500)
     }
@@ -269,8 +286,10 @@ test.describe('Redeem BTD with Wallet', () => {
 
     // Step 4: Check action button state
     console.log('Step 4: Checking action button...')
-    const actionButton = page.locator('button:has-text("Redeem"), button:has-text("Approve"), button:has-text("Insufficient")')
-    if (await actionButton.count() > 0) {
+    const actionButton = page.locator(
+      'button:has-text("Redeem"), button:has-text("Approve"), button:has-text("Insufficient")'
+    )
+    if ((await actionButton.count()) > 0) {
       const buttonText = await actionButton.first().textContent()
       const isDisabled = await actionButton.first().isDisabled()
       console.log(`Action button: "${buttonText}", disabled: ${isDisabled}`)
@@ -294,9 +313,9 @@ test.describe('Redeem BTD with Wallet', () => {
         const toastSuccess = page.locator('text=/success|confirmed|complete/i')
         const toastError = page.locator('text=/error|failed|rejected/i')
 
-        if (await toastSuccess.count() > 0) {
+        if ((await toastSuccess.count()) > 0) {
           console.log('✅ Transaction appears successful!')
-        } else if (await toastError.count() > 0) {
+        } else if ((await toastError.count()) > 0) {
           const errorText = await toastError.first().textContent()
           console.log('❌ Transaction error:', errorText)
         } else {

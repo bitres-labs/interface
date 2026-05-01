@@ -58,7 +58,10 @@ test.describe('Mint and Redeem UI', () => {
     await expect(amountInput).toBeVisible()
     await expect(page.getByRole('button', { name: /max/i }).first()).toBeVisible()
 
-    const connectMint = page.locator('button:has-text("Connect Wallet")').filter({ hasText: /mint/i }).first()
+    const connectMint = page
+      .locator('button:has-text("Connect Wallet")')
+      .filter({ hasText: /mint/i })
+      .first()
     if (await connectMint.count()) {
       await expect(connectMint).toBeVisible()
     }
@@ -122,7 +125,9 @@ test.describe('Stake UI', () => {
 
     await expect(page.getByRole('button', { name: /^stake$/i }).first()).toBeVisible()
     await expect(page.getByRole('button', { name: /unstake/i }).first()).toBeVisible()
-    await expect(page.locator('input[type="number"], input[inputmode="decimal"]').first()).toBeVisible()
+    await expect(
+      page.locator('input[type="number"], input[inputmode="decimal"]').first()
+    ).toBeVisible()
   })
 })
 
@@ -131,13 +136,17 @@ test.describe('Data and Asset pages', () => {
     await gotoPath(page, '/explorer')
 
     const content = await page.content()
-    expect(content.includes('Explorer') || content.includes('Data') || content.includes('Transaction')).toBe(true)
+    expect(
+      content.includes('Explorer') || content.includes('Data') || content.includes('Transaction')
+    ).toBe(true)
   })
 
   test('loads asset page content', async ({ page }) => {
     await gotoPath(page, '/asset')
 
     const content = await page.content()
-    expect(content.includes('Asset') || content.includes('Portfolio') || content.includes('Balance')).toBe(true)
+    expect(
+      content.includes('Asset') || content.includes('Portfolio') || content.includes('Balance')
+    ).toBe(true)
   })
 })

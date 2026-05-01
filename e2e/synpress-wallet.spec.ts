@@ -12,7 +12,7 @@ import {
   isWalletConnected,
   navigateTo,
   takeScreenshot,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)

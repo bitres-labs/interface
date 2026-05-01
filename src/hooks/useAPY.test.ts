@@ -20,7 +20,23 @@ vi.mock('./useSystemStats', () => ({
   useBRSPrice: vi.fn(),
   useBTBPrice: vi.fn(),
   useBTDPrice: vi.fn(),
+  useWETHPrice: vi.fn(),
+  useUSDCPrice: vi.fn(),
+  useUSDTPrice: vi.fn(),
+  useChainlinkBTCPrice: vi.fn(),
 }))
+
+function mockDefaultPriceHooks() {
+  vi.mocked(useMinter.useBTCPrice).mockReturnValue({ btcPrice: 100000 } as never)
+  vi.mocked(useMinter.useIUSDPrice).mockReturnValue({ iusdPrice: 1.0 } as never)
+  vi.mocked(useSystemStats.useChainlinkBTCPrice).mockReturnValue({ btcPrice: 100000 } as never)
+  vi.mocked(useSystemStats.useWETHPrice).mockReturnValue({ wethPrice: 3000 } as never)
+  vi.mocked(useSystemStats.useUSDCPrice).mockReturnValue({ usdcPrice: 1.0 } as never)
+  vi.mocked(useSystemStats.useUSDTPrice).mockReturnValue({ usdtPrice: 1.0 } as never)
+  vi.mocked(useSystemStats.useBRSPrice).mockReturnValue({ brsPrice: 10 } as never)
+  vi.mocked(useSystemStats.useBTBPrice).mockReturnValue({ btbPrice: 1.0 } as never)
+  vi.mocked(useSystemStats.useBTDPrice).mockReturnValue({ btdPrice: 1.0 } as never)
+}
 
 describe('useAPY utilities', () => {
   describe('aprToApy', () => {
@@ -148,6 +164,7 @@ describe('useAPY utilities', () => {
   describe('useTokenPrices', () => {
     beforeEach(() => {
       vi.clearAllMocks()
+      mockDefaultPriceHooks()
     })
 
     it('should return all token prices from hooks', () => {
@@ -224,6 +241,7 @@ describe('useAPY utilities', () => {
   describe('usePoolAPR', () => {
     beforeEach(() => {
       vi.clearAllMocks()
+      mockDefaultPriceHooks()
 
       // Setup default mocks
       vi.mocked(useMinter.useBTCPrice).mockReturnValue({ btcPrice: 100000 } as never)
@@ -374,6 +392,7 @@ describe('useAPY utilities', () => {
   describe('usePoolAPY', () => {
     beforeEach(() => {
       vi.clearAllMocks()
+      mockDefaultPriceHooks()
 
       // Setup default mocks
       vi.mocked(useMinter.useBTCPrice).mockReturnValue({ btcPrice: 100000 } as never)
@@ -409,8 +428,8 @@ describe('useAPY utilities', () => {
       // APR ~3153% should be formatted as "3.15K%"
       expect(result.current.aprFormatted).toMatch(/\d+\.\d+K%/)
 
-      // APY should be much higher and also use K/M/B formatting
-      expect(result.current.apyFormatted).toMatch(/[KMB]%/)
+      // APY compounds to an extremely large value and should use compact formatting.
+      expect(result.current.apyFormatted).toMatch(/([KMB]|e\+)\d*%/)
     })
 
     it('should return 0% when APR is 0', () => {

@@ -21,36 +21,39 @@ import { TIMEOUT, TEST_ADDRESS, SEPOLIA_CHAIN_ID } from './constants'
  * This goes through wagmi's normal state machine — no hacks needed.
  */
 async function connectWallet(page: Page): Promise<boolean> {
-  const connected = await page.evaluate(async ({ chainId }) => {
-    // Wait for __e2e to be available (async import in main.tsx)
-    let retries = 0
-    while (!(window as any).__e2e && retries < 50) {
-      await new Promise(r => setTimeout(r, 100))
-      retries++
-    }
+  const connected = await page.evaluate(
+    async ({ chainId }) => {
+      // Wait for __e2e to be available (async import in main.tsx)
+      let retries = 0
+      while (!(window as any).__e2e && retries < 50) {
+        await new Promise(r => setTimeout(r, 100))
+        retries++
+      }
 
-    const e2e = (window as any).__e2e
-    if (!e2e) {
-      console.log('[E2E] __e2e not found after waiting')
-      return false
-    }
+      const e2e = (window as any).__e2e
+      if (!e2e) {
+        console.log('[E2E] __e2e not found after waiting')
+        return false
+      }
 
-    const { config, connect, injected } = e2e
+      const { config, connect, injected } = e2e
 
-    try {
-      // Use wagmi's real connect action with injected() connector
-      // injected() creates a connector that uses window.ethereum
-      const result = await connect(config, {
-        connector: injected(),
-        chainId,
-      })
-      console.log('[E2E] Wallet connected via wagmi connect():', result.accounts)
-      return true
-    } catch (err: any) {
-      console.log('[E2E] Connect error:', err.message)
-      return false
-    }
-  }, { chainId: SEPOLIA_CHAIN_ID })
+      try {
+        // Use wagmi's real connect action with injected() connector
+        // injected() creates a connector that uses window.ethereum
+        const result = await connect(config, {
+          connector: injected(),
+          chainId,
+        })
+        console.log('[E2E] Wallet connected via wagmi connect():', result.accounts)
+        return true
+      } catch (err: any) {
+        console.log('[E2E] Connect error:', err.message)
+        return false
+      }
+    },
+    { chainId: SEPOLIA_CHAIN_ID }
+  )
 
   return connected
 }
@@ -61,7 +64,7 @@ async function connectWallet(page: Page): Promise<boolean> {
 async function waitForWalletUI(page: Page, timeout = 10000): Promise<boolean> {
   try {
     await page.waitForFunction(
-      (addr) => {
+      addr => {
         const short = addr.slice(0, 6)
         return document.body.innerText.toLowerCase().includes(short.toLowerCase())
       },
@@ -84,7 +87,7 @@ export const test = base.extend<{ sepoliaPage: Page }>({
     await injectSepoliaProvider(page)
 
     // 3. Handle alerts (app uses window.alert for success messages)
-    page.on('dialog', async (dialog) => {
+    page.on('dialog', async dialog => {
       console.log('[Fixture] Dialog:', dialog.type(), dialog.message())
       await dialog.accept()
     })

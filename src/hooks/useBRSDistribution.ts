@@ -99,17 +99,11 @@ export function useBRSDistribution(): BRSDistributionData {
     ? Number(formatUnits(data[1].result as bigint, decimals))
     : 0
 
-  const treasury = data?.[2]?.result
-    ? Number(formatUnits(data[2].result as bigint, decimals))
-    : 0
+  const treasury = data?.[2]?.result ? Number(formatUnits(data[2].result as bigint, decimals)) : 0
 
-  const foundation = data?.[3]?.result
-    ? Number(formatUnits(data[3].result as bigint, decimals))
-    : 0
+  const foundation = data?.[3]?.result ? Number(formatUnits(data[3].result as bigint, decimals)) : 0
 
-  const team = data?.[4]?.result
-    ? Number(formatUnits(data[4].result as bigint, decimals))
-    : 0
+  const team = data?.[4]?.result ? Number(formatUnits(data[4].result as bigint, decimals)) : 0
 
   // Calculate distributed amount (what has left FarmingPool)
   const distributed = totalSupply - farmingPool

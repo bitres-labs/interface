@@ -94,7 +94,9 @@ test.describe('Asset Page', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Click Liquidity tab if available
-    const liqTab = page.locator('button:has-text("Liquidity"), button:has-text("LP"), button:has-text("Pool")').first()
+    const liqTab = page
+      .locator('button:has-text("Liquidity"), button:has-text("LP"), button:has-text("Pool")')
+      .first()
     if ((await liqTab.count()) > 0) {
       await liqTab.click()
       await page.waitForTimeout(TIMEOUT.SHORT)

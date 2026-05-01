@@ -15,7 +15,9 @@ test.describe('Error Handling & Edge Cases', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Input zero
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0')
       await page.waitForTimeout(TIMEOUT.SHORT)
@@ -35,12 +37,16 @@ test.describe('Error Handling & Edge Cases', () => {
     }
   })
 
-  test('mint with amount exceeding balance shows error or disabled', async ({ sepoliaPage: page }) => {
+  test('mint with amount exceeding balance shows error or disabled', async ({
+    sepoliaPage: page,
+  }) => {
     await navigateTo(page, '/mint')
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Input a very large amount
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('999999999')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -75,9 +81,7 @@ test.describe('Error Handling & Edge Cases', () => {
     }
 
     // Stake button should be disabled
-    const stakeBtn = page.locator(
-      'button:has-text("Stake BTD"), button:has-text("Deposit")'
-    ).last()
+    const stakeBtn = page.locator('button:has-text("Stake BTD"), button:has-text("Deposit")').last()
 
     if ((await stakeBtn.count()) > 0) {
       const isDisabled = await stakeBtn.isDisabled()

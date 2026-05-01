@@ -63,7 +63,9 @@ test.describe('Sepolia Debug', () => {
     console.log('Has price display:', hasPrice)
 
     // Check button state
-    const mintButton = page.locator('button:has-text("Mint BTD"), button:has-text("Connect Wallet")').last()
+    const mintButton = page
+      .locator('button:has-text("Mint BTD"), button:has-text("Connect Wallet")')
+      .last()
     const buttonText = await mintButton.textContent()
     const buttonDisabled = await mintButton.isDisabled()
     console.log('Button text:', buttonText)
@@ -80,13 +82,18 @@ test.describe('Sepolia Debug', () => {
     await page.route('**/*', async route => {
       const request = route.request()
 
-      if (request.method() === 'POST' && request.url().includes('infura') || request.url().includes('sepolia')) {
+      if (
+        (request.method() === 'POST' && request.url().includes('infura')) ||
+        request.url().includes('sepolia')
+      ) {
         try {
           const postData = request.postDataJSON()
           if (postData?.method) {
             rpcCalls.push({ method: postData.method, params: postData.params })
           }
-        } catch {}
+        } catch {
+          // Ignore non-JSON requests while tracing RPC calls.
+        }
       }
 
       await route.continue()

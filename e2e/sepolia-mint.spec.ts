@@ -35,13 +35,13 @@ test.describe('Sepolia Mint BTD', () => {
 
     // Connect wallet
     const connectButton = page.locator('button:has-text("Connect Wallet")')
-    if (await connectButton.count() > 0) {
+    if ((await connectButton.count()) > 0) {
       await connectButton.first().click()
       await page.waitForTimeout(WAIT.SHORT)
 
       // Select OKX wallet
       const okxOption = page.locator('button:has-text("OKX")')
-      if (await okxOption.count() > 0) {
+      if ((await okxOption.count()) > 0) {
         await okxOption.first().click()
         await page.waitForTimeout(WAIT.SHORT)
         await metamask.connectToDapp()
@@ -59,7 +59,7 @@ test.describe('Sepolia Mint BTD', () => {
 
     // Click Mint tab
     const mintTab = page.locator('button:has-text("Mint")').first()
-    if (await mintTab.count() > 0) {
+    if ((await mintTab.count()) > 0) {
       await mintTab.click()
       await page.waitForTimeout(WAIT.MEDIUM)
     }
@@ -123,7 +123,9 @@ test.describe('Sepolia Mint BTD', () => {
     await page.screenshot({ path: 'test-results/sepolia-mint-before-click.png' })
 
     // Click Mint button
-    const mintButton = page.locator('button:has-text("Mint BTD"), button:has-text("Approve")').last()
+    const mintButton = page
+      .locator('button:has-text("Mint BTD"), button:has-text("Approve")')
+      .last()
     const buttonText = await mintButton.textContent()
     console.log('Clicking button:', buttonText)
 
@@ -150,11 +152,15 @@ test.describe('Sepolia Mint BTD', () => {
 
       if (content.includes('success') || content.includes('Success')) {
         console.log('Transaction appears successful!')
-      } else if (content.includes('error') || content.includes('Error') || content.includes('fail')) {
+      } else if (
+        content.includes('error') ||
+        content.includes('Error') ||
+        content.includes('fail')
+      ) {
         console.log('Transaction may have failed')
         // Extract error message
         const errorEl = page.locator('[class*="error"], [class*="toast"], [role="alert"]')
-        if (await errorEl.count() > 0) {
+        if ((await errorEl.count()) > 0) {
           const errorText = await errorEl.first().textContent()
           console.log('Error message:', errorText)
         }

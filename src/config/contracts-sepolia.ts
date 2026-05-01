@@ -5,7 +5,9 @@
 import contractsData from './contracts.json'
 
 const { tokens, contracts, pairs, oracles } = contractsData
-const uniswap = (contractsData as { uniswap?: { UniswapV2Factory?: string; UniswapV2Router?: string } }).uniswap
+const uniswap = (
+  contractsData as { uniswap?: { UniswapV2Factory?: string; UniswapV2Router?: string } }
+).uniswap
 
 // Official Uniswap V2 on Sepolia (fallback if not in contracts.json)
 const UNISWAP_V2_SEPOLIA = {
@@ -30,8 +32,8 @@ export const CONTRACTS_SEPOLIA = {
   stBTB: tokens.stBTB as `0x${string}`,
 
   // Oracles - Chainlink Price Feeds on Sepolia
-  ChainlinkBTCUSD: '0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43' as `0x${string}`,  // Real Chainlink BTC/USD
-  ChainlinkETHUSD: '0x694AA1769357215DE4FAC081bf1f309aDC325306' as `0x${string}`,  // Real Chainlink ETH/USD
+  ChainlinkBTCUSD: '0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43' as `0x${string}`, // Real Chainlink BTC/USD
+  ChainlinkETHUSD: '0x694AA1769357215DE4FAC081bf1f309aDC325306' as `0x${string}`, // Real Chainlink ETH/USD
   ChainlinkUSDCUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Not available on Sepolia (mainnet: 0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6)
   ChainlinkUSDTUSD: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Not available on Sepolia (mainnet: 0x3E7d1eAB13ad0104d2750B8863b489D65364e32D)
   ChainlinkWBTCBTC: oracles.ChainlinkWBTCBTC as `0x${string}`,
@@ -52,7 +54,7 @@ export const CONTRACTS_SEPOLIA = {
   // Core Contracts
   ConfigCore: contracts.ConfigCore as `0x${string}`,
   ConfigGov: contracts.ConfigGov as `0x${string}`,
-  Config: contracts.ConfigCore as `0x${string}`,  // alias
+  Config: contracts.ConfigCore as `0x${string}`, // alias
   Treasury: contracts.Treasury as `0x${string}`,
   Minter: contracts.Minter as `0x${string}`,
   InterestPool: contracts.InterestPool as `0x${string}`,
@@ -64,7 +66,8 @@ export const CONTRACTS_SEPOLIA = {
   UniswapV2Router: (uniswap?.UniswapV2Router || UNISWAP_V2_SEPOLIA.ROUTER) as `0x${string}`,
 
   // Faucet (for test token distribution)
-  Faucet: ((contracts as { Faucet?: string }).Faucet || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  Faucet: ((contracts as { Faucet?: string }).Faucet ||
+    '0x0000000000000000000000000000000000000000') as `0x${string}`,
 }
 
 export const NETWORK_CONFIG_SEPOLIA = {

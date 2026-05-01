@@ -40,11 +40,26 @@ export async function waitForTxSuccess(page: Page, timeout = TIMEOUT.TX): Promis
  * then wait for loading state to END (button returns to normal).
  * This prevents false-positive early returns when the button hasn't entered loading yet.
  */
-export async function waitForTxComplete(page: Page, buttonText: string, timeout = TIMEOUT.TX): Promise<boolean> {
+export async function waitForTxComplete(
+  page: Page,
+  buttonText: string,
+  timeout = TIMEOUT.TX
+): Promise<boolean> {
   const loadingPatterns = [
-    '⏳', 'staking', 'unstaking', 'confirming', 'minting', 'redeeming',
-    'swapping', 'depositing', 'withdrawing', 'approving', 'claiming',
-    'pending', 'processing', 'transferring'
+    '⏳',
+    'staking',
+    'unstaking',
+    'confirming',
+    'minting',
+    'redeeming',
+    'swapping',
+    'depositing',
+    'withdrawing',
+    'approving',
+    'claiming',
+    'pending',
+    'processing',
+    'transferring',
   ]
 
   // Phase 1: Wait up to 10s for the button to enter loading state
@@ -54,9 +69,11 @@ export async function waitForTxComplete(page: Page, buttonText: string, timeout 
         const buttons = Array.from(document.querySelectorAll('button'))
         return buttons.some(b => {
           const text = (b.textContent || '').toLowerCase()
-          return patterns.some(p => text.includes(p)) ||
-            (text.includes('⏳')) ||
+          return (
+            patterns.some(p => text.includes(p)) ||
+            text.includes('⏳') ||
             (text.includes('...') && !text.includes(btnText.toLowerCase()))
+          )
         })
       },
       { btnText: buttonText, patterns: loadingPatterns },
@@ -74,8 +91,7 @@ export async function waitForTxComplete(page: Page, buttonText: string, timeout 
         const buttons = Array.from(document.querySelectorAll('button'))
         return !buttons.some(b => {
           const text = (b.textContent || '').toLowerCase()
-          return text.includes('⏳') ||
-            patterns.some(p => text.includes(p) && text.includes('...'))
+          return text.includes('⏳') || patterns.some(p => text.includes(p) && text.includes('...'))
         })
       },
       { patterns: loadingPatterns },
@@ -110,7 +126,7 @@ export async function clickButton(
   await button.waitFor({ state: 'visible', timeout: options?.timeout || TIMEOUT.READ })
   // Wait until button is enabled
   await page.waitForFunction(
-    (btnText) => {
+    btnText => {
       const btns = Array.from(document.querySelectorAll('button'))
       const btn = btns.find(b => b.textContent?.includes(btnText))
       return btn && !btn.disabled
@@ -128,7 +144,7 @@ export async function clickButton(
  */
 export async function navigateTo(page: Page, path: string): Promise<void> {
   // Use React Router's navigation by dispatching a popstate event
-  await page.evaluate((targetPath) => {
+  await page.evaluate(targetPath => {
     window.history.pushState({}, '', targetPath)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }, path)
@@ -172,7 +188,7 @@ export async function clickTab(page: Page, tabText: string): Promise<void> {
  */
 export function captureDialogs(page: Page): () => string[] {
   const messages: string[] = []
-  page.on('dialog', async (dialog) => {
+  page.on('dialog', async dialog => {
     messages.push(dialog.message())
     await dialog.accept()
   })
@@ -191,7 +207,10 @@ export async function waitForText(
     if (typeof text === 'string') {
       await page.locator(`text=${text}`).first().waitFor({ state: 'visible', timeout })
     } else {
-      await page.locator(`text=/${text.source}/${text.flags}`).first().waitFor({ state: 'visible', timeout })
+      await page
+        .locator(`text=/${text.source}/${text.flags}`)
+        .first()
+        .waitFor({ state: 'visible', timeout })
     }
     return true
   } catch {

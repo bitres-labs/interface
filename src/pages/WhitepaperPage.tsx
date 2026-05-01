@@ -36,10 +36,10 @@ function WhitepaperPage() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">About Bitres Protocol</h2>
         </div>
         <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
-          Bitres is a Bitcoin-native decentralized stablecoin protocol
-          that creates BTD, a stablecoin pegged to Ideal USD (a conceptual unit of account with
-          target 2% annual inflation). The system uses Bitcoin ({BTC_COLLATERAL_SYMBOL}) as collateral and employs
-          a three-token structure: BTD (stablecoin), BTB (bond token), and BRS (governance token).
+          Bitres is a Bitcoin-native decentralized stablecoin protocol that creates BTD, a
+          stablecoin pegged to Ideal USD (a conceptual unit of account with target 2% annual
+          inflation). The system uses Bitcoin ({BTC_COLLATERAL_SYMBOL}) as collateral and employs a
+          three-token structure: BTD (stablecoin), BTB (bond token), and BRS (governance token).
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-primary-200 dark:border-primary-700">
@@ -113,7 +113,9 @@ function WhitepaperPage() {
         <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
           <li className="flex items-start gap-2">
             <span className="text-primary-600 dark:text-primary-400 mt-0.5">✓</span>
-            <span>Bitcoin-native stablecoin (BTD) pegged to Ideal USD with 2% target inflation</span>
+            <span>
+              Bitcoin-native stablecoin (BTD) pegged to Ideal USD with 2% target inflation
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-primary-600 dark:text-primary-400 mt-0.5">✓</span>
@@ -125,7 +127,9 @@ function WhitepaperPage() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-primary-600 dark:text-primary-400 mt-0.5">✓</span>
-            <span>Dynamic interest rates: BTD synced with Fed funds rate, BTB adjusted by market price</span>
+            <span>
+              Dynamic interest rates: BTD synced with Fed funds rate, BTB adjusted by market price
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-primary-600 dark:text-primary-400 mt-0.5">✓</span>

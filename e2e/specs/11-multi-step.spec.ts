@@ -6,7 +6,15 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, waitForTxSuccess, readBalance, readBalanceUntilChanged, expectBalanceIncrease, expectBalanceDecrease } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  waitForTxSuccess,
+  readBalance,
+  readBalanceUntilChanged,
+  expectBalanceIncrease,
+  expectBalanceDecrease,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Multi-Step Flows', () => {
@@ -19,17 +27,23 @@ test.describe('Multi-Step Flows', () => {
 
     const body = await page.textContent('body')
     if (!body?.includes('not yet deployed') && !body?.includes('Not Available')) {
-      const claimBtn = page.locator('button:has-text("Claim"), button:has-text("Get Tokens")').first()
+      const claimBtn = page
+        .locator('button:has-text("Claim"), button:has-text("Get Tokens")')
+        .first()
       if ((await claimBtn.count()) > 0 && !(await claimBtn.isDisabled())) {
         await claimBtn.click()
-        await page.waitForFunction(
-          () => {
-            const text = document.body.innerText.toLowerCase()
-            return text.includes('success') || text.includes('cooldown') || text.includes('confirmed')
-          },
-          undefined,
-          { timeout: TIMEOUT.TX }
-        ).catch(() => {})
+        await page
+          .waitForFunction(
+            () => {
+              const text = document.body.innerText.toLowerCase()
+              return (
+                text.includes('success') || text.includes('cooldown') || text.includes('confirmed')
+              )
+            },
+            undefined,
+            { timeout: TIMEOUT.TX }
+          )
+          .catch(() => {})
         console.log('[Multi] Faucet claim attempted')
       }
     }
@@ -40,7 +54,10 @@ test.describe('Multi-Step Flows', () => {
 
     // Check oracle status
     const mintBody = await page.textContent('body')
-    if (mintBody?.includes('= 0.00 BTD') || (mintBody?.includes('BTC Price') && mintBody?.includes('$0'))) {
+    if (
+      mintBody?.includes('= 0.00 BTD') ||
+      (mintBody?.includes('BTC Price') && mintBody?.includes('$0'))
+    ) {
       console.log('[Multi] Oracle shows $0 BTC price - skipping mint')
       test.skip()
       return
@@ -55,7 +72,9 @@ test.describe('Multi-Step Flows', () => {
 
     const btdBefore = await readBalance(page, ADDRESSES.BTD)
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.00001')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -113,9 +132,11 @@ test.describe('Multi-Step Flows', () => {
       await page.waitForTimeout(TIMEOUT.MEDIUM)
     }
 
-    const stakeBtn = page.locator(
-      'button:has-text("Stake BTD"), button:has-text("Deposit"), button:has-text("Approve")'
-    ).last()
+    const stakeBtn = page
+      .locator(
+        'button:has-text("Stake BTD"), button:has-text("Deposit"), button:has-text("Approve")'
+      )
+      .last()
 
     if ((await stakeBtn.count()) > 0 && !(await stakeBtn.isDisabled())) {
       const btnText = await stakeBtn.textContent()
@@ -129,7 +150,9 @@ test.describe('Multi-Step Flows', () => {
     }
 
     // Step 2: Unstake
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
+    const withdrawTab = page
+      .locator('button:has-text("Withdraw"), button:has-text("Unstake")')
+      .first()
     if ((await withdrawTab.count()) > 0) {
       await withdrawTab.click()
       await page.waitForTimeout(TIMEOUT.SHORT)
@@ -143,9 +166,9 @@ test.describe('Multi-Step Flows', () => {
         await page.waitForTimeout(TIMEOUT.MEDIUM)
       }
 
-      const unstakeBtn = page.locator(
-        'button:has-text("Unstake"), button:has-text("Withdraw")'
-      ).last()
+      const unstakeBtn = page
+        .locator('button:has-text("Unstake"), button:has-text("Withdraw")')
+        .last()
 
       if ((await unstakeBtn.count()) > 0 && !(await unstakeBtn.isDisabled())) {
         const btnText = await unstakeBtn.textContent()
@@ -174,9 +197,9 @@ test.describe('Multi-Step Flows', () => {
       await page.waitForTimeout(TIMEOUT.MEDIUM)
     }
 
-    const depositBtn = page.locator(
-      'button:has-text("Deposit"), button:has-text("Stake"), button:has-text("Approve")'
-    ).last()
+    const depositBtn = page
+      .locator('button:has-text("Deposit"), button:has-text("Stake"), button:has-text("Approve")')
+      .last()
 
     if ((await depositBtn.count()) > 0 && !(await depositBtn.isDisabled())) {
       const btnText = await depositBtn.textContent()
@@ -194,9 +217,9 @@ test.describe('Multi-Step Flows', () => {
 
     // Step 3: Claim if available (may take long for multi-pool claims)
     if (rewardAmount > 0) {
-      const claimBtn = page.locator(
-        'text=Claim All, button:has-text("Claim"), button:has-text("Harvest")'
-      ).first()
+      const claimBtn = page
+        .locator('text=Claim All, button:has-text("Claim"), button:has-text("Harvest")')
+        .first()
       if ((await claimBtn.count()) > 0) {
         await claimBtn.click()
         // Claim All triggers multiple txs — don't wait too long, just let it go
@@ -206,7 +229,9 @@ test.describe('Multi-Step Flows', () => {
     }
 
     // Step 4: Withdraw (may not be available on farm page)
-    const withdrawTab = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")').first()
+    const withdrawTab = page
+      .locator('button:has-text("Withdraw"), button:has-text("Unstake")')
+      .first()
     if ((await withdrawTab.count()) > 0 && !(await withdrawTab.isDisabled())) {
       try {
         await withdrawTab.click({ timeout: TIMEOUT.SHORT })
@@ -215,15 +240,17 @@ test.describe('Multi-Step Flows', () => {
       }
       await page.waitForTimeout(TIMEOUT.SHORT)
 
-      const withdrawInput = page.locator('input[type="number"], input[inputmode="decimal"], input').first()
+      const withdrawInput = page
+        .locator('input[type="number"], input[inputmode="decimal"], input')
+        .first()
       if ((await withdrawInput.count()) > 0) {
         await withdrawInput.fill('0.0005')
         await page.waitForTimeout(TIMEOUT.MEDIUM)
       }
 
-      const withdrawBtn = page.locator(
-        'button:has-text("Withdraw"), button:has-text("Unstake")'
-      ).last()
+      const withdrawBtn = page
+        .locator('button:has-text("Withdraw"), button:has-text("Unstake")')
+        .last()
       if ((await withdrawBtn.count()) > 0 && !(await withdrawBtn.isDisabled())) {
         const btnText = await withdrawBtn.textContent()
         await withdrawBtn.click()
@@ -267,9 +294,11 @@ test.describe('Multi-Step Flows', () => {
     }
 
     // Step 2: Reverse direction and swap back
-    const reverseBtn = page.locator(
-      'button:has-text("↕"), button:has-text("⇅"), button[aria-label*="reverse"], button[aria-label*="switch"], [class*="arrow"], [class*="switch"]'
-    ).first()
+    const reverseBtn = page
+      .locator(
+        'button:has-text("↕"), button:has-text("⇅"), button[aria-label*="reverse"], button[aria-label*="switch"], [class*="arrow"], [class*="switch"]'
+      )
+      .first()
 
     if ((await reverseBtn.count()) > 0) {
       await reverseBtn.click()
@@ -313,9 +342,11 @@ test.describe('Multi-Step Flows', () => {
       await page.waitForTimeout(TIMEOUT.MEDIUM)
     }
 
-    const supplyBtn = page.locator(
-      'button:has-text("Supply"), button:has-text("Add Liquidity"), button:has-text("Add")'
-    ).last()
+    const supplyBtn = page
+      .locator(
+        'button:has-text("Supply"), button:has-text("Add Liquidity"), button:has-text("Add")'
+      )
+      .last()
 
     if ((await supplyBtn.count()) > 0 && !(await supplyBtn.isDisabled())) {
       await supplyBtn.click()
@@ -342,9 +373,9 @@ test.describe('Multi-Step Flows', () => {
         await page.waitForTimeout(TIMEOUT.SHORT)
       }
 
-      const confirmBtn = page.locator(
-        'button:has-text("Remove"), button:has-text("Confirm")'
-      ).last()
+      const confirmBtn = page
+        .locator('button:has-text("Remove"), button:has-text("Confirm")')
+        .last()
       if ((await confirmBtn.count()) > 0 && !(await confirmBtn.isDisabled())) {
         await confirmBtn.click()
         await waitForTxComplete(page, 'Remove', TIMEOUT.TX)

@@ -20,7 +20,7 @@ import {
   handlePermit,
   handleTransaction,
   takeScreenshot,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -47,7 +47,7 @@ test.describe('Pool Interface', () => {
     // Check for pool cards or list items
     for (const pool of POOLS) {
       const poolElement = page.locator(`text=${pool}, text=/${pool.replace('-', '.*')}/i`)
-      const hasPool = await poolElement.count() > 0
+      const hasPool = (await poolElement.count()) > 0
       console.log(`Pool ${pool} visible:`, hasPool)
     }
 
@@ -57,10 +57,11 @@ test.describe('Pool Interface', () => {
   test('should display pool statistics', async ({ page }) => {
     const content = await page.content()
     // Check for common pool stats
-    const hasStats = content.includes('TVL') ||
-                     content.includes('Volume') ||
-                     content.includes('Liquidity') ||
-                     content.includes('APR')
+    const hasStats =
+      content.includes('TVL') ||
+      content.includes('Volume') ||
+      content.includes('Liquidity') ||
+      content.includes('APR')
 
     expect(hasStats).toBe(true)
 
@@ -77,7 +78,7 @@ test.describe('Pool BTD-WBTC', () => {
 
   test('should select BTD-WBTC pool', async ({ page }) => {
     const poolSelector = page.locator('text=BTD-WBTC, text=/BTD.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -90,7 +91,7 @@ test.describe('Pool BTD-WBTC', () => {
 
     // Select pool
     const poolSelector = page.locator('text=BTD-WBTC, text=/BTD.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -105,8 +106,10 @@ test.describe('Pool BTD-WBTC', () => {
 
     await takeScreenshot(page, 'pool-btd-wbtc-add-before')
 
-    const addButton = page.locator('button:has-text("Add Liquidity"), button:has-text("Add")').last()
-    if (await addButton.count() > 0 && !(await addButton.isDisabled())) {
+    const addButton = page
+      .locator('button:has-text("Add Liquidity"), button:has-text("Add")')
+      .last()
+    if ((await addButton.count()) > 0 && !(await addButton.isDisabled())) {
       await addButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -145,7 +148,7 @@ test.describe('Pool BTD-WBTC', () => {
 
     // Select pool
     const poolSelector = page.locator('text=BTD-WBTC, text=/BTD.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -159,8 +162,10 @@ test.describe('Pool BTD-WBTC', () => {
 
     await takeScreenshot(page, 'pool-btd-wbtc-remove-before')
 
-    const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
-    if (await removeButton.count() > 0 && !(await removeButton.isDisabled())) {
+    const removeButton = page
+      .locator('button:has-text("Remove Liquidity"), button:has-text("Remove")')
+      .last()
+    if ((await removeButton.count()) > 0 && !(await removeButton.isDisabled())) {
       await removeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -196,7 +201,7 @@ test.describe('Pool BTB-WBTC', () => {
 
   test('should select BTB-WBTC pool', async ({ page }) => {
     const poolSelector = page.locator('text=BTB-WBTC, text=/BTB.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -208,7 +213,7 @@ test.describe('Pool BTB-WBTC', () => {
     test.setTimeout(150000)
 
     const poolSelector = page.locator('text=BTB-WBTC, text=/BTB.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -221,8 +226,10 @@ test.describe('Pool BTB-WBTC', () => {
 
     await takeScreenshot(page, 'pool-btb-wbtc-add-before')
 
-    const addButton = page.locator('button:has-text("Add Liquidity"), button:has-text("Add")').last()
-    if (await addButton.count() > 0 && !(await addButton.isDisabled())) {
+    const addButton = page
+      .locator('button:has-text("Add Liquidity"), button:has-text("Add")')
+      .last()
+    if ((await addButton.count()) > 0 && !(await addButton.isDisabled())) {
       await addButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -259,7 +266,7 @@ test.describe('Pool BTB-WBTC', () => {
     test.setTimeout(120000)
 
     const poolSelector = page.locator('text=BTB-WBTC, text=/BTB.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -272,8 +279,10 @@ test.describe('Pool BTB-WBTC', () => {
 
     await takeScreenshot(page, 'pool-btb-wbtc-remove-before')
 
-    const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
-    if (await removeButton.count() > 0 && !(await removeButton.isDisabled())) {
+    const removeButton = page
+      .locator('button:has-text("Remove Liquidity"), button:has-text("Remove")')
+      .last()
+    if ((await removeButton.count()) > 0 && !(await removeButton.isDisabled())) {
       await removeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -307,7 +316,7 @@ test.describe('Pool BTD-BTB', () => {
 
   test('should select BTD-BTB pool', async ({ page }) => {
     const poolSelector = page.locator('text=BTD-BTB, text=/BTD.*BTB/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -319,7 +328,7 @@ test.describe('Pool BTD-BTB', () => {
     test.setTimeout(150000)
 
     const poolSelector = page.locator('text=BTD-BTB, text=/BTD.*BTB/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -332,8 +341,10 @@ test.describe('Pool BTD-BTB', () => {
 
     await takeScreenshot(page, 'pool-btd-btb-add-before')
 
-    const addButton = page.locator('button:has-text("Add Liquidity"), button:has-text("Add")').last()
-    if (await addButton.count() > 0 && !(await addButton.isDisabled())) {
+    const addButton = page
+      .locator('button:has-text("Add Liquidity"), button:has-text("Add")')
+      .last()
+    if ((await addButton.count()) > 0 && !(await addButton.isDisabled())) {
       await addButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -370,7 +381,7 @@ test.describe('Pool BTD-BTB', () => {
     test.setTimeout(120000)
 
     const poolSelector = page.locator('text=BTD-BTB, text=/BTD.*BTB/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }
@@ -383,8 +394,10 @@ test.describe('Pool BTD-BTB', () => {
 
     await takeScreenshot(page, 'pool-btd-btb-remove-before')
 
-    const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
-    if (await removeButton.count() > 0 && !(await removeButton.isDisabled())) {
+    const removeButton = page
+      .locator('button:has-text("Remove Liquidity"), button:has-text("Remove")')
+      .last()
+    if ((await removeButton.count()) > 0 && !(await removeButton.isDisabled())) {
       await removeButton.click()
       await page.waitForTimeout(WAIT.MEDIUM)
 
@@ -418,10 +431,11 @@ test.describe('Pool User Positions', () => {
 
   test('should show user LP positions', async ({ page }) => {
     const content = await page.content()
-    const hasPositions = content.includes('position') ||
-                         content.includes('Position') ||
-                         content.includes('Your') ||
-                         content.includes('Balance')
+    const hasPositions =
+      content.includes('position') ||
+      content.includes('Position') ||
+      content.includes('Your') ||
+      content.includes('Balance')
 
     await takeScreenshot(page, 'pool-user-positions')
   })
@@ -429,7 +443,7 @@ test.describe('Pool User Positions', () => {
   test('should show LP token balance for each pool', async ({ page }) => {
     for (const pool of POOLS) {
       const poolElement = page.locator(`text=/${pool}/i`).first()
-      if (await poolElement.count() > 0) {
+      if ((await poolElement.count()) > 0) {
         console.log(`Checking LP balance for ${pool}`)
       }
     }
@@ -446,7 +460,7 @@ test.describe('Pool Tab Navigation', () => {
 
     for (const pool of POOLS) {
       const poolSelector = page.locator(`text=/${pool}/i`).first()
-      if (await poolSelector.count() > 0) {
+      if ((await poolSelector.count()) > 0) {
         await poolSelector.click()
         await page.waitForTimeout(WAIT.SHORT)
         console.log(`Selected pool: ${pool}`)
@@ -462,7 +476,7 @@ test.describe('Pool Tab Navigation', () => {
 
     // Select first pool
     const poolSelector = page.locator('text=/BTD.*WBTC/i').first()
-    if (await poolSelector.count() > 0) {
+    if ((await poolSelector.count()) > 0) {
       await poolSelector.click()
       await page.waitForTimeout(WAIT.SHORT)
     }

@@ -30,19 +30,19 @@ export function usePoolDailyLimit(poolId: number) {
 
   return {
     // Raw values (USD, 18 decimals parsed to number)
-    dailyLimitValue,    // Total 24h limit in USD for this pool
-    dailyRemaining,     // Remaining quota in USD for this pool
-    dailyUsed,          // Used amount in 24h (current12h + previous12h)
-    current12h,         // Amount withdrawn in current 12h window
-    previous12h,        // Amount withdrawn in previous 12h window
+    dailyLimitValue, // Total 24h limit in USD for this pool
+    dailyRemaining, // Remaining quota in USD for this pool
+    dailyUsed, // Used amount in 24h (current12h + previous12h)
+    current12h, // Amount withdrawn in current 12h window
+    previous12h, // Amount withdrawn in previous 12h window
 
     // Calculated percentages
-    usagePercent,       // Used percentage (0-100)
-    remainingPercent,   // Remaining percentage (0-100)
+    usagePercent, // Used percentage (0-100)
+    remainingPercent, // Remaining percentage (0-100)
 
     // Status flags
-    isNearLimit: remainingPercent < 20,  // Warning when < 20% remaining
-    isAtLimit: dailyRemaining <= 0,      // Alert when limit reached
+    isNearLimit: remainingPercent < 20, // Warning when < 20% remaining
+    isAtLimit: dailyRemaining <= 0, // Alert when limit reached
 
     // Query status
     isLoading,
@@ -77,19 +77,19 @@ export function useFarmingDailyLimit() {
 
   return {
     // Raw values (USD, 18 decimals parsed to number)
-    dailyLimitValue,    // Total 24h limit in USD
-    dailyRemaining,     // Remaining quota in USD
-    dailyUsed,          // Used amount in 24h (current12h + previous12h)
-    current12h,         // Amount withdrawn in current 12h window
-    previous12h,        // Amount withdrawn in previous 12h window
+    dailyLimitValue, // Total 24h limit in USD
+    dailyRemaining, // Remaining quota in USD
+    dailyUsed, // Used amount in 24h (current12h + previous12h)
+    current12h, // Amount withdrawn in current 12h window
+    previous12h, // Amount withdrawn in previous 12h window
 
     // Calculated percentages
-    usagePercent,       // Used percentage (0-100)
-    remainingPercent,   // Remaining percentage (0-100)
+    usagePercent, // Used percentage (0-100)
+    remainingPercent, // Remaining percentage (0-100)
 
     // Status flags
-    isNearLimit: remainingPercent < 20,  // Warning when < 20% remaining
-    isAtLimit: dailyRemaining <= 0,      // Alert when limit reached
+    isNearLimit: remainingPercent < 20, // Warning when < 20% remaining
+    isAtLimit: dailyRemaining <= 0, // Alert when limit reached
 
     // Query status
     isLoading,

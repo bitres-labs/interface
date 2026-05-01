@@ -1,5 +1,15 @@
-import { chromium, type BrowserContext, type Frame, type Page, test as base } from '@playwright/test'
-import { createTempContextDir, removeTempContextDir, defineWalletSetup } from '@synthetixio/synpress-cache'
+import {
+  chromium,
+  type BrowserContext,
+  type Frame,
+  type Page,
+  test as base,
+} from '@playwright/test'
+import {
+  createTempContextDir,
+  removeTempContextDir,
+  defineWalletSetup,
+} from '@synthetixio/synpress-cache'
 import { getExtensionIdFromUrl, prepareOkxExtension } from './okx-extension'
 
 const DEFAULT_SEED_PHRASE = 'test test test test test test test test test test test junk'
@@ -18,7 +28,10 @@ let _okxPage: Page
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 class OkxWallet {
-  constructor(private context: BrowserContext, private extensionId: string) {}
+  constructor(
+    private context: BrowserContext,
+    private extensionId: string
+  ) {}
 
   async connectToDapp() {
     await this.confirmInPopup(['Connect', 'Approve', 'Confirm'])
@@ -55,11 +68,13 @@ class OkxWallet {
           }
 
           // Scroll down to reveal hidden buttons (OKX often hides confirm buttons)
-          await popup.evaluate(() => {
-            window.scrollTo(0, document.body.scrollHeight)
-            const main = document.querySelector('main, [role="main"], .container, .content')
-            if (main) main.scrollTop = main.scrollHeight
-          }).catch(() => undefined)
+          await popup
+            .evaluate(() => {
+              window.scrollTo(0, document.body.scrollHeight)
+              const main = document.querySelector('main, [role="main"], .container, .content')
+              if (main) main.scrollTop = main.scrollHeight
+            })
+            .catch(() => undefined)
           await sleep(300)
 
           if (await tryClickLabels(popup, labels)) {
@@ -70,9 +85,11 @@ class OkxWallet {
           const frame = await waitForSesFrame(popup, 2000)
           if (frame) {
             // Also scroll in frame
-            await frame.evaluate(() => {
-              window.scrollTo(0, document.body.scrollHeight)
-            }).catch(() => undefined)
+            await frame
+              .evaluate(() => {
+                window.scrollTo(0, document.body.scrollHeight)
+              })
+              .catch(() => undefined)
             await sleep(300)
 
             if (await tryClickLabels(frame, labels)) {
@@ -109,10 +126,15 @@ async function tryClickLabels(scope: Page | Frame, labels: string[]) {
 }
 
 async function waitForOkxPopup(context: BrowserContext, extensionId: string, timeout = 10_000) {
-  const existing = context.pages().find(page =>
-    page.url().includes(extensionId) &&
-    (page.url().includes('notification') || page.url().includes('connect') || page.url().includes('popup'))
-  )
+  const existing = context
+    .pages()
+    .find(
+      page =>
+        page.url().includes(extensionId) &&
+        (page.url().includes('notification') ||
+          page.url().includes('connect') ||
+          page.url().includes('popup'))
+    )
   if (existing) {
     await existing.waitForLoadState('domcontentloaded').catch(() => undefined)
     return existing
@@ -123,7 +145,9 @@ async function waitForOkxPopup(context: BrowserContext, extensionId: string, tim
     await page.waitForLoadState('domcontentloaded')
     if (
       page.url().includes(extensionId) &&
-      (page.url().includes('notification') || page.url().includes('connect') || page.url().includes('popup'))
+      (page.url().includes('notification') ||
+        page.url().includes('connect') ||
+        page.url().includes('popup'))
     ) {
       return page
     }
@@ -217,7 +241,7 @@ async function onboardOkx(
       while (Date.now() < deadline && !found) {
         // Try main page first
         const evmOption = page.locator('text=EVM-compatible networks').first()
-        if (await evmOption.count() > 0) {
+        if ((await evmOption.count()) > 0) {
           console.log('[OKX] Found EVM option on main page')
           await evmOption.click()
           found = true
@@ -227,7 +251,7 @@ async function onboardOkx(
         // Try frames
         for (const frameObj of page.frames()) {
           const frameEvmOption = frameObj.locator('text=EVM-compatible networks').first()
-          if (await frameEvmOption.count() > 0) {
+          if ((await frameEvmOption.count()) > 0) {
             console.log('[OKX] Found EVM option in frame')
             await frameEvmOption.click()
             found = true
@@ -247,7 +271,7 @@ async function onboardOkx(
 
         // Try main page first
         const confirmBtn = page.locator('button:has-text("Confirm")').first()
-        if (await confirmBtn.count() > 0) {
+        if ((await confirmBtn.count()) > 0) {
           console.log('[OKX] Clicking Confirm button on main page')
           await confirmBtn.click()
           confirmClicked = true
@@ -257,7 +281,7 @@ async function onboardOkx(
         if (!confirmClicked) {
           for (const frameObj of page.frames()) {
             const frameConfirmBtn = frameObj.locator('button:has-text("Confirm")').first()
-            if (await frameConfirmBtn.count() > 0) {
+            if ((await frameConfirmBtn.count()) > 0) {
               console.log('[OKX] Clicking Confirm button in frame')
               await frameConfirmBtn.click()
               confirmClicked = true
@@ -286,7 +310,7 @@ async function onboardOkx(
       // Look for Next button on main page or in frames
       let nextClicked = false
       const nextBtn = page.locator('button:has-text("Next")').first()
-      if (await nextBtn.count() > 0) {
+      if ((await nextBtn.count()) > 0) {
         console.log('[OKX] Clicking Next on Secure wallet screen')
         await nextBtn.click()
         nextClicked = true
@@ -295,7 +319,7 @@ async function onboardOkx(
       if (!nextClicked) {
         for (const frameObj of page.frames()) {
           const frameNextBtn = frameObj.locator('button:has-text("Next")').first()
-          if (await frameNextBtn.count() > 0) {
+          if ((await frameNextBtn.count()) > 0) {
             console.log('[OKX] Clicking Next in frame')
             await frameNextBtn.click()
             nextClicked = true
@@ -362,31 +386,35 @@ async function addTrustedSite(page: Page, extensionId: string, domain: string) {
 
   // Look for Security settings
   const securityLink = page.locator('text=Security').first()
-  if (await securityLink.count() > 0) {
+  if ((await securityLink.count()) > 0) {
     await securityLink.click()
     await page.waitForTimeout(1000)
 
     // Look for Trusted Sites or similar option
     const trustedSitesLink = page.locator('text=/Trusted|Whitelist|Safe sites/i').first()
-    if (await trustedSitesLink.count() > 0) {
+    if ((await trustedSitesLink.count()) > 0) {
       await trustedSitesLink.click()
       await page.waitForTimeout(1000)
 
       // Look for Add button
       const addBtn = page.locator('button:has-text("Add"), text=Add site').first()
-      if (await addBtn.count() > 0) {
+      if ((await addBtn.count()) > 0) {
         await addBtn.click()
         await page.waitForTimeout(500)
 
         // Fill domain input
-        const domainInput = page.locator('input[type="text"], input[placeholder*="domain"], input[placeholder*="site"]').first()
-        if (await domainInput.count() > 0) {
+        const domainInput = page
+          .locator('input[type="text"], input[placeholder*="domain"], input[placeholder*="site"]')
+          .first()
+        if ((await domainInput.count()) > 0) {
           await domainInput.fill(domain)
           await page.waitForTimeout(500)
 
           // Click confirm/save
-          const confirmBtn = page.locator('button:has-text("Confirm"), button:has-text("Save"), button:has-text("Add")').first()
-          if (await confirmBtn.count() > 0) {
+          const confirmBtn = page
+            .locator('button:has-text("Confirm"), button:has-text("Save"), button:has-text("Add")')
+            .first()
+          if ((await confirmBtn.count()) > 0) {
             await confirmBtn.click()
             await page.waitForTimeout(1000)
             console.log(`[OKX] Successfully added ${domain} to trusted sites`)
@@ -412,14 +440,18 @@ async function addTrustedSite(page: Page, extensionId: string, domain: string) {
 
       // Check if we're on a page with whitelist functionality
       const pageContent = await page.content()
-      if (pageContent.includes('trusted') || pageContent.includes('whitelist') || pageContent.includes('safe')) {
+      if (
+        pageContent.includes('trusted') ||
+        pageContent.includes('whitelist') ||
+        pageContent.includes('safe')
+      ) {
         console.log(`[OKX] Found settings page at ${url}`)
         // Try to add the domain here
         const input = page.locator('input').first()
-        if (await input.count() > 0) {
+        if ((await input.count()) > 0) {
           await input.fill(domain)
           const btn = page.locator('button').first()
-          if (await btn.count() > 0) {
+          if ((await btn.count()) > 0) {
             await btn.click()
             console.log(`[OKX] Added ${domain} via ${url}`)
             return
@@ -431,7 +463,9 @@ async function addTrustedSite(page: Page, extensionId: string, domain: string) {
     }
   }
 
-  console.log(`[OKX] Could not find trusted sites settings - phishing warning will need to be handled in tests`)
+  console.log(
+    `[OKX] Could not find trusted sites settings - phishing warning will need to be handled in tests`
+  )
 }
 
 export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, slowMo = 0) => {
@@ -448,7 +482,8 @@ export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, s
     context: async ({ _contextPath }, use) => {
       const { walletPassword } = walletSetup
       // Support both private key and seed phrase
-      const seedOrKey = process.env.OKX_PRIVATE_KEY || process.env.OKX_SEED_PHRASE || DEFAULT_SEED_PHRASE
+      const seedOrKey =
+        process.env.OKX_PRIVATE_KEY || process.env.OKX_SEED_PHRASE || DEFAULT_SEED_PHRASE
 
       const { extensionPath } = await prepareOkxExtension()
       const context = await chromium.launchPersistentContext(_contextPath, {
@@ -456,15 +491,15 @@ export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, s
         args: [
           `--disable-extensions-except=${extensionPath}`,
           `--load-extension=${extensionPath}`,
-          '--no-sandbox'
+          '--no-sandbox',
         ],
         ignoreDefaultArgs: [
           '--disable-extensions',
           '--disable-component-extensions-with-background-pages',
           '--disable-extensions-except',
-          '--enable-automation'
+          '--enable-automation',
         ],
-        slowMo
+        slowMo,
       })
 
       await sleep(3000)
@@ -490,6 +525,6 @@ export const okxFixtures = (walletSetup: ReturnType<typeof defineWalletSetup>, s
     metamask: async ({ context, extensionId }, use) => {
       const okx = new OkxWallet(context, extensionId)
       await use(okx)
-    }
+    },
   })
 }

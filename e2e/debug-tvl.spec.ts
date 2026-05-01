@@ -45,7 +45,8 @@ test.describe('Sepolia Data Verification', () => {
 
     // Verify at least some data is showing (not all $0)
     const pageContent = await page.content()
-    const hasPrices = pageContent.includes('$') && !pageContent.match(/\$0\.00.*\$0\.00.*\$0\.00.*\$0\.00.*\$0\.00/)
+    const hasPrices =
+      pageContent.includes('$') && !pageContent.match(/\$0\.00.*\$0\.00.*\$0\.00.*\$0\.00.*\$0\.00/)
 
     console.log('Farm page has price data:', hasPrices)
   })

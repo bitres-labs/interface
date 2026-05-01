@@ -5,7 +5,13 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, readBalance, expectBalanceIncrease, expectBalanceDecrease } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  readBalance,
+  expectBalanceIncrease,
+  expectBalanceDecrease,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Swap', () => {
@@ -96,9 +102,9 @@ test.describe('Swap', () => {
     }
 
     // Look for swap button
-    const swapBtn = page.locator(
-      'button:has-text("Swap"), button:has-text("Exchange"), button:has-text("Approve")'
-    ).last()
+    const swapBtn = page
+      .locator('button:has-text("Swap"), button:has-text("Exchange"), button:has-text("Approve")')
+      .last()
 
     if ((await swapBtn.count()) > 0 && !(await swapBtn.isDisabled())) {
       const btnText = await swapBtn.textContent()
@@ -195,7 +201,9 @@ test.describe('Swap', () => {
     const firstTokenBefore = await selects.first().inputValue()
 
     // Look for a direction toggle (↓ arrow between inputs)
-    const arrowArea = page.locator('svg, [class*="arrow"], [class*="switch"], [class*="reverse"]').first()
+    const arrowArea = page
+      .locator('svg, [class*="arrow"], [class*="switch"], [class*="reverse"]')
+      .first()
     if ((await arrowArea.count()) > 0) {
       await arrowArea.click()
       await page.waitForTimeout(TIMEOUT.SHORT)

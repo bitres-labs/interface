@@ -2,11 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor, act } from '@testing-library/react'
 import { parseUnits } from 'viem'
 import * as wagmi from 'wagmi'
-import {
-  useApproveAndExecute,
-  useAllowance,
-  useNeedsApproval,
-} from './useApproveAndExecute'
+import { useApproveAndExecute, useAllowance, useNeedsApproval } from './useApproveAndExecute'
 
 vi.mock('wagmi', () => ({
   useAccount: vi.fn(),
@@ -26,7 +22,8 @@ describe('useApproveAndExecute', () => {
   const mockAccount = '0x1234567890123456789012345678901234567890' as `0x${string}`
   const mockTokenAddress = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' as `0x${string}`
   const mockSpenderAddress = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' as `0x${string}`
-  const mockHash = '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc' as `0x${string}`
+  const mockHash =
+    '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc' as `0x${string}`
 
   let mockPublicClient: any
   let mockWalletClient: any
@@ -160,9 +157,9 @@ describe('useApproveAndExecute', () => {
     })
 
     it('should set isProcessing state during execution', async () => {
-      const executeAction = vi.fn().mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 100))
-      )
+      const executeAction = vi
+        .fn()
+        .mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
 
       mockPublicClient.readContract.mockResolvedValue(parseUnits('200', 18))
 
@@ -238,9 +235,7 @@ describe('useApproveAndExecute', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useAllowance(mockTokenAddress, mockSpenderAddress)
-      )
+      const { result } = renderHook(() => useAllowance(mockTokenAddress, mockSpenderAddress))
 
       expect(result.current.allowance).toBe(parseUnits('100', 18))
       expect(result.current.allowanceFormatted).toBe(parseUnits('100', 18).toString())
@@ -256,9 +251,7 @@ describe('useApproveAndExecute', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useAllowance(mockTokenAddress, mockSpenderAddress)
-      )
+      const { result } = renderHook(() => useAllowance(mockTokenAddress, mockSpenderAddress))
 
       expect(result.current.allowance).toBe(0n)
       expect(result.current.allowanceFormatted).toBe('0')
@@ -287,9 +280,7 @@ describe('useApproveAndExecute', () => {
         refetch: mockRefetch,
       } as never)
 
-      const { result } = renderHook(() =>
-        useAllowance(mockTokenAddress, mockSpenderAddress)
-      )
+      const { result } = renderHook(() => useAllowance(mockTokenAddress, mockSpenderAddress))
 
       expect(result.current.refetch).toBe(mockRefetch)
     })
@@ -302,9 +293,7 @@ describe('useApproveAndExecute', () => {
         refetch: vi.fn(),
       } as never)
 
-      const { result } = renderHook(() =>
-        useAllowance(mockTokenAddress, mockSpenderAddress)
-      )
+      const { result } = renderHook(() => useAllowance(mockTokenAddress, mockSpenderAddress))
 
       expect(result.current.isLoading).toBe(true)
     })

@@ -29,13 +29,13 @@ const BASE_URL = 'https://bitres.org'
 
 // Minimal test amounts
 const AMOUNTS = {
-  WBTC_MINT: '0.00001',      // ~$1 worth for minting
-  BTD_REDEEM: '0.5',         // Small BTD amount
-  BTB_REDEEM: '0.1',         // Small BTB amount
-  SWAP_AMOUNT: '0.1',        // Small swap amount
-  LP_AMOUNT: '0.0001',       // Tiny LP amount
-  STAKE_BTD: '0.1',          // Small stake amount
-  STAKE_BTB: '0.1',          // Small stake amount
+  WBTC_MINT: '0.00001', // ~$1 worth for minting
+  BTD_REDEEM: '0.5', // Small BTD amount
+  BTB_REDEEM: '0.1', // Small BTB amount
+  SWAP_AMOUNT: '0.1', // Small swap amount
+  LP_AMOUNT: '0.0001', // Tiny LP amount
+  STAKE_BTD: '0.1', // Small stake amount
+  STAKE_BTB: '0.1', // Small stake amount
 }
 
 const WAIT = {
@@ -49,12 +49,12 @@ const WAIT = {
 // Helper to connect wallet
 async function connectWallet(page: any, metamask: any) {
   const connectButton = page.locator('button:has-text("Connect Wallet")')
-  if (await connectButton.count() > 0) {
+  if ((await connectButton.count()) > 0) {
     await connectButton.first().click()
     await page.waitForTimeout(WAIT.SHORT)
 
     const okxOption = page.locator('button:has-text("OKX")')
-    if (await okxOption.count() > 0) {
+    if ((await okxOption.count()) > 0) {
       await okxOption.first().click()
       await page.waitForTimeout(WAIT.SHORT)
       await metamask.connectToDapp()
@@ -111,7 +111,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Check if approve is needed first
       const approveBtn = page.locator('button:has-text("Approve")')
-      if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      if ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Mint BTD] Approving WBTC...')
         await approveBtn.click()
         await waitForTx(page, metamask, 'Approve WBTC')
@@ -120,7 +120,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Mint button (main action button, not tab)
       const mintBtn = page.locator('button.btn-primary:has-text("Mint BTD")')
-      if (await mintBtn.count() > 0 && !(await mintBtn.first().isDisabled())) {
+      if ((await mintBtn.count()) > 0 && !(await mintBtn.first().isDisabled())) {
         console.log('[Mint BTD] Minting...')
         await mintBtn.click()
         await waitForTx(page, metamask, 'Mint BTD')
@@ -148,7 +148,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Redeem button (action button, not tab)
       const redeemBtn = page.locator('button.btn-primary:has-text("Redeem")')
-      if (await redeemBtn.count() > 0 && !(await redeemBtn.first().isDisabled())) {
+      if ((await redeemBtn.count()) > 0 && !(await redeemBtn.first().isDisabled())) {
         console.log('[Redeem BTD] Redeeming...')
         await redeemBtn.first().click()
         await waitForTx(page, metamask, 'Redeem BTD')
@@ -175,12 +175,15 @@ test.describe('Sepolia Full E2E Tests', () => {
       await screenshot(page, 'redeem-btb-input')
 
       // Check CR status - BTB redemption requires CR > 100%
-      const crInfo = await page.locator('text=/CR|Collateral Ratio/i').textContent().catch(() => '')
+      const crInfo = await page
+        .locator('text=/CR|Collateral Ratio/i')
+        .textContent()
+        .catch(() => '')
       console.log('[Redeem BTB] CR Info:', crInfo)
 
       // Click Redeem button (action button, not tab)
       const redeemBtn = page.locator('button.btn-primary:has-text("Redeem")')
-      if (await redeemBtn.count() > 0 && !(await redeemBtn.first().isDisabled())) {
+      if ((await redeemBtn.count()) > 0 && !(await redeemBtn.first().isDisabled())) {
         console.log('[Redeem BTB] Redeeming...')
         await redeemBtn.first().click()
         await waitForTx(page, metamask, 'Redeem BTB')
@@ -215,7 +218,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Approve if needed
       const approveBtn = page.locator('button:has-text("Approve")')
-      if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      if ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Swap] Approving token...')
         await approveBtn.click()
         await waitForTx(page, metamask, 'Approve')
@@ -224,7 +227,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Swap button
       const swapBtn = page.locator('button:has-text("Swap")')
-      if (await swapBtn.count() > 0 && !(await swapBtn.isDisabled())) {
+      if ((await swapBtn.count()) > 0 && !(await swapBtn.isDisabled())) {
         console.log('[Swap] Swapping...')
         await swapBtn.click()
         await waitForTx(page, metamask, 'Swap')
@@ -252,7 +255,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Approve tokens if needed
       const approveBtn = page.locator('button:has-text("Approve")')
-      while (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      while ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Add Liquidity] Approving token...')
         await approveBtn.first().click()
         await waitForTx(page, metamask, 'Approve')
@@ -261,7 +264,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Add button
       const addBtn = page.locator('button:has-text("Add Liquidity"), button:has-text("Supply")')
-      if (await addBtn.count() > 0 && !(await addBtn.isDisabled())) {
+      if ((await addBtn.count()) > 0 && !(await addBtn.isDisabled())) {
         console.log('[Add Liquidity] Adding...')
         await addBtn.first().click()
         await waitForTx(page, metamask, 'Add Liquidity')
@@ -282,7 +285,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Select percentage (e.g., 25%)
       const percentBtn = page.locator('button:has-text("25%")')
-      if (await percentBtn.count() > 0) {
+      if ((await percentBtn.count()) > 0) {
         await percentBtn.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -291,7 +294,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Approve LP token if needed
       const approveBtn = page.locator('button:has-text("Approve")')
-      if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      if ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Remove Liquidity] Approving LP token...')
         await approveBtn.click()
         await waitForTx(page, metamask, 'Approve LP')
@@ -300,7 +303,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Remove button (action button)
       const removeBtn = page.locator('button.btn-primary:has-text("Remove Liquidity")')
-      if (await removeBtn.count() > 0 && !(await removeBtn.first().isDisabled())) {
+      if ((await removeBtn.count()) > 0 && !(await removeBtn.first().isDisabled())) {
         console.log('[Remove Liquidity] Removing...')
         await removeBtn.first().click()
         await waitForTx(page, metamask, 'Remove Liquidity')
@@ -322,7 +325,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click on first farm pool to expand
       const poolCard = page.locator('[class*="pool"], [class*="farm"]').first()
-      if (await poolCard.count() > 0) {
+      if ((await poolCard.count()) > 0) {
         await poolCard.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -330,15 +333,17 @@ test.describe('Sepolia Full E2E Tests', () => {
       await screenshot(page, 'farm-pool-expanded')
 
       // Find deposit input and button
-      const depositInput = page.locator('input[placeholder*="amount" i], input[type="number"]').first()
-      if (await depositInput.count() > 0) {
+      const depositInput = page
+        .locator('input[placeholder*="amount" i], input[type="number"]')
+        .first()
+      if ((await depositInput.count()) > 0) {
         await depositInput.fill(AMOUNTS.LP_AMOUNT)
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Approve if needed
       const approveBtn = page.locator('button:has-text("Approve")')
-      if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      if ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Farm Deposit] Approving LP token...')
         await approveBtn.click()
         await waitForTx(page, metamask, 'Approve LP')
@@ -347,7 +352,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Deposit button
       const depositBtn = page.locator('button:has-text("Deposit"), button:has-text("Stake")')
-      if (await depositBtn.count() > 0 && !(await depositBtn.isDisabled())) {
+      if ((await depositBtn.count()) > 0 && !(await depositBtn.isDisabled())) {
         console.log('[Farm Deposit] Depositing...')
         await depositBtn.first().click()
         await waitForTx(page, metamask, 'Farm Deposit')
@@ -366,7 +371,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Claim button if available
       const claimBtn = page.locator('button:has-text("Claim"), button:has-text("Harvest")')
-      if (await claimBtn.count() > 0 && !(await claimBtn.first().isDisabled())) {
+      if ((await claimBtn.count()) > 0 && !(await claimBtn.first().isDisabled())) {
         console.log('[Farm Claim] Claiming rewards...')
         await claimBtn.first().click()
         await waitForTx(page, metamask, 'Claim Rewards')
@@ -387,21 +392,21 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click on first farm pool to expand
       const poolCard = page.locator('[class*="pool"], [class*="farm"]').first()
-      if (await poolCard.count() > 0) {
+      if ((await poolCard.count()) > 0) {
         await poolCard.click()
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Switch to withdraw tab if exists
       const withdrawTab = page.locator('button:has-text("Withdraw")')
-      if (await withdrawTab.count() > 0) {
+      if ((await withdrawTab.count()) > 0) {
         await withdrawTab.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Enter amount or use Max
       const maxBtn = page.locator('button:has-text("Max")')
-      if (await maxBtn.count() > 0) {
+      if ((await maxBtn.count()) > 0) {
         await maxBtn.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -410,7 +415,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Withdraw button
       const withdrawBtn = page.locator('button:has-text("Withdraw"), button:has-text("Unstake")')
-      if (await withdrawBtn.count() > 0 && !(await withdrawBtn.first().isDisabled())) {
+      if ((await withdrawBtn.count()) > 0 && !(await withdrawBtn.first().isDisabled())) {
         console.log('[Farm Withdraw] Withdrawing...')
         await withdrawBtn.first().click()
         await waitForTx(page, metamask, 'Farm Withdraw')
@@ -432,7 +437,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Select BTD token tab if available (not the main stake button)
       const btdTab = page.locator('[role="tab"]:has-text("BTD"), button.tab:has-text("BTD")')
-      if (await btdTab.count() > 0) {
+      if ((await btdTab.count()) > 0) {
         await btdTab.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -446,7 +451,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Approve if needed
       const approveBtn = page.locator('button:has-text("Approve")')
-      if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      if ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Stake BTD] Approving...')
         await approveBtn.click()
         await waitForTx(page, metamask, 'Approve BTD')
@@ -455,7 +460,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Stake button (action button)
       const stakeBtn = page.locator('button.btn-primary:has-text("Stake")')
-      if (await stakeBtn.count() > 0 && !(await stakeBtn.first().isDisabled())) {
+      if ((await stakeBtn.count()) > 0 && !(await stakeBtn.first().isDisabled())) {
         console.log('[Stake BTD] Staking...')
         await stakeBtn.first().click()
         await waitForTx(page, metamask, 'Stake BTD')
@@ -476,7 +481,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Select BTB token tab
       const btbTab = page.locator('[role="tab"]:has-text("BTB"), button.tab:has-text("BTB")')
-      if (await btbTab.count() > 0) {
+      if ((await btbTab.count()) > 0) {
         await btbTab.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -490,7 +495,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Approve if needed
       const approveBtn = page.locator('button:has-text("Approve")')
-      if (await approveBtn.count() > 0 && !(await approveBtn.isDisabled())) {
+      if ((await approveBtn.count()) > 0 && !(await approveBtn.isDisabled())) {
         console.log('[Stake BTB] Approving...')
         await approveBtn.click()
         await waitForTx(page, metamask, 'Approve BTB')
@@ -499,7 +504,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Stake button (action button)
       const stakeBtn = page.locator('button.btn-primary:has-text("Stake")')
-      if (await stakeBtn.count() > 0 && !(await stakeBtn.first().isDisabled())) {
+      if ((await stakeBtn.count()) > 0 && !(await stakeBtn.first().isDisabled())) {
         console.log('[Stake BTB] Staking...')
         await stakeBtn.first().click()
         await waitForTx(page, metamask, 'Stake BTB')
@@ -520,21 +525,21 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Switch to Unstake tab
       const unstakeTab = page.locator('button:has-text("Unstake")')
-      if (await unstakeTab.count() > 0) {
+      if ((await unstakeTab.count()) > 0) {
         await unstakeTab.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Select stBTD
       const stbtdOption = page.locator('button:has-text("stBTD"), [data-token="stBTD"]')
-      if (await stbtdOption.count() > 0) {
+      if ((await stbtdOption.count()) > 0) {
         await stbtdOption.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Use Max button
       const maxBtn = page.locator('button:has-text("Max")')
-      if (await maxBtn.count() > 0) {
+      if ((await maxBtn.count()) > 0) {
         await maxBtn.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -543,7 +548,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Unstake button
       const unstakeBtn = page.locator('button:has-text("Unstake"), button:has-text("Withdraw")')
-      if (await unstakeBtn.count() > 0 && !(await unstakeBtn.first().isDisabled())) {
+      if ((await unstakeBtn.count()) > 0 && !(await unstakeBtn.first().isDisabled())) {
         console.log('[Unstake stBTD] Unstaking...')
         await unstakeBtn.first().click()
         await waitForTx(page, metamask, 'Unstake stBTD')
@@ -562,21 +567,21 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Switch to Unstake tab
       const unstakeTab = page.locator('button:has-text("Unstake")')
-      if (await unstakeTab.count() > 0) {
+      if ((await unstakeTab.count()) > 0) {
         await unstakeTab.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Select stBTB
       const stbtbOption = page.locator('button:has-text("stBTB"), [data-token="stBTB"]')
-      if (await stbtbOption.count() > 0) {
+      if ((await stbtbOption.count()) > 0) {
         await stbtbOption.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
 
       // Use Max button
       const maxBtn = page.locator('button:has-text("Max")')
-      if (await maxBtn.count() > 0) {
+      if ((await maxBtn.count()) > 0) {
         await maxBtn.first().click()
         await page.waitForTimeout(WAIT.SHORT)
       }
@@ -585,7 +590,7 @@ test.describe('Sepolia Full E2E Tests', () => {
 
       // Click Unstake button
       const unstakeBtn = page.locator('button:has-text("Unstake"), button:has-text("Withdraw")')
-      if (await unstakeBtn.count() > 0 && !(await unstakeBtn.first().isDisabled())) {
+      if ((await unstakeBtn.count()) > 0 && !(await unstakeBtn.first().isDisabled())) {
         console.log('[Unstake stBTB] Unstaking...')
         await unstakeBtn.first().click()
         await waitForTx(page, metamask, 'Unstake stBTB')

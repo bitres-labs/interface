@@ -31,34 +31,130 @@ const client = createPublicClient({
 // ============ Contract ABIs ============
 
 const erc20Abi = [
-  { inputs: [], name: 'totalSupply', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'decimals', outputs: [{ type: 'uint8' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'symbol', outputs: [{ type: 'string' }], stateMutability: 'view', type: 'function' },
-  { inputs: [{ name: 'account', type: 'address' }], name: 'balanceOf', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  {
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ name: 'account', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const
 
 const priceOracleAbi = [
-  { inputs: [], name: 'getWBTCPrice', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'getBTDPrice', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'getBTBPrice', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'getBRSPrice', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'getIUSDPrice', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  {
+    inputs: [],
+    name: 'getWBTCPrice',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getBTDPrice',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getBTBPrice',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getBRSPrice',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getIUSDPrice',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const
 
 const treasuryAbi = [
-  { inputs: [], name: 'getCollateralRatio', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'totalCollateral', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  {
+    inputs: [],
+    name: 'getCollateralRatio',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'totalCollateral',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const
 
 const farmingPoolAbi = [
-  { inputs: [], name: 'minted', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'currentRewardPerSecond', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [], name: 'poolLength', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
-  { inputs: [{ name: 'pid', type: 'uint256' }], name: 'poolInfo', outputs: [{ type: 'address' }, { type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  {
+    inputs: [],
+    name: 'minted',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'currentRewardPerSecond',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'poolLength',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ name: 'pid', type: 'uint256' }],
+    name: 'poolInfo',
+    outputs: [{ type: 'address' }, { type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const
 
 const stakingRouterAbi = [
-  { inputs: [], name: 'poolLength', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  {
+    inputs: [],
+    name: 'poolLength',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const
 
 // ============ Helper Functions ============
@@ -230,7 +326,11 @@ function extractNumber(text: string): number {
   return match ? parseFloat(match[0]) : 0
 }
 
-function isWithinTolerance(actual: number, expected: number, tolerancePercent: number = 5): boolean {
+function isWithinTolerance(
+  actual: number,
+  expected: number,
+  tolerancePercent: number = 5
+): boolean {
   if (expected === 0) return actual === 0
   const tolerance = expected * (tolerancePercent / 100)
   return Math.abs(actual - expected) <= tolerance
@@ -262,7 +362,9 @@ test.describe('Phase 1: Data Verification', () => {
       const priceText = await page.locator('text=/\\$[\\d,]+\\.?\\d*/').first().textContent()
       if (priceText) {
         const displayedPrice = extractNumber(priceText)
-        console.log(`Home: Displayed price: ${displayedPrice}, Contract: ${contractData.prices.wbtc}`)
+        console.log(
+          `Home: Displayed price: ${displayedPrice}, Contract: ${contractData.prices.wbtc}`
+        )
 
         // Sanity check: WBTC price should be reasonable (10k-500k)
         expect(contractData.prices.wbtc).toBeGreaterThan(10000)
@@ -298,7 +400,7 @@ test.describe('Phase 1: Data Verification', () => {
       await page.goto('/explorer')
       await page.waitForTimeout(3000)
 
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
 
       // Check WBTC price is displayed correctly
       const wbtcPriceStr = Math.floor(contractData.prices.wbtc).toString()
@@ -329,7 +431,7 @@ test.describe('Phase 1: Data Verification', () => {
       expect(contractData.supplies.brs).toBe(2100000000)
 
       // Check page shows token names
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
       expect(pageContent).toContain('BTD')
       expect(pageContent).toContain('BTB')
       expect(pageContent).toContain('BRS')
@@ -351,7 +453,7 @@ test.describe('Phase 1: Data Verification', () => {
       await page.goto('/explorer')
       await page.waitForTimeout(3000)
 
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
 
       // Check Treasury section exists
       expect(pageContent.toLowerCase()).toContain('treasury')
@@ -375,8 +477,9 @@ test.describe('Phase 1: Data Verification', () => {
       console.log(`BRS Distributed (minted): ${contractData.farming.minted}`)
 
       // Check if page shows BRS Distributed field
-      const pageContent = await page.textContent('body') || ''
-      const hasDistributedField = pageContent.includes('Distributed') || pageContent.includes('Mined')
+      const pageContent = (await page.textContent('body')) || ''
+      const hasDistributedField =
+        pageContent.includes('Distributed') || pageContent.includes('Mined')
       console.log(`Has Distributed/Mined field: ${hasDistributedField}`)
     })
 
@@ -389,14 +492,16 @@ test.describe('Phase 1: Data Verification', () => {
 
       for (const label of priceLabels) {
         const priceElement = page.locator(`text=${label}`).first()
-        if (await priceElement.count() > 0) {
+        if ((await priceElement.count()) > 0) {
           // Get parent or nearby price value
           const parent = priceElement.locator('xpath=ancestor::div[1]')
-          const parentText = await parent.textContent() || ''
+          const parentText = (await parent.textContent()) || ''
 
           // Check it doesn't show $0 or $0.00
           const hasZeroPrice = /\$0(\.0+)?(?!\d)/.test(parentText)
-          console.log(`${label} section: "${parentText.slice(0, 50)}..." hasZeroPrice: ${hasZeroPrice}`)
+          console.log(
+            `${label} section: "${parentText.slice(0, 50)}..." hasZeroPrice: ${hasZeroPrice}`
+          )
         }
       }
     })
@@ -407,7 +512,7 @@ test.describe('Phase 1: Data Verification', () => {
       await page.goto('/farm')
       await page.waitForTimeout(3000)
 
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
 
       // Check farming page has pool-related content
       const hasFarmContent =
@@ -430,7 +535,9 @@ test.describe('Phase 1: Data Verification', () => {
       console.log(`Farm: Expected ${expectedPools} pools`)
 
       // Count pool cards/rows on page
-      const poolElements = await page.locator('[class*="pool"], [class*="card"], [class*="farm"]').count()
+      const poolElements = await page
+        .locator('[class*="pool"], [class*="card"], [class*="farm"]')
+        .count()
       console.log(`Farm: Found ${poolElements} pool-related elements`)
 
       expect(poolElements).toBeGreaterThan(0)
@@ -463,7 +570,7 @@ test.describe('Phase 1: Data Verification', () => {
       await page.goto('/stake')
       await page.waitForTimeout(3000)
 
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
 
       // Check stake page content
       const hasStakeContent =
@@ -499,7 +606,7 @@ test.describe('Phase 1: Data Verification', () => {
       await page.goto('/pool')
       await page.waitForTimeout(3000)
 
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
 
       // Check pool page content
       const hasPoolContent =
@@ -516,7 +623,7 @@ test.describe('Phase 1: Data Verification', () => {
       await page.goto('/swap')
       await page.waitForTimeout(3000)
 
-      const pageContent = await page.textContent('body') || ''
+      const pageContent = (await page.textContent('body')) || ''
 
       // Check swap page content
       const hasSwapContent =
@@ -546,15 +653,16 @@ test.describe('Phase 1: Data Verification', () => {
       }
 
       // Filter out expected/benign errors
-      const criticalErrors = consoleErrors.filter(e =>
-        !e.includes('favicon') &&
-        !e.includes('404') &&
-        !e.includes('network') &&
-        !e.includes('403') &&
-        !e.includes('reown.com') &&
-        !e.includes('walletconnect') &&
-        !e.includes('WalletConnect') &&
-        !e.includes('Allowlist')
+      const criticalErrors = consoleErrors.filter(
+        e =>
+          !e.includes('favicon') &&
+          !e.includes('404') &&
+          !e.includes('network') &&
+          !e.includes('403') &&
+          !e.includes('reown.com') &&
+          !e.includes('walletconnect') &&
+          !e.includes('WalletConnect') &&
+          !e.includes('Allowlist')
       )
 
       console.log('Critical errors:', criticalErrors)
@@ -566,12 +674,12 @@ test.describe('Phase 1: Data Verification', () => {
       // Get WBTC price from explorer
       await page.goto('/explorer')
       await page.waitForTimeout(3000)
-      const explorerContent = await page.textContent('body') || ''
+      const explorerContent = (await page.textContent('body')) || ''
 
       // Get WBTC price from home
       await page.goto('/')
       await page.waitForTimeout(3000)
-      const homeContent = await page.textContent('body') || ''
+      const homeContent = (await page.textContent('body')) || ''
 
       // Both pages should show similar WBTC price (first 3 digits)
       const wbtcPricePrefix = Math.floor(contractData.prices.wbtc / 1000).toString()
@@ -615,7 +723,9 @@ test.describe('Phase 1: Data Verification', () => {
       const rewardsPerDay = contractData.farming.rewardPerSecond * 86400
       const rewardsPerYear = rewardsPerDay * 365
 
-      console.log(`Farming rewards: ${contractData.farming.rewardPerSecond}/sec, ${rewardsPerDay}/day, ${rewardsPerYear}/year`)
+      console.log(
+        `Farming rewards: ${contractData.farming.rewardPerSecond}/sec, ${rewardsPerDay}/day, ${rewardsPerYear}/year`
+      )
 
       // Should not distribute more than total supply per year
       expect(rewardsPerYear).toBeLessThan(contractData.supplies.brs)

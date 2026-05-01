@@ -82,25 +82,27 @@ test.describe('Signing Wallet Tests', () => {
 
     // Make sure we're on Mint tab
     const mintTab = page.locator('button:has-text("Mint")').first()
-    if (await mintTab.count() > 0) {
+    if ((await mintTab.count()) > 0) {
       await mintTab.click()
       await page.waitForTimeout(1000)
     }
 
     // Enter WBTC amount
     const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       await input.fill('0.0001')
       await page.waitForTimeout(1500)
     }
     await page.screenshot({ path: 'test-results/signing-mint-amount.png' })
 
     // Click action button
-    const actionButton = page.locator('button:has-text("Mint BTD"), button:has-text("Approve WBTC")').last()
+    const actionButton = page
+      .locator('button:has-text("Mint BTD"), button:has-text("Approve WBTC")')
+      .last()
     const buttonText = await actionButton.textContent()
     console.log('Action button:', buttonText)
 
-    if (await actionButton.count() > 0 && !(await actionButton.isDisabled())) {
+    if ((await actionButton.count()) > 0 && !(await actionButton.isDisabled())) {
       await actionButton.click()
       await page.waitForTimeout(5000)
       await page.screenshot({ path: 'test-results/signing-mint-clicked.png' })
@@ -109,7 +111,7 @@ test.describe('Signing Wallet Tests', () => {
       if (buttonText?.includes('Approve')) {
         await page.waitForTimeout(5000)
         const mintButton = page.locator('button:has-text("Mint BTD")').last()
-        if (await mintButton.count() > 0 && !(await mintButton.isDisabled())) {
+        if ((await mintButton.count()) > 0 && !(await mintButton.isDisabled())) {
           await mintButton.click()
           await page.waitForTimeout(5000)
         }
@@ -118,8 +120,8 @@ test.describe('Signing Wallet Tests', () => {
       await page.screenshot({ path: 'test-results/signing-mint-complete.png' })
 
       // Check for success indicator
-      const hasSuccess = await page.locator('text=/success|confirmed|complete/i').count() > 0
-      const hasError = await page.locator('text=/error|failed|rejected/i').count() > 0
+      const hasSuccess = (await page.locator('text=/success|confirmed|complete/i').count()) > 0
+      const hasError = (await page.locator('text=/error|failed|rejected/i').count()) > 0
 
       console.log('Success:', hasSuccess, 'Error:', hasError)
     }
@@ -140,14 +142,14 @@ test.describe('Signing Wallet Tests', () => {
 
     // Switch to Redeem BTD tab
     const redeemTab = page.locator('button:has-text("Redeem BTD")').first()
-    if (await redeemTab.count() > 0) {
+    if ((await redeemTab.count()) > 0) {
       await redeemTab.click()
       await page.waitForTimeout(1000)
     }
 
     // Enter BTD amount
     const input = page.locator('input[type="number"], input[inputmode="decimal"]').first()
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       await input.fill('10')
       await page.waitForTimeout(1500)
     }
@@ -158,7 +160,7 @@ test.describe('Signing Wallet Tests', () => {
     const buttonText = await redeemButton.textContent()
     console.log('Redeem button:', buttonText)
 
-    if (await redeemButton.count() > 0 && !(await redeemButton.isDisabled())) {
+    if ((await redeemButton.count()) > 0 && !(await redeemButton.isDisabled())) {
       console.log('Clicking redeem button...')
       await redeemButton.click()
 
@@ -167,8 +169,8 @@ test.describe('Signing Wallet Tests', () => {
       await page.screenshot({ path: 'test-results/signing-redeem-clicked.png' })
 
       // Check for success/error
-      const hasSuccess = await page.locator('text=/success|confirmed|complete/i').count() > 0
-      const hasError = await page.locator('text=/error|failed|rejected/i').count() > 0
+      const hasSuccess = (await page.locator('text=/success|confirmed|complete/i').count()) > 0
+      const hasError = (await page.locator('text=/error|failed|rejected/i').count()) > 0
 
       console.log('Redeem result - Success:', hasSuccess, 'Error:', hasError)
 

@@ -6,7 +6,13 @@
  */
 
 import { test, expect } from '../sepolia/fixtures'
-import { navigateTo, waitForTxComplete, readBalance, expectBalanceIncrease, expectBalanceDecrease } from '../sepolia/helpers'
+import {
+  navigateTo,
+  waitForTxComplete,
+  readBalance,
+  expectBalanceIncrease,
+  expectBalanceDecrease,
+} from '../sepolia/helpers'
 import { TIMEOUT, ADDRESSES } from '../sepolia/constants'
 
 test.describe('Mint BTD', () => {
@@ -39,7 +45,9 @@ test.describe('Mint BTD', () => {
     await page.waitForTimeout(TIMEOUT.SHORT)
 
     // Find and fill the input
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.clear()
       await input.fill('0.00001')
@@ -53,7 +61,9 @@ test.describe('Mint BTD', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     // Input an amount to trigger fee display
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.001')
       await page.waitForTimeout(TIMEOUT.SHORT)
@@ -83,7 +93,9 @@ test.describe('Mint BTD', () => {
       return
     }
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.00001')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -125,7 +137,9 @@ test.describe('Mint BTD', () => {
     }
 
     // Fill in a tiny amount
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.00001')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -156,7 +170,7 @@ test.describe('Mint BTD', () => {
 
     // Check for price oracle issues
     const body = await page.textContent('body')
-    if (body?.includes('= 0.00 BTD') || body?.includes('BTC Price') && body?.includes('$0')) {
+    if (body?.includes('= 0.00 BTD') || (body?.includes('BTC Price') && body?.includes('$0'))) {
       console.log('[Mint] Oracle shows $0 BTC price - skipping balance verification')
       test.skip()
       return
@@ -182,7 +196,9 @@ test.describe('Mint BTD', () => {
     const btdBefore = await readBalance(page, ADDRESSES.BTD)
     console.log(`[Mint] BTD before: ${btdBefore}`)
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.00001')
       await page.waitForTimeout(TIMEOUT.MEDIUM)
@@ -209,7 +225,7 @@ test.describe('Mint BTD', () => {
     await page.waitForTimeout(TIMEOUT.MEDIUM)
 
     const body = await page.textContent('body')
-    if (body?.includes('= 0.00 BTD') || body?.includes('BTC Price') && body?.includes('$0')) {
+    if (body?.includes('= 0.00 BTD') || (body?.includes('BTC Price') && body?.includes('$0'))) {
       console.log('[Mint] Oracle shows $0 BTC price - skipping balance verification')
       test.skip()
       return
@@ -234,7 +250,9 @@ test.describe('Mint BTD', () => {
     const wbtcBefore = await readBalance(page, ADDRESSES.WBTC)
     console.log(`[Mint] WBTC before: ${wbtcBefore}`)
 
-    const input = page.locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]').first()
+    const input = page
+      .locator('input[type="number"], input[inputmode="decimal"], [role="spinbutton"]')
+      .first()
     if ((await input.count()) > 0) {
       await input.fill('0.00001')
       await page.waitForTimeout(TIMEOUT.MEDIUM)

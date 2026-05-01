@@ -46,28 +46,30 @@ test.describe('Redeem BTD - UI Tests', () => {
     console.log('\n--- Step 4: Verify output ---')
     // The output should show some WBTC value
     const outputSection = page.locator('[class*="output"], [class*="Output"], [class*="receive"]')
-    if (await outputSection.count() > 0) {
+    if ((await outputSection.count()) > 0) {
       const html = await outputSection.first().innerHTML()
       console.log('Output section found:', html.substring(0, 200))
     }
 
     // Look for WBTC display
     const wbtcText = page.locator('text=/WBTC/')
-    if (await wbtcText.count() > 0) {
+    if ((await wbtcText.count()) > 0) {
       console.log('Found WBTC label')
     }
 
     // Check for numeric output value
     const numericOutput = page.locator('text=/\\d+\\.\\d+/')
-    if (await numericOutput.count() > 0) {
+    if ((await numericOutput.count()) > 0) {
       const values = await numericOutput.allTextContents()
       console.log('Numeric values found:', values.slice(0, 5))
     }
 
     // Step 5: Verify button state
     console.log('\n--- Step 5: Verify button state ---')
-    const actionButton = page.locator('button:has-text("Connect Wallet"), button:has-text("Redeem BTD")').last()
-    if (await actionButton.count() > 0) {
+    const actionButton = page
+      .locator('button:has-text("Connect Wallet"), button:has-text("Redeem BTD")')
+      .last()
+    if ((await actionButton.count()) > 0) {
       const buttonText = await actionButton.textContent()
       console.log('Action button text:', buttonText)
       // Without wallet connected, should show "Connect Wallet to Redeem BTD"

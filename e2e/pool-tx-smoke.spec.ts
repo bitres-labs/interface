@@ -12,7 +12,7 @@ import {
   handleApprove,
   handleTransaction,
   navigateTo,
-  WAIT
+  WAIT,
 } from './utils/test-helpers'
 
 const test = metaMaskFixtures(BasicSetup, 0)
@@ -31,7 +31,9 @@ test.describe('Pool TX smoke', () => {
     await fillAmount(page, '1', 1)
     await page.waitForTimeout(WAIT.MEDIUM)
 
-    const addButton = page.locator('button:has-text("Add Liquidity"), button:has-text("Add")').last()
+    const addButton = page
+      .locator('button:has-text("Add Liquidity"), button:has-text("Add")')
+      .last()
     if (!(await addButton.count())) {
       test.skip(true, 'Add liquidity button not found, skipping tx smoke')
     }
@@ -58,7 +60,9 @@ test.describe('Pool TX smoke', () => {
     await clickTab(page, 'Remove Liquidity')
     await page.waitForTimeout(WAIT.MEDIUM)
 
-    const removeButton = page.locator('button:has-text("Remove Liquidity"), button:has-text("Remove")').last()
+    const removeButton = page
+      .locator('button:has-text("Remove Liquidity"), button:has-text("Remove")')
+      .last()
     if (!(await removeButton.count())) {
       test.skip(true, 'Remove liquidity button not found, skipping tx smoke')
     }

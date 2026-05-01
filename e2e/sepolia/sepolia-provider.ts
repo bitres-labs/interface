@@ -17,7 +17,7 @@ export async function injectSepoliaProvider(page: Page): Promise<void> {
   await page.addInitScript(
     ({ chainIdHex, testAddress, rpcUrl }) => {
       const TEST_ADDR = testAddress.toLowerCase()
-      let requestId = 1
+      const requestId = 1
       let isConnected = false
 
       // Event listeners
@@ -43,7 +43,7 @@ export async function injectSepoliaProvider(page: Page): Promise<void> {
           switch (method) {
             // ---- Account ----
             case 'eth_accounts':
-              return [TEST_ADDR]  // Always return address (pre-connected)
+              return [TEST_ADDR] // Always return address (pre-connected)
 
             case 'eth_requestAccounts': {
               isConnected = true
@@ -167,7 +167,9 @@ export async function injectSepoliaProvider(page: Page): Promise<void> {
           if (event) {
             eventListeners[event] = []
           } else {
-            Object.keys(eventListeners).forEach(e => { eventListeners[e] = [] })
+            Object.keys(eventListeners).forEach(e => {
+              eventListeners[e] = []
+            })
           }
           return mockProvider
         },
@@ -175,7 +177,11 @@ export async function injectSepoliaProvider(page: Page): Promise<void> {
         emit: (event: string, ...args: unknown[]) => {
           if (eventListeners[event]) {
             eventListeners[event].forEach(cb => {
-              try { cb(...args) } catch (e) { console.error('[SepoliaProvider] Event error:', e) }
+              try {
+                cb(...args)
+              } catch (e) {
+                console.error('[SepoliaProvider] Event error:', e)
+              }
             })
           }
           return true
@@ -189,10 +195,14 @@ export async function injectSepoliaProvider(page: Page): Promise<void> {
           paramsOrCb?: unknown[] | ((err: Error | null, res?: unknown) => void)
         ) => {
           if (typeof methodOrPayload === 'string') {
-            return mockProvider.request({ method: methodOrPayload, params: paramsOrCb as unknown[] })
+            return mockProvider.request({
+              method: methodOrPayload,
+              params: paramsOrCb as unknown[],
+            })
           }
           const cb = paramsOrCb as (err: Error | null, res?: unknown) => void
-          mockProvider.request(methodOrPayload)
+          mockProvider
+            .request(methodOrPayload)
             .then(result => cb?.(null, { jsonrpc: '2.0', id: requestId, result }))
             .catch(err => cb?.(err))
         },
@@ -201,7 +211,8 @@ export async function injectSepoliaProvider(page: Page): Promise<void> {
           req: { method: string; params?: unknown[] },
           cb: (err: Error | null, res?: { result: unknown }) => void
         ) => {
-          mockProvider.request(req)
+          mockProvider
+            .request(req)
             .then(result => cb(null, { result }))
             .catch(err => cb(err))
         },
